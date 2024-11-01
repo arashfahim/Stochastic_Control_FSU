@@ -1,0 +1,9 @@
+cff-version: 0.0.0
+message: "If you use this software, please cite it as below."
+authors:
+  - family-names: "Fahim"
+    given-names: "Arash"
+    orcid: "https://orcid.org/0009-0005-7737-9375"
+title: "Graduate Course: Deep Learning for Optimal Control"
+version: "0.0.0"
+url: "https://github.com/arashfahim/Stochastic_Control_FSU"
