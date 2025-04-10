@@ -1,0 +1,421 @@
+%    These are the general settings for my Notes Template
+%    > I haven't organized them terribly much yet, however plan to soon.
+
+\usepackage[T1]{fontenc}
+%\usepackage[latin9]{inputenc}
+\usepackage{geometry}
+\usepackage{url}
+\usepackage{amsthm}
+\usepackage{mathrsfs}
+\usepackage{makeidx}
+\usepackage{microtype}
+\usepackage{setspace}
+\usepackage{graphicx}
+\usepackage{ulem}
+%\usepackage{babel}
+\usepackage{fancyhdr}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{url}
+\usepackage{enumerate}
+\usepackage{tikz}
+\usepackage{listings}
+\usepackage{thmtools}
+\usepackage{tabularx}
+\usepackage[titletoc]{appendix}
+\usepackage{
+nameref,%\nameref
+hyperref,%\autoref
+% n.b. \Autoref is defined by thmtools
+cleveref,% \cref
+% n.b. cleveref after! hyperref
+}
+\geometry{verbose,tmargin=1.0in,bmargin=1.0in,lmargin=1in,rmargin=1in}
+\pagestyle{fancy}
+\PassOptionsToPackage{normalem}{ulem}
+\makeindex
+\makeatletter
+
+\setlength{\headheight}{15pt}
+
+% Command for use \textsc quickly
+\newcommand{\noun}[1]{\textsc{#1}}
+
+% Numbering
+\numberwithin{equation}{section}
+\numberwithin{figure}{section}
+
+\usepackage{caption}
+\captionsetup{labelfont=bf,indention=0cm}
+\usepackage{hyperref}
+\hypersetup{
+colorlinks,
+citecolor=blue,
+filecolor=blue,
+linkcolor=blue,
+urlcolor=black
+}
+
+\newcommand{\tc}[1]{\texttt{#1}}
+\renewcommand{\baselinestretch}{1}
+
+% Tweaks
+\geometry{letterpaper}
+\renewcommand{\ps@plain}{\pagestyle{fancy}}
+%\addto\captionsenglish{\renewcommand{\contentsname}{Table of Contents}}
+
+\makeatother
+%\usepackage{babel}
+
+\newcommand{\tocandfigures}{
+\rule[0.5ex]{1\columnwidth}{1pt}
+Last Revision: \today
+\noindent \begin{flushleft}
+\makeatletter
+\makeatother
+\setcounter{page}{1}
+\setcounter{secnumdepth}{0} %Hide section number in header
+\end{flushleft}
+\noindent \begin{flushleft}
+\tableofcontents{}
+\par\end{flushleft}
+\noindent \begin{flushleft}
+\rule[0.5ex]{1\columnwidth}{1pt}
+\par\end{flushleft}
+\noindent \begin{flushleft}
+\newpage{}
+\par\end{flushleft}
+}
+\newcommand{\ub}[1]{\underbrace{#1}}
+\newcommand{\ubt}[2]{$\underbrace{\mbox{#1}}_{\mbox{#2}}$}
+\newcommand{\comb}[2]{{#1 \choose #2}}
+\newcommand{\doabstract}[1]{
+\sectionmark{Abstract}
+\begin{abstract}
+\noindent
+#1
+\end{abstract}
+\setcounter{secnumdepth}{2}
+\setcounter{page}{2}
+\pagenumbering{arabic}
+}
+
+\newcommand{\piecewise}[4]{\left\{
+     \begin{array}{lr}
+       #1 & \mbox{#2} \\ #3 & \mbox{#4}
+     \end{array}
+   \right.}
+
+\newcommand{\sip}[2]{\langle #1 , #2 \rangle}
+
+%%%%%%%Function spaces %%%%%%%%%%%%%%
+\def \USC{{\rm USC}}
+\def \LSC{{\rm LSC}}
+\newcommand{\Cn}[1]{{\rm C}^{#1}}
+
+
+%%%% mathbb%%%%%%%%%%
+
+\def \D{\mathbb{D}}
+\def \E{\mathbb{E}}
+\def \F{\mathbb{F}}
+\def \H{\mathbb{H}}
+\def \L{\mathbb{L}}
+\def \M{\mathbb{M}}
+\def \N{\mathbb{N}}
+\def \P{\mathbb{P}}
+\def \Q{\mathbb{Q}}
+\def \R{\mathbb{R}}
+\def \Z{\mathbb{Z}}
+
+%%% cali %%%%
+
+\def\Ac{\mathcal{A}}
+\def\Bc{\mathcal{B}}
+\def\Cc{\mathcal{C}}
+\def\Dc{\mathcal{D}}
+\def\Ec{\mathcal{E}}
+\def\Fc{\mathcal{F}}
+\def\Gc{\mathcal{G}}
+\def\Hc{\mathcal{H}}
+\def\Ic{\mathcal{I}}
+\def\Jc{\mathcal{J}}
+\def\Kc{\mathcal{K}}
+\def\Lc{\mathcal{L}}
+\def\Mc{\mathcal{M}}
+\def\Nc{\mathcal{N}}
+\def\Oc{\mathcal{O}}
+\def\Pc{\mathcal{P}}
+\def\Qc{\mathcal{Q}}
+\def\Rc{\mathcal{R}}
+\def\Sc{\mathcal{S}}
+\def\Tc{\mathcal{T}}
+\def\Uc{\mathcal{U}}
+\def\Vc{\mathcal{V}}
+\def\Wc{\mathcal{W}}
+\def\Xc{\mathcal{X}}
+\def\Yc{\mathcal{Y}}
+\def\Zc{\mathcal{Z}}
+
+%%% bar %%%%
+
+\def\Ab{{\bar A}}
+\def\Bb{{\bar B}}
+\def\Cb{{\bar C}}
+\def\Db{{\bar D}}
+\def\Eb{{\bar E}}
+\def\Fb{{\bar F}}
+\def\Gb{{\bar G}}
+\def\Hb{{\bar H}}
+\def\Ib{{\bar I}}
+\def\Jb{{\bar J}}
+\def\Kb{{\bar K}}
+\def\Lb{{\bar L}}
+\def\Mb{{\bar M}}
+\def\Nb{{\bar N}}
+\def\Ob{{\bar O}}
+\def\Pb{{\bar P}}
+\def\Qb{{\overline{q}}}
+\def\Rb{{\bar R}}
+\def\Sb{{\bar S}}
+\def\Tb{{\bar T}}
+\def\Ub{{\bar U}}
+\def\Vb{{\bar V}}
+\def\Wb{{\bar W}}
+\def\Xb{{\bar z}}
+\def\Yb{{\bar Y}}
+\def\Zb{{\bar Z}}
+
+%%% hat %%%%
+
+\def\Ah{{\hat A}}
+\def\Bh{{\hat B}}
+\def\Ch{{\hat C}}
+\def\Dh{{\hat D}}
+\def\Eh{{\hat E}}
+\def\Fh{{\hat F}}
+\def\Gh{{\hat G}}
+\def\Hh{{\hat H}}
+\def\Ih{{\hat I}}
+\def\Jh{{\hat J}}
+\def\Kh{{\hat K}}
+\def\Lh{{\hat L}}
+\def\Mh{{\hat M}}
+\def\Nh{{\hat N}}
+\def\Oh{{\hat O}}
+\def\Ph{{\hat P}}
+\def\Qh{{\hat Q}}
+\def\Rh{{\hat R}}
+\def\Sh{{\hat S}}
+\def\Th{{\hat T}}
+\def\Uh{{\hat U}}
+\def\Vh{{\hat V}}
+\def\Wh{{\hat W}}
+\def\Xh{{\hat X}}
+\def\Yh{{\hat Y}}
+\def\Zh{{\hat Z}}
+
+%%% tilde %%%%
+
+\def\At{{\tilde A}}
+\def\Bt{{\tilde B}}
+\def\Ct{{\tilde C}}
+\def\Dt{{\tilde D}}
+\def\Et{{\tilde E}}
+\def\Ft{{\tilde F}}
+\def\Gt{{\tilde G}}
+\def\Ht{{\tilde H}}
+\def\It{{\tilde I}}
+\def\Jt{{\tilde J}}
+\def\Kt{{\tilde K}}
+\def\Lt{{\tilde L}}
+\def\Mt{{\tilde M}}
+\def\Nt{{\tilde N}}
+\def\Ot{{\tilde O}}
+\def\Pt{{\tilde P}}
+\def\Qt{{\tilde Q}}
+\def\Rt{{\tilde R}}
+\def\St{{\tilde S}}
+\def\Tt{{\tilde T}}
+\def\Ut{{\tilde U}}
+\def\Vt{{\tilde V}}
+\def\Wt{{\tilde W}}
+\def\Xt{{\tilde X}}
+\def\Yt{{\tilde Y}}
+\def\Zt{{\tilde Z}}
+
+%%% check %%%%
+
+\def\Xch{{\check X}}
+\def\Ych{{\check Y}}
+\def\Zch{{\check Z}}
+
+%%% gras %%%%
+
+\def\LL{{\bf L}}
+\def\TT{{\bf T}}
+\def\HH{{\bf H}}
+
+%%%% operateurs math %%%
+
+\def\normep#1{\left|{#1}\right|_p}
+%\def\E#1{E\left[{#1}\right]}
+\def\Tr#1{{\rm Tr}\left[#1\right]}
+\def \dst{\displaystyle}
+\def \Sum{\displaystyle\sum}
+\def \Prod{\displaystyle\prod}
+\def \Int{\displaystyle\int}
+\def \Frac{\displaystyle\frac}
+\def \Inf{\displaystyle\inf}
+\def \Sup{\displaystyle\sup}
+\def \Lim{\displaystyle\lim}
+\def \Liminf{\displaystyle\liminf}
+\def \Limsup{\displaystyle\limsup}
+\def \Max{\displaystyle\max}
+\def \Min{\displaystyle\min}
+\DeclareMathOperator*{\esssup}{ess\,sup}
+\DeclareMathOperator*{\essinf}{ess\,inf}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+
+%%%% texte dans formule %%%%%%%%%
+
+\def\d#1{\mbox{\rm diag}\left[#1\right]}
+\def\Pas{P-\mbox{a.s.}}
+\def\And{\;\mbox{ and }\;}
+\def\pourtout{\mbox{ for all }}
+
+%%%%%% raccourci commandes %%%
+
+\def\no{\noindent}
+\def\x{\times}
+
+\def\={\;=\;}
+\def\.{\;.}
+
+\def\vp{\varphi}
+\def\eps{\varepsilon}
+
+\def\reff#1{{\rm(\ref{#1})}}
+
+%%%%%%% characteres
+
+\def \i{1\!\mbox{\rm I}}
+\def\1{{\mathds{1}}}
+\def \ep{\hbox{ }\hfill{ $\mathcal{t}$~\hspace{-5.1mm}~$\mathcal{u}$   } }
+
+%\def \proof{{\noindent \bf Proof. }}
+%\def \ep{\hbox{ }\hfill$\Box$}
+
+\def \point{$\bullet$}
+
+%%%%%%% propres articles
+
+\def\pt{[\phi^N_t]}
+\def\px{[\phi^N_x]}
+\def\py{[\phi^N_y]}
+\def\pz{[\phi^N_z]}
+
+\def\fx{[f_x]}
+\def\fy{[f_y]}
+\def\fz{[f_z]}
+
+\def\gx{[g_x]}
+
+ \def\DW{\Delta W}
+
+ \def\k#1{{k+ {#1}}}
+ \def\n#1{{n+ {#1}}}
+ \def\j#1{{j+ {#1}}}
+
+ \def\Ek#1{E_k\left[{#1}\right]}
+ \def\Ekh#1{\hat E_k\left[{#1}\right]}
+ \def\Ekb#1{\bar E_k\left[{#1}\right]}
+ \def\En#1{E_n\left[{#1}\right]}
+ \def\Enh#1{\hat E_n\left[{#1}\right]}
+ \def\Enb#1{\bar E_n\left[{#1}\right]}
+ \def\normeL2#1{\left\|{#1}\right\|_{L^2}}
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand {\lb} {\lambda}
+\newcommand {\Chi} {{\bf \raise 1.5pt \hbox{$\chi$}}}
+%
+\newcommand {\partt} {\frac{\partial}{\partial t}}
+\newcommand {\intOM} {\int_\Omega}
+\newcommand{\lap}{\bigtriangleup}
+\newcommand{\nb}{\nabla}
+
+\usepackage{times}
+\usepackage{graphicx}
+\usepackage{amssymb,amsfonts,amsmath,amsthm}
+\usepackage{float}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{latexsym}
+\usepackage{hyperref}
+\usepackage{dsfont}
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb,float}
+\usepackage{epsfig}
+\usepackage{amsthm}
+\usepackage{comment}
+ \usepackage[T1]{fontenc}
+ \usepackage{tikz}
+\usepackage{caption}
+\usepackage{pgfplots}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+\newtheorem{defn}{Definition}[section]
+\newtheorem{rem}{Remark}[section]
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{lem}{Lemma}[section]
+\newtheorem{prop}{Proposition}[section]
+\newtheorem{coro}{Corollary}[section]
+\newtheorem{assp}{Assumption}
+\newtheorem{eg}{Example}
+\newtheorem{ex}{Exercise}
+%%%%%Assumptions
+\newtheorem{innercustomthm}{Assumption}
+\newenvironment{asm}[1]
+  {\renewcommand\theinnercustomthm{#1}\innercustomthm}
+  {\endinnercustomthm}
+
+
+\newcommand{\ms}{\scriptscriptstyle}
+
+\numberwithin{equation}{section}
+
+
+
+% \newcommand{\Lp}{\mathcal{L}^p}
+
+
+
+\usepackage{color}
+\usepackage{listings}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{ivory}{rgb}{1.000000,1.000000,0.941176}
+
+\lstset{
+language=c++,
+basicstyle=\ttfamily\small,
+breaklines=true,
+prebreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+frame=none,
+showtabs=false,
+showspaces=false,
+showstringspaces=false,
+morecomment=[l][\color{magenta}]{\#},
+keywordstyle=\color{blue}\bfseries,
+stringstyle=\color{green!50!black},
+commentstyle=\color{gray}\itshape,
+numbers=left,
+captionpos=t,
+backgroundcolor=\color{white},
+escapeinside={\%*}{*)}
+}
+\setlength\parindent{5pt}
