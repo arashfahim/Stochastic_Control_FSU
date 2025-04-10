@@ -168,20 +168,36 @@ Assume that there exists no function $u$ such that $\alpha_t=2\int_0^te^{-\beta 
 
 The problem \eqref{simple_control} is a simple control problem. However, after doing the above exercises, you note that it can simply be reduced to an optimization problem. Such a solution for control problems are called myopic solutions and do not necessarily exist for more interesting control problems. Here is an example which does not allow for a \emph{myopic} solution.
 \begin{eg}
-    Consider the control problem: \begin{equation}\label{cost_u}
-        \inf\bigg\{\int_0^T\Big(x_t^2 - \alpha_t x_t + u_t^2 \Big) {{\dt}}\bigg\}
+    Consider the control problem: 
+    \begin{equation}\label{cost_u}
+        \inf \int_0^T\Big(x_t^2 - \alpha_t x_t + u_t^2 \Big) {{\dt}} 
     \end{equation}
-where the infimum is over all ${\color{blue} u:[0,T]\to\mathbb{R}}$ and $x:[0,T]\to\mathbb{R}$ and ${u:[0,T]\to\mathbb{R}}$ satisfy  \eqref{dynamic_x}. In the above problem, the \emph{cost function} for the control problem $C(t,x,u)=x^2 - \alpha_t x + u^2$ depends on the control $u$. Unlike the previous example, the free choice of $u$ induces a new cost that no longer makes $x_t=\alpha_t/2$ optimal. Such problems do not have a myopic solution. 
+where the infimum is over all (Riemann integrable) functions $u:[0,T]\to\mathbb{R}$ and $x:[0,T]\to\mathbb{R}$ and ${u:[0,T]\to\mathbb{R}}$ satisfy  \eqref{dynamic_x}. In the above problem, the \emph{cost function} for the control problem $C(t,x,u)=x^2 - \alpha_t x + u^2$ depends on the control $u$. Unlike the previous example, the free choice of $u$ induces a new cost that no longer makes $x_t=\alpha_t/2$ optimal. Such problems do not have a myopic solution. 
 \end{eg}
 
 
 A general control problem is described as 
 \begin{equation}
     \label{prob:deterministic_control}
-    \inf_u\int_0^TC(t,x_t,u_t){{\dt}}+g(x_T)
+    \inf_{u\in\mathcal{U}}\int_0^TC(t,x_t,u_t){{\dt}}+g(x_T)
 \end{equation}
 where 
-${\dx}_t=f(x_t,u_t){{\dt}}$. The function $C:\mathbb{R}_+\times\mathbb{R}^d\times\mathbb{R}^n\to \mathbb{R}$ is called the running cost and  $g:\mathbb{R}^d\to\mathbb{R}$ is called the terminal cost. We shall discuss different solution approaches to the general control problem in the future. Note that infinite horizon is accommodated by $T=\infty$. 
+${\dx}_t=f(x_t,u_t){{\dt}}$. The function $C:\mathbb{R}_+\times\mathbb{R}^d\times\mathbb{R}^n\to \mathbb{R}$ is called the running cost and  $g:\mathbb{R}^d\to\mathbb{R}$ is called the terminal cost. The set $\mathcal{U}$ is the set of all functions $u:[0,T]\to\mathbb{R}^n$, control variable, which we are interested. 
+
+\begin{rem}
+    {Important remark on the set of all controls}
+    It is crucial to choose the set $\mathcal{U}$ of all control variables properly. For instance, if  $\mathcal{U}$ is the set of all function $u:[0,T]\to\mathbb{R}$, then
+    \begin{equation}
+        \inf_{u\in\mathcal{U}} \int_0^T(x_t-u_t^2) {{\dt}},~~~~{\dx}_t=(x_t-u_t){{\dt}}=-\infty
+    \end{equation}
+    by simply choosing $u_t=-x_t$. However, if we restrict the set $\mathcal{U}$ to function $u:[0,T]\to[-1,1]$, then 
+    \begin{equation}
+        \inf_{u\in\mathcal{U}} \int_0^T(x_t-u_t^2) {{\dt}},~~~~{\dx}_t=(x_t-u_t){{\dt}}>-\infty.
+    \end{equation}
+    The suitable set of controls chosen for a specific problem is referred to as \emph{admissible} control. We denote this set by $\mathcal{U}$.
+\end{rem}
+
+Note that infinite horizon is accommodated by $T=\infty$. 
 
 \begin{ex}\label{ex:eikonal}
 Write the following problem as a generic control problems by associating the horizon $T$, the running cost $C(t,x,u)$ and terminal cost $g(x)$ in \eqref{prob:deterministic_control}: 
@@ -310,8 +326,33 @@ KKT condition becomes $x^*_t =   (\alpha_t - \lambda^* )/2$ and $\int_0^Tx^*_t=0
 
 Adding restrictions to a control problem is slightly more subtle due to the dynamics of $x$. We postpone the study of such problems to the future endeavors. However, a simple control problem can be described as a constrained optimization and can be solved via the Lagrange multiplier. We discuss this approach in the next section.
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Pontryagin principle}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Solution methods for deterministic optimal control}
+\label{sec:sol_deter}
+In this section, we propose methods for the optimal control problems. There are two groups of numerical methods, first group are based on the dynamic programming principle (DPP). DPP provides a backward recursive method to solve an optimal control problem.  The second group completely avoids DPP and formulates problem as an optimization. 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Dynamic programming principle (DPP)}
+\label{sec:dpp_deter}
+Consider the optimal control problem \eqref{prob:deterministic_control}:
+\begin{equation}
+    \inf_u\int_0^TC(t,x_t,u_t){{\dt}}+g(x_T),~~~~{\dx}_t=f(x_t,u_t){{\dt}}
+\end{equation}
+To explain DPP, we first define the value function for \eqref{prob:deterministic_control}.
+\begin{defn}
+Let $x_t=x$. Then, the value function of \eqref{prob:deterministic_control} is defined by
+    \begin{equation}
+    V(t,x):=\inf_{u\in\mathcal{U}}\int_t^TC(s,x_s,u_s){{\ds}}+g(x_T),~~~~{\dx}_s=f(x_s,u_s){{\ds}}
+\end{equation}
+and $u$ belongs to the set of controls restricted to interval $[t,T]$.
+\end{defn}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Pontryagin principle}
+\label{sec:det_pontryagin}
 Consider the simple control problem in Section~\ref{sec:opt_control}:
 \begin{equation}
 \inf_{u}\bigg\{\int_0^T\Big(x_t^2 - \alpha_t x_t\Big) {{\dt}}\bigg\}
