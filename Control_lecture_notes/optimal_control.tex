@@ -7,7 +7,7 @@
 \usepackage{graphicx}
 \usepackage{libertine}
 \usepackage{enumitem}
-\usepackage{amsmath,amssymb,float}
+\usepackage{float}
 \usepackage{epsfig}
 \usepackage{amsthm}
 \usepackage{comment}
@@ -36,7 +36,7 @@
 \newcommand{\dx}{\text{\normalfont d}x}
 \newcommand{\dX}{\text{\normalfont d}X}
 
-\newcommand{\thiscoursecode}{Optimal Control}
+\newcommand{\thiscoursecode}{Methods Of Optimal Control}
 \newcommand{\thiscoursename}{}
 \newcommand{\thisprof}{Arash Fahim}
 %\newcommand{\me}{Liam Horne}
@@ -149,7 +149,7 @@ We make the above example more complicated by specifying a dynamics for $x_t$:
     \end{equation}
 where the infimum is over all functions $x:[0,T]\to\in\mathbb{R}$ such that for some (Borel measurable) function ${\color{blue} u:[0,T]\to\mathbb{R}}$
 \begin{equation}\label{dynamic_x}
-    {\dx}_t = -\beta x_t {{\dt}} {\color{blue}+ u_t {{\dt}}}, ~~ x_0=x
+    {\dx}_t = (-\beta x_t  {\color{blue}+ u_t }) {{\dt}}, ~~ x_0=x
 \end{equation}
 Note that the existence of the term ${\color{blue} u_t {{\dt}}}$ is necessary for the meaning of infimum. This problem is not a simple dynamic optimization problem because one can only choose $x$ such that the dynamic equation \eqref{dynamic_x} holds for some function ${\color{blue} u}$. \textbf{Therefore,} we can only choose ${\color{blue} u}$ and indirectly modify $x_t$ to minimize \eqref{simple_control}.
 \end{eg}
@@ -168,13 +168,19 @@ Assume that there exists no function $u$ such that $\alpha_t=2\int_0^te^{-\beta 
 
 The problem \eqref{simple_control} is a simple control problem. However, after doing the above exercises, you note that it can simply be reduced to an optimization problem. Such a solution for control problems are called myopic solutions and do not necessarily exist for more interesting control problems. Here is an example which does not allow for a \emph{myopic} solution.
 \begin{eg}
-    Consider the control problem: 
-    \begin{equation}\label{cost_u}
+    Consider the control problem: \begin{equation}\label{cost_u}
         \inf \int_0^T\Big(x_t^2 - \alpha_t x_t + u_t^2 \Big) {{\dt}} 
     \end{equation}
-where the infimum is over all (Riemann integrable) functions $u:[0,T]\to\mathbb{R}$ and $x:[0,T]\to\mathbb{R}$ and ${u:[0,T]\to\mathbb{R}}$ satisfy  \eqref{dynamic_x}. In the above problem, the \emph{cost function} for the control problem $C(t,x,u)=x^2 - \alpha_t x + u^2$ depends on the control $u$. Unlike the previous example, the free choice of $u$ induces a new cost that no longer makes $x_t=\alpha_t/2$ optimal. Such problems do not have a myopic solution. 
+where the infimum is over all (Riemann integrable) functions $u:[0,T]\to\mathbb{R}$ and $x:[0,T]\to\mathbb{R}$ and ${u:[0,T]\to\mathbb{R}}$ satisfy  \eqref{dynamic_x}. Unlike the previous example, the choice of $u$ induces a new cost, the term $\int_0^T u_t^2 dt$. Due to this new cost, we cannot freely choose $u_t$ to make $x_t=\alpha_t/2$ optimal. It is possible that $x_t=\alpha_t/2$ is not even optimal. 
 \end{eg}
-
+In the above example, there is a tradeoff between the choice of $u_t$ to minimize the  dependence of cost on $x_t$ and to minimize  the dependence of cost on $u_t$ itself. In such cases, the tradeoff prevents us from finding a myopic solution. Here is another example.
+\begin{eg}
+    Consider the control problem: \begin{equation}
+        \inf \int_0^T \big(x_t^2+{\color{blue}u_t^2}\big)  {{\dt}} 
+    \end{equation}
+    where the infimum is over all (Riemann integrable) functions $u:[0,T]\to\mathbb{R}$ and $x:[0,T]\to\mathbb{R}$ and ${u:[0,T]\to\mathbb{R}}$ satisfy  ${\dx}_t = (-\beta x_t  {\color{blue}+ u_t}) {{\dt}}, ~~ x_0=x$. 
+    On one hand, we like $x_t$ to be zero to minimize the cost, but pushing $x_t$ to zero requires application of $u_t$, which introduces another cost term.
+\end{eg}
 
 A general control problem is described as 
 \begin{equation}
@@ -182,19 +188,19 @@ A general control problem is described as
     \inf_{u\in\mathcal{U}}\int_0^TC(t,x_t,u_t){{\dt}}+g(x_T)
 \end{equation}
 where 
-${\dx}_t=f(x_t,u_t){{\dt}}$. The function $C:\mathbb{R}_+\times\mathbb{R}^d\times\mathbb{R}^n\to \mathbb{R}$ is called the running cost and  $g:\mathbb{R}^d\to\mathbb{R}$ is called the terminal cost. The set $\mathcal{U}$ is the set of all functions $u:[0,T]\to\mathbb{R}^n$, control variable, which we are interested. 
+${\dx}_t=f(x_t,u_t){{\dt}}$. The function $C:\mathbb{R}_+\times\mathbb{R}^d\times\mathbb{R}^n\to \mathbb{R}$ is called the \emph{running cost} and  $g:\mathbb{R}^d\to\mathbb{R}$ is called the \emph{terminal cost}. The set $\mathcal{U}$ is \emph{a} set of functions $u:[0,T]\to\mathbb{R}^n$, \emph{control variable}, which we are interested in. 
 
 \begin{rem}
     {Important remark on the set of all controls}
-    It is crucial to choose the set $\mathcal{U}$ of all control variables properly. For instance, if  $\mathcal{U}$ is the set of all function $u:[0,T]\to\mathbb{R}$, then
+    It is crucial to choose \emph{a} set $\mathcal{U}$ of control variables properly. For instance, if   ~$\mathcal{U}$ is the set of all function $u:[0,T]\to\mathbb{R}$, then
     \begin{equation}
-        \inf_{u\in\mathcal{U}} \int_0^T(x_t-u_t^2) {{\dt}},~~~~{\dx}_t=(x_t-u_t){{\dt}}=-\infty
+        \inf_{u\in\mathcal{U}} \int_0^T(x_t-u_t^2) {{\dt}}=-\infty,~~~~{\dx}_t=(x_t-u_t){{\dt}}
     \end{equation}
-    by simply choosing $u_t=-x_t$. However, if we restrict the set $\mathcal{U}$ to function $u:[0,T]\to[-1,1]$, then 
+    by simply choosing $u_t$ very large. However, if we restrict  $\mathcal{U}$ to the set of functions $u:[0,T]\to[-1,\infty)$, then 
     \begin{equation}
-        \inf_{u\in\mathcal{U}} \int_0^T(x_t-u_t^2) {{\dt}},~~~~{\dx}_t=(x_t-u_t){{\dt}}>-\infty.
+        \inf_{u\in\mathcal{U}} \int_0^T(x_t-u_t^2) {{\dt}}>-\infty,~~~~{\dx}_t=(x_t-u_t){{\dt}}.
     \end{equation}
-    The suitable set of controls chosen for a specific problem is referred to as \emph{admissible} control. We denote this set by $\mathcal{U}$.
+    A suitable set of controls chosen for a specific problem is referred to as \emph{admissible} control. We denote this set by $\mathcal{U}$.
 \end{rem}
 
 Note that infinite horizon is accommodated by $T=\infty$. 
