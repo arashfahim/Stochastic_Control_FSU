@@ -188,22 +188,26 @@ A general control problem is described as
     \inf_{u\in\mathcal{U}}\int_0^TC(t,x_t,u_t){{\dt}}+g(x_T)
 \end{equation}
 where 
-${\dx}_t=f(x_t,u_t){{\dt}}$. The function $C:\mathbb{R}_+\times\mathbb{R}^d\times\mathbb{R}^n\to \mathbb{R}$ is called the \emph{running cost} and  $g:\mathbb{R}^d\to\mathbb{R}$ is called the \emph{terminal cost}. The set $\mathcal{U}$ is \emph{a} set of functions $u:[0,T]\to\mathbb{R}^n$, \emph{control variable}, which we are interested in. 
+${\dx}_t=f(x_t,u_t){{\dt}}$. The function $C:\mathbb{R}_+\times\mathbb{R}^d\times\mathbb{R}^n\to \mathbb{R}$ is called the \emph{running cost} and  $g:\mathbb{R}^d\to\mathbb{R}$ is called the \emph{terminal cost}. 
 
-\begin{rem}
-    {Important remark on the set of all controls}
-    It is crucial to choose \emph{a} set $\mathcal{U}$ of control variables properly. For instance, if   ~$\mathcal{U}$ is the set of all function $u:[0,T]\to\mathbb{R}$, then
+Set $\mathcal{U}$ is \emph{a} set of functions $u:[0,T]\to\mathbb{R}^n$ called \emph{control variable}, which is determined by the application or by the wellposedness of the problem. It is crucial to choose \emph{a} set $\mathcal{U}$ of control variables to fit the proper application. More over, it is also important to choose a set that makes the control problem wellposed. For instance, for the control problem 
     \begin{equation}
-        \inf_{u\in\mathcal{U}} \int_0^T(x_t-u_t^2) {{\dt}}=-\infty,~~~~{\dx}_t=(x_t-u_t){{\dt}}
+        \inf_{u\in\mathcal{U}} \int_0^T(x_t-u_t^2) {{\dt}},~~~~{\dx}_t=(x_t-u_t){{\dt}}
     \end{equation}
-    by simply choosing $u_t$ very large. However, if we restrict  $\mathcal{U}$ to the set of functions $u:[0,T]\to[-1,\infty)$, then 
+if we choose $\mathcal{U}$ to be the set of all functions $u:[0,T]\to\mathbb{R}$, 
+by simply choosing $u_t$ very large, the value of the infimum is $-\infty$. However, if we restrict  $\mathcal{U}$ to the set of functions $u:[0,T]\to[-1,\infty)$ (some lower bound on the value), then 
     \begin{equation}
         \inf_{u\in\mathcal{U}} \int_0^T(x_t-u_t^2) {{\dt}}>-\infty,~~~~{\dx}_t=(x_t-u_t){{\dt}}.
     \end{equation}
-    A suitable set of controls chosen for a specific problem is referred to as \emph{admissible} control. We denote this set by $\mathcal{U}$.
-\end{rem}
+A suitable set of controls chosen for a specific problem is referred to as the set of all \emph{admissible} control. We denote this set by $\mathcal{U}$.
 
-Note that infinite horizon is accommodated by $T=\infty$. 
+
+An infinite horizon control problem is accommodated by setting $T=\infty$. For example, 
+\begin{equation}
+    \label{prob:deterministic_control_infinite_horizon}
+    \inf_{u\in\mathcal{U}}\int_0^\infty C(t,x_t,u_t){{\dt}}+g(x_T)
+\end{equation}
+The following exercise is an example of infinite horizon control problem.
 
 \begin{ex}\label{ex:eikonal}
 Write the following problem as a generic control problems by associating the horizon $T$, the running cost $C(t,x,u)$ and terminal cost $g(x)$ in \eqref{prob:deterministic_control}: 
@@ -220,7 +224,11 @@ where ${\dx}_t=u_t{{\dt}}$ with control $|u_t|\le1$ and $u_t\in\mathbb{R}^d$ and
 }
 \end{ex}
 
-We give a quick review of some of the most important optimization results, including the Lagrange multiplier. 
+\begin{ex}
+    In your area of study, find an optimal control problem. Then, write the cost functions and the control variable and determine a set of admissible controls. 
+\end{ex}
+
+In the next two sections, we quickly review two of the most influential results from optimization, namely the Lagrange multiplier and gradient descent, which will later be used in the context of control problems. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Lagrange multiplier}
@@ -239,9 +247,9 @@ Then, under proper conditions, the following saddle point problem yields the sol
 \begin{equation}
 \sup_{\lambda}\inf_{x}L(x,\lambda)
 \end{equation}
-The function $f^*(\lambda)=\inf_{x}L(x,\lambda)$ is called the dual of $f$, and the Lagrange multiplier $\lambda$ is called the dual variable. The problem
+The function $H(\lambda)=\inf_{x}L(x,\lambda)$ is called Hamiltonian and the Lagrange multiplier $\lambda$ is called the dual variable. The unconstrained problem
 \begin{equation}\label{prob:dual}
-    \sup_{\lambda}f^*(\lambda)
+    \sup_{\lambda}H(\lambda)
 \end{equation}
 is called the \emph{dual problem} for the \emph{primal problem} \eqref{constraint_optimization1}.
 
@@ -249,7 +257,16 @@ The key to the success of the Lagrange multiplier method is the \emph{strong dua
 \begin{equation}
     \sup_{\lambda}\inf_{x} L(x,\lambda)=\inf_{x}\sup_{\lambda}L(x,\lambda)
 \end{equation}
-It is not always true that the strong duality holds. 
+With strong duality, if for some $x$, $g(x)\neq(0)$, then 
+\begin{equation}
+    \sup_{\lambda}L(x,\lambda) = \sup_{\lambda}\{f(x) - \lambda \cdot g(x)\} = \infty
+\end{equation}
+Therefore, $\inf_{x}\sup_{\lambda}L(x,\lambda)$ is restricted to $x$ with $g(x)=0$ and 
+\begin{equation}
+    \inf_{x:g(x)=0} \sup_{\lambda}L(x,\lambda) = \inf_{x:g(x)=0} f(x)
+\end{equation}
+
+It is not always easy to check if strong duality holds. 
 However, \emph{Karush-Kuhn-Tucker} conditions (KKT) provide some necessary and sufficient conditions for strong duality.
 \begin{thm}
 Assume the differentiability of $f$ and $g$.
@@ -265,7 +282,6 @@ Assume the differentiability of $f$ and $g$.
     In particular, $x^*$ solve \eqref{constraint_optimization1}.
 \end{thm}
 A geometric interpretation of $\lambda^*$ in KKT conditions is explained in See Figure~\ref{fig:KKT_1}.
-Note that $(x^*,\lambda^*)$ constitutes a \emph{saddle point} for $L(x,\lambda)$.
 \begin{figure}
     \centering
 \includesvg[scale=0.39]{LagrangeMultipliers2D.svg}
@@ -282,8 +298,7 @@ When the constraint is given by some inequalities and qualities, i.e.,
     \label{constraint_optimization2}
     \inf_x f(x) ~~~ \textrm{subject to}~~~g(x)=0,~~~h(x)\ge 0
 \end{equation}
-the Lagrangian is similar, but
-the dual variable in the Lagrangian is different.
+the range of dual variable in Hamiltonian changes:
 \begin{equation}\label{lagrangian2}
     L(x,\lambda,\mu):= f(x) - \lambda \cdot g(x) - \mu \cdot h(x)
 \end{equation}
@@ -313,21 +328,21 @@ The last equality emphasizes that either $h(x^*)>0$ holds, in which case $\mu^*=
     \caption{KKT conditions for $h(x)\ge0$. The figure uses $g$ for $h$. Source \char57391\sc{ikipedi}A}
     \label{fig:KKT_2}
 \end{figure}
-\subsection{Lagrange multiplier and constrained optimal control}
-Let us put the Lagrange multiplier in the context of an optimization problem:
+\subsection{Lagrange multiplier and constrained dynamic optimization}
+Let's first put the Lagrange multiplier in the context of an optimization problem:
     \begin{equation}
         \inf\bigg\{\int_0^T\Big(x_t^2 - \alpha_t x_t\Big) {{\dt}}\bigg\}
     \end{equation}
-subject to $x_T=0$. The Lagrangian simple is
+subject to $x_T=0$. The Lagrangian is
 \begin{equation}
     \int_0^T\Big(x_t^2 - \alpha_t x_t\Big) {{\dt}} + \lambda x_T
 \end{equation}
-and KKT condition suggests that $x^*_t=2\alpha_t$ for $t<T$ and $x^*_T=0$ solves the problem. However, this is not an interesting problem. One can simply argue that changing $x$ at $T$ does not change the value of the integral, and therefore it is not really a constraint. Even if we impose a more restricted constraint such as $x_t\ge0$ on all $t$, the solution will simply be $x^*_t=\max\{\alpha_t,0\}/2$.
+and KKT condition suggests that $x^*_t=2\alpha_t$ for $t<T$ and $x^*_T=0$ solves the problem. However, this is not an interesting problem. One can simply argue that changing $x$ at $T$ does not change the value of the integral, and therefore it is not really a constraint. Even if we impose a more restricted constraint such as $x_t\ge0$ on all $t$, the myopic solution is simply $x^*_t=\max\{\alpha_t,0\}/2$.
 
-However, if the constraint is something as $\int_0^T x_t{{\dt}} = 0$, then the optimization problem becomes more interesting.
+However, for the constraint $\int_0^T x_t{{\dt}} = 0$, the optimization problem becomes more interesting.
 \begin{equation}
-        \int_0^T\Big(x_t^2 - \alpha_t x_t + \lambda x_t\Big) {{\dt}} 
-\sup_{\lambda}\inf_{x}\end{equation}
+        \sup_{\lambda}\inf_{x}\int_0^T\Big(x_t^2 - \alpha_t x_t + \lambda x_t\Big) {{\dt}} 
+\end{equation}
 KKT condition becomes $x^*_t =   (\alpha_t - \lambda^* )/2$ and $\int_0^Tx^*_t=0$. This implies that $\lambda^* = \frac{1}{T}\int_0^T\alpha_t{{\dt}}$, and therefore $x^*_t =   (\alpha_t - \frac{1}{T}\int_0^T\alpha_t{{\dt}} )/2$. 
 
 Adding restrictions to a control problem is slightly more subtle due to the dynamics of $x$. We postpone the study of such problems to the future endeavors. However, a simple control problem can be described as a constrained optimization and can be solved via the Lagrange multiplier. We discuss this approach in the next section.
@@ -344,16 +359,109 @@ In this section, we propose methods for the optimal control problems. There are 
 \label{sec:dpp_deter}
 Consider the optimal control problem \eqref{prob:deterministic_control}:
 \begin{equation}
-    \inf_u\int_0^TC(t,x_t,u_t){{\dt}}+g(x_T),~~~~{\dx}_t=f(x_t,u_t){{\dt}}
+    \inf_{u\in\mathcal{U}}\int_0^TC(t,x_t,u_t){{\dt}}+g(x_T),~~~~{\dx}_t=f(x_t,u_t){{\dt}}
 \end{equation}
-To explain DPP, we first define the value function for \eqref{prob:deterministic_control}.
+A key concept in DPP is the value function:
 \begin{defn}
 Let $x_t=x$. Then, the value function of \eqref{prob:deterministic_control} is defined by
-    \begin{equation}
-    V(t,x):=\inf_{u\in\mathcal{U}}\int_t^TC(s,x_s,u_s){{\ds}}+g(x_T),~~~~{\dx}_s=f(x_s,u_s){{\ds}}
+    \begin{equation}\label{eqn:value_deterministic}
+    V(t,x):=\inf_{u\in\mathcal{U}_{t}}\int_t^TC(s,x_s,u_s){{\ds}}+g(x_T),~~~~{\dx}_s=f(x_s,u_s){{\ds}}
 \end{equation}
-and $u$ belongs to the set of controls restricted to interval $[t,T]$.
+where $\mathcal{U}_{t}$ is the set of admissible controls restricted to time interval $[t,T]$.
 \end{defn}
+The value function is encoding the outcome of optimal control at time $t$ at point $x$. The function $V(t,\cdot):\mathbb{R}^d\to\mathbb{R}$ returns the optimal value of the control problem for any point $x$ at time $t$.
+
+Given the value function, the DPP is explained in the following result.
+\begin{thm}\label{thm:dpp_deterministic}
+    [Dynamic Programming Principle]
+    Let $0\le t<s\le T$ and $x_t=x$. Then, the DPP for \eqref{prob:deterministic_control} is given by 
+    \begin{equation}\label{eqn:dpp_deterministic}
+    V(t,x) =\inf_{u\in\mathcal{U}_{t,s}}\int_t^sC(r,x_r,u_r){{\dr}}+V(s,x_s),~~~~{\dx}_r=f(x_r,u_r){{\dr}}
+\end{equation}
+where $\mathcal{U}_{t,s}$ is the set of admissible controls restricted to time interval $[t,s]$.
+\end{thm}
+DPP can be interpreted as the tradeoff between two intervals $[t,s]$ and $[s,T]$. More precisely, to obtain the optimal value of the control problem at time $t$, DPP finds a balance between the running cost on $[t,s]$, $\int_t^sC(r,x_r,u_r){{\dr}}$, and the continuation cost on $[s,T]$, $V(t,x_s)$. Note that choosing a control $u$ on $[t,s]$, determines the position of $x_s$.
+This interpretation reveals the proof of DPP.
+\begin{proof}
+    [Proof of DPP, Theorem~\ref{eqn:dpp_deterministic}]
+    To show that DPP holds, we need to decompose a control $u$ on $[t,T]$ into two pieces, $u_1$ on $[t,s]$ and $u_2$ on $[s,T]$. More formally,
+    \[
+    u(r) =\begin{cases}
+        u_1(r)& r\in[t,s]\\
+        u_2(r)& r\in[s,T]
+    \end{cases} 
+    \]
+    We denote this decomposition by $u=u_1\oplus u_2$. Note that $u_1\in\mathcal{U}_{t,s}$ and $u_2\in\mathcal{U}_{s}$.
+    Therefore, by \eqref{eqn:value_deterministic},
+    \[
+    \begin{split}
+        V(t,x)&= \inf_{u\in\mathcal{U}_{t}}\int_t^TC(r,x_r,u_r){{\dr}}+g(x_T)\\
+        &= \inf_{u_1\in\mathcal{U}_{t,s}}\inf_{u_2\in\mathcal{U}_{s}}\int_t^sC(r,x_r,u_1(r)){{\dr}}+\int_s^TC(r,x_r,u_2(r)){{\dr}}+g(x_T)\\
+        &=
+        \inf_{u_1\in\mathcal{U}_{t,s}} \int_t^sC(r,x_r,u_1(r)){{\dr}} + \inf_{u_2\in\mathcal{U}_{s}}\int_s^TC(r,x_r,u_2(r)){{\dr}}+g(x_T)\\
+    \end{split}
+    \]
+    Note that $\inf_{u_2\in\mathcal{U}_{s}}\int_s^TC(r,x_r,u_2(r)){{\dr}}+g(x_T)=V(s,x_s)$. Therefore,
+     \[
+        V(t,x)= 
+        \inf_{u_1\in\mathcal{U}_{t,s}} \int_t^sC(r,x_r,u_1(r)){{\dr}} + V(s,x_s)
+    \]
+\end{proof}
+
+One of the side-products of DPP is a partial differential equation, \emph{Hamilton-Jacobi-Bellman equation} or HJB for short, that can be solved via different methods to provide us with the solution of the control problem. 
+To derive the HJB, we first assume that the value function is sufficiently continuously differentiable ,first order derivatives exist are are continuous. Then, we use the first Taylor polynomial with the remainder term for the value function $V(s,x_s)$ about $(t,x)$ as follows:
+\[
+V(s,x_s) = V(t,x) + V_t(t,x)(s-t) + V_x(t,x)(x_s-x) + R_2
+\]
+Note that $x_s=x+\int_t^s f(x_r,u_r){{\dr}}$. Let's insert the above Taylor polynomial into the DPP:
+\[
+\begin{split}
+    V(t,x) & =\inf_{u\in\mathcal{U}_{t,s}}\int_t^sC(r,x_r,u_r){{\dr}}+V(s,x_s)\\
+    & = \inf_{u\in\mathcal{U}_{t,s}}\int_t^sC(r,x_r,u_r){{\dr}}+V(t,x) + V_t(t,x)(s-t) + V_x(t,x)\int_t^s f(x_r,u_r){{\dr}} + R_2\\
+    &= V(t,x) + V_t(t,x)(s-t) +\inf_{u\in\mathcal{U}_{t,s}}\int_t^sC(r,x_r,u_r){{\dr}} + V_x(t,x)\int_t^s f(x_r,u_r){{\dr}} + R_2\\
+\end{split}
+\]
+$V(t,x)$ on both sides can be canceled. Note that $R_2=o(s-t)$, which means $\lim_{s\to t} \frac{R_2}{s-t}=0$.
+Dividing both sides by $s-t$ and sending $s\to t$, we obtain
+\begin{equation}\label{eqn:HJB_deterministic}
+        0 = V_t(t,x) +\inf_{u} C(t,x,u) + V_x(t,x)f(t,x,u)
+\end{equation}
+In the above, we used the fundamental theorem of calculus to write $\lim_{s\to t} \frac{\int_t^s f(x_r,u_r){{\dr}}}{s-t}=f(t,x,u)$ and $\lim_{s\to t} \frac{\int_t^sC(r,x_r,u_r){{\dr}}}{s-t}=C(t,x,u)$.
+A PDE requires proper boundary condition. For HJB, the boundary condition is the terminal cost at $T$:
+\begin{equation}
+    \label{eqn:HJB_terminal}
+    V(T,x)=g(x)
+\end{equation}
+
+Let's explore the HJB inside an example.
+\begin{eg}
+    Consider the control problem in Section~\ref{sec:opt_control}:
+\begin{equation}
+\inf_{u}\bigg\{\int_0^T\Big(x_t^2 +u_t^2\Big) {{\dt}}\bigg\}
+\end{equation}
+where ${\dx}_t = (-\beta x_t + u_t ){{\dt}}$.
+Here, $C(t,x,u)=x^2 + u^2$ and $f(t,x,u)=-\beta x + u$.
+The HJB is given by:
+\[
+0 = V_t + x^2 -\beta x V_x + \inf_{u} u^2 + V_x u
+\]
+Note that the infimum above is attained at $u^*=-\frac12V_x$ and, therefore, we can write the HJB without using infimum:
+\[
+0 = V_t + x^2 -\beta x V_x -\frac14 V_x^2 
+\]
+Since there is no terminal cost, the boundary condition for the HJB is $V(T,x)=0$. 
+\end{eg}
+An important question about the above HJB is that how can the HJB help us find the optimal control. For the above example, if we solve the HJB and find the value function, then a candidate for the optimal control is $u_t^*=-\frac12V_x(t,x_t)$ where ${\dx}_t = (-\beta x_t + u_t^* ){{\dt}}$. In general, we cannot guarantee a simple way to solve the HJB. However, for certain problems there is a simple way and for other problems numerical solutions to PDEs can be used. Next, exercise shows how to solve the HJB derived for the previous example.
+\begin{ex}
+    We guess that the solution for the HJB 
+    \[
+    \begin{cases}
+    0 = V_t + x^2 -\beta x V_x -\frac14 V_x^2 \\
+    V(T,x)=0
+    \end{cases}
+    \]
+    takes the form $V(t,x)=a(t)x^2+b(t)x+c(t)$. Insert this guess into the HJB and find ODEs for $a(t)$, $b(t)$, and $c(t)$. Use terminal conditions to prescribe terminal conditions for $a$, $b$, and $c$. Can you solve the system of ODEs?
+\end{ex}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -363,7 +471,7 @@ Consider the simple control problem in Section~\ref{sec:opt_control}:
 \begin{equation}
 \inf_{u}\bigg\{\int_0^T\Big(x_t^2 - \alpha_t x_t\Big) {{\dt}}\bigg\}
 \end{equation}
-where ${\dx}_t = -\beta x_t {{\dt}} + u_t {{\dt}}$, $x_0=x$.
+where ${\dx}_t = (-\beta x_t + u_t ){{\dt}}$, $x_0=x$.
 One can consider the dynamics of $x$ as a constraint. Therefore, we can formally write Lagrangian by 
 \begin{equation}\label{ex:sup_inf}
     \sup_{\lambda}\inf_{u,x}\bigg\{\int_0^T\big(x_t^2 - \alpha_t x_t\big) {{\dt}} - \int_0^T \lambda_t \big({\dx}_t + (\beta x_t  - u_t ){{\dt}}\big)\bigg\}
@@ -413,7 +521,7 @@ where the Hamiltonian is given by
 \begin{equation}
     H(t,x,\lambda,u):=\lambda f(t,x,u)+ C(t,x,u)
 \end{equation} 
-\begin{thm}\label{thm:pontryagin_deterministc}
+\begin{thm}\label{thm:pontryagin_deterministic}
     [Pontryagin principle]
     Assume that there exists $(x^*,u^*,\lambda^*):[0,T]\to\mathbb{R}^d\times\mathbb{R}^n\times\mathbb{R}^d$ such that
     \begin{equation}\label{eqn:pontryagin_determinimstic}
@@ -435,11 +543,11 @@ Then, $u^*$ is an optimal control for \eqref{prob:deterministic_control}.
 %         H(t,x^*_t,\lambda^*_t,u^*_t)\le H(t,x^*_t,\lambda^*_t,u)~\textrm{ for all } u
 %         \end{cases}
 % \end{equation}
-The function $\lambda^*_t$, described by \ref{thm:pontryagin_deterministc} is called the \emph{adjoint} process. It is important to distinguish between the two ODEs in \eqref{eqn:pontryagin_determinimstic}, namely, 
+The function $\lambda^*_t$, described by \ref{thm:pontryagin_deterministic} is called the \emph{adjoint} process. It is important to distinguish between the two ODEs in \eqref{eqn:pontryagin_determinimstic}, namely, 
 \begin{equation}
     {\dx}^*_t = f(t,x^*_t,u^*_t) {{\dt}} \text{ and }{\dd}\lambda^*_t+ \partial_x H(t,x^*_t,\lambda^*_t,u^*_t){{\dt}}=0
 \end{equation}
-The first one has an initial condition $x^*_0=x_0$, the initial position of the state process. However, the adjoint equation comes with a terminal condition, $\lambda^*_T=\nabla g(x^*_T)$. This makes solving Theorem~\ref{thm:pontryagin_determinimstic} challenging. We shall see later how Pontryagin principle is applied to some specific examples such as linear quadratic linear control problem, where solving \eqref{eqn:pontryagin_determinimstic} is simpler to solve. 
+The first one has an initial condition $x^*_0=x_0$, the initial position of the state process. However, the adjoint equation comes with a terminal condition, $\lambda^*_T=\nabla g(x^*_T)$. This makes solving Theorem~\ref{thm:pontryagin_deterministic} challenging. We shall see later how Pontryagin principle is applied to some specific examples such as linear quadratic linear control problem, where solving \eqref{eqn:pontryagin_determinimstic} is simpler to solve. 
 \begin{rem}
 If $u^*_t$ is an interior minimizer of $H(t,x^*_t,\lambda^*_t,u)$, then we can write $\partial_u H(t,x^*_t,\lambda^*_t,u^*_t)=0$. However, if there are constraint on $u$, e.g., $u\ge0$, we shall stick to the inequality above. 
 \end{rem}
