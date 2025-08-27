@@ -19,11 +19,13 @@
 \usepackage{enumitem}
 \usepackage{mathtools}
 \usepackage{dsfont}
+\usepackage{natbib}
 \usepackage[linesnumbered,ruled,vlined]{algorithm2e}
 \DeclarePairedDelimiter\ceil{\lceil}{\rceil}
 \DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
 \SetKwInput{KwInput}{Input}                % Set the Input
 \SetKwInput{KwOutput}{Output}
+\SetKwInOut{Parameter}{Parameter}
 % Uncomment these for a different family of fonts
 % \usepackage{cmbright}
 % \renewcommand{\sfdefault}{cmss}
@@ -228,124 +230,6 @@ where ${\dx}_t=u_t{{\dt}}$ with control $|u_t|\le1$ and $u_t\in\mathbb{R}^d$ and
     In your area of study, find an optimal control problem. Then, write the cost functions and the control variable and determine a set of admissible controls. 
 \end{ex}
 
-In the next two sections, we quickly review two of the most influential results from optimization, namely the Lagrange multiplier and gradient descent, which will later be used in the context of control problems. 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Lagrange multiplier}
-If we add a constraint to a simple minimization problem such as $\min_x f(x)$, the Lagrange multiplier method is the way to proceed. In a nutshell, the Lagrange multiplier method turns a constrained optimization problem into a saddle point problem without constraints by adding more variables. 
-
-Consider  the constrained problem below:
-\begin{equation}        
-\label{constraint_optimization1}
-    \inf_x f(x) ~~~ \textrm{subject to}~~~g(x)=0
-\end{equation}
-Define the Lagrangian:
-\begin{equation}\label{lagrangian}
-    L(x,\lambda):= f(x) - \lambda \cdot g(x)
-\end{equation}
-Then, under proper conditions, the following saddle point problem yields the solution to \eqref{constraint_optimization1}.
-\begin{equation}
-\sup_{\lambda}\inf_{x}L(x,\lambda)
-\end{equation}
-The function $H(\lambda)=\inf_{x}L(x,\lambda)$ is called Hamiltonian and the Lagrange multiplier $\lambda$ is called the dual variable. The unconstrained problem
-\begin{equation}\label{prob:dual}
-    \sup_{\lambda}H(\lambda)
-\end{equation}
-is called the \emph{dual problem} for the \emph{primal problem} \eqref{constraint_optimization1}.
-
-The key to the success of the Lagrange multiplier method is the \emph{strong duality}.
-\begin{equation}
-    \sup_{\lambda}\inf_{x} L(x,\lambda)=\inf_{x}\sup_{\lambda}L(x,\lambda)
-\end{equation}
-With strong duality, if for some $x$, $g(x)\neq(0)$, then 
-\begin{equation}
-    \sup_{\lambda}L(x,\lambda) = \sup_{\lambda}\{f(x) - \lambda \cdot g(x)\} = \infty
-\end{equation}
-Therefore, $\inf_{x}\sup_{\lambda}L(x,\lambda)$ is restricted to $x$ with $g(x)=0$ and 
-\begin{equation}
-    \inf_{x:g(x)=0} \sup_{\lambda}L(x,\lambda) = \inf_{x:g(x)=0} f(x)
-\end{equation}
-
-It is not always easy to check if strong duality holds. 
-However, \emph{Karush-Kuhn-Tucker} conditions (KKT) provide some necessary and sufficient conditions for strong duality.
-\begin{thm}
-Assume the differentiability of $f$ and $g$.
-    If $x^*$ solves \eqref{constraint_optimization1}  and $\lambda^*$ solves \eqref{prob:dual} such that 
-    \begin{equation} \label{cond:KKT}
-    \begin{cases} \triangledown f(x^*) - \lambda^* \cdot \triangledown g(x^*) = 0\\
-            g (x^*)=0
-        \end{cases}
-    \end{equation}
-    then, strong duality holds and $(x^*,\lambda^*)$ is a saddle point for $\sup_{\lambda}\inf_{x}L(x,\lambda)$. 
-
-    Conversely, if strong duality holds, then any saddle point $(x^*,\lambda^*)$ satisfies \eqref{cond:KKT}. 
-    In particular, $x^*$ solve \eqref{constraint_optimization1}.
-\end{thm}
-A geometric interpretation of $\lambda^*$ in KKT conditions is explained in See Figure~\ref{fig:KKT_1}.
-\begin{figure}
-    \centering
-\includesvg[scale=0.39]{LagrangeMultipliers2D.svg}
-    \caption{KKT conditions for $g(x)=0$. Source \char57391\sc{ikipedi}A}
-    \label{fig:KKT_1}
-\end{figure}
-             
-
-
-
-
-When the constraint is given by some inequalities and qualities, i.e.,
-\begin{equation}
-    \label{constraint_optimization2}
-    \inf_x f(x) ~~~ \textrm{subject to}~~~g(x)=0,~~~h(x)\ge 0
-\end{equation}
-the range of dual variable in Hamiltonian changes:
-\begin{equation}\label{lagrangian2}
-    L(x,\lambda,\mu):= f(x) - \lambda \cdot g(x) - \mu \cdot h(x)
-\end{equation}
-\begin{equation}
-    \sup_{{\color{blue}\mu\ge0}}\sup_{\lambda}\inf_{x}L(x,\lambda,\mu)
-\end{equation}
-The reason for such modification can formally be seen after switching $\inf_x$ and $\sup_{\mu\ge0}$ in the above
-\begin{equation}
-    \sup_{\mu\ge0}\inf_{x}L(x,\lambda,\mu) =\inf_{x}\sup_{\mu\ge0}L(x,\lambda,\mu)
-\end{equation}
-If $x_1$ is such that $h(x_1)<0$, then 
-$$\sup_{\mu\ge0}L(x_1,\lambda,\mu)= f(x_1) - \lambda g(x_1) - h(x_1) \sup_{\mu\ge0} \mu =\infty$$
-Therefore, $\inf_{x}\sup_{\mu\ge0}L(x,\lambda,\mu)$ is not attained at $x_1$. Thus, any saddle point $(x^*,\lambda^*,\mu^*)$ with $\mu^*>0$ must satisfy $h(x^*)\ge0$. More general KKT conditions guarantee the strong duality in this case:
-    \begin{equation} \label{cond:KKT_general}
-    \begin{cases} \triangledown f (x^*) - \lambda^* \triangledown g (x^*) -\mu^* \triangledown 
- h(x^*)= 0\\
-            g(x^*)=0\\
-            h(x^*)\ge0\\
-            \mu^*\ge0\\
-            \mu^*\cdot h(x^*)=0
-        \end{cases}
-    \end{equation}
-The last equality emphasizes that either $h(x^*)>0$ holds, in which case $\mu^*=0$, or $h^*(x^*)=0$, in which case $\mu^*$ is irrelevant. See Figure~\ref{fig:KKT_2}.
-\begin{figure}
-    \centering
-\includesvg[scale=2]{Inequality_constraint_diagram.svg}
-    \caption{KKT conditions for $h(x)\ge0$. The figure uses $g$ for $h$. Source \char57391\sc{ikipedi}A}
-    \label{fig:KKT_2}
-\end{figure}
-\subsection{Lagrange multiplier and constrained dynamic optimization}
-Let's first put the Lagrange multiplier in the context of an optimization problem:
-    \begin{equation}
-        \inf\bigg\{\int_0^T\Big(x_t^2 - \alpha_t x_t\Big) {{\dt}}\bigg\}
-    \end{equation}
-subject to $x_T=0$. The Lagrangian is
-\begin{equation}
-    \int_0^T\Big(x_t^2 - \alpha_t x_t\Big) {{\dt}} + \lambda x_T
-\end{equation}
-and KKT condition suggests that $x^*_t=2\alpha_t$ for $t<T$ and $x^*_T=0$ solves the problem. However, this is not an interesting problem. One can simply argue that changing $x$ at $T$ does not change the value of the integral, and therefore it is not really a constraint. Even if we impose a more restricted constraint such as $x_t\ge0$ on all $t$, the myopic solution is simply $x^*_t=\max\{\alpha_t,0\}/2$.
-
-However, for the constraint $\int_0^T x_t{{\dt}} = 0$, the optimization problem becomes more interesting.
-\begin{equation}
-        \sup_{\lambda}\inf_{x}\int_0^T\Big(x_t^2 - \alpha_t x_t + \lambda x_t\Big) {{\dt}} 
-\end{equation}
-KKT condition becomes $x^*_t =   (\alpha_t - \lambda^* )/2$ and $\int_0^Tx^*_t=0$. This implies that $\lambda^* = \frac{1}{T}\int_0^T\alpha_t{{\dt}}$, and therefore $x^*_t =   (\alpha_t - \frac{1}{T}\int_0^T\alpha_t{{\dt}} )/2$. 
-
-Adding restrictions to a control problem is slightly more subtle due to the dynamics of $x$. We postpone the study of such problems to the future endeavors. However, a simple control problem can be described as a constrained optimization and can be solved via the Lagrange multiplier. We discuss this approach in the next section.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1948,9 +1832,182 @@ Specifically, we shall determine $\hat{\mathbf{Y}}$ and $\hat{\mathbf{Z}}$ such 
     (\alpha^*,\beta^*)\in\mathop\textrm{argmin}\limits_{\alpha,\beta}\mathbb{E}\Big[\big(\hat{\mathbf{Y}}(T,\hat{X}_T)-g(\hat{X}_T)\big)^2\Big]
 \end{equation}
 
+\appendix
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Results from optimization}
+In this sections, we quickly review two of the most influential results from optimization, namely the Lagrange multiplier and gradient descent, which later be used in the context of control problems. 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Lagrange multiplier}
+If we add a constraint to a simple minimization problem such as $\min_x f(x)$, the Lagrange multiplier method is the way to proceed. In a nutshell, the Lagrange multiplier method turns a constrained optimization problem into a saddle point problem without constraints by adding more variables. 
 
+Consider  the constrained problem below:
+\begin{equation}        
+\label{constraint_optimization1}
+    \inf_x f(x) ~~~ \textrm{subject to}~~~g(x)=0
+\end{equation}
+Define the Lagrangian:
+\begin{equation}\label{lagrangian}
+    L(x,\lambda):= f(x) - \lambda \cdot g(x)
+\end{equation}
+Then, under proper conditions, the following saddle point problem yields the solution to \eqref{constraint_optimization1}.
+\begin{equation}
+\sup_{\lambda}\inf_{x}L(x,\lambda)
+\end{equation}
+The function $H(\lambda)=\inf_{x}L(x,\lambda)$ is called Hamiltonian and the Lagrange multiplier $\lambda$ is called the dual variable. The unconstrained problem
+\begin{equation}\label{prob:dual}
+    \sup_{\lambda}H(\lambda)
+\end{equation}
+is called the \emph{dual problem} for the \emph{primal problem} \eqref{constraint_optimization1}.
+
+The key to the success of the Lagrange multiplier method is the \emph{strong duality}.
+\begin{equation}
+    \sup_{\lambda}\inf_{x} L(x,\lambda)=\inf_{x}\sup_{\lambda}L(x,\lambda)
+\end{equation}
+With strong duality, if for some $x$, $g(x)\neq(0)$, then 
+\begin{equation}
+    \sup_{\lambda}L(x,\lambda) = \sup_{\lambda}\{f(x) - \lambda \cdot g(x)\} = \infty
+\end{equation}
+Therefore, $\inf_{x}\sup_{\lambda}L(x,\lambda)$ is restricted to $x$ with $g(x)=0$ and 
+\begin{equation}
+    \inf_{x:g(x)=0} \sup_{\lambda}L(x,\lambda) = \inf_{x:g(x)=0} f(x)
+\end{equation}
+
+It is not always easy to check if strong duality holds. 
+However, \emph{Karush-Kuhn-Tucker} conditions (KKT) provide some necessary and sufficient conditions for strong duality.
+\begin{thm}
+Assume the differentiability of $f$ and $g$.
+    If $x^*$ solves \eqref{constraint_optimization1}  and $\lambda^*$ solves \eqref{prob:dual} such that 
+    \begin{equation} \label{cond:KKT}
+    \begin{cases} \triangledown f(x^*) - \lambda^* \cdot \triangledown g(x^*) = 0\\
+            g (x^*)=0
+        \end{cases}
+    \end{equation}
+    then, strong duality holds and $(x^*,\lambda^*)$ is a saddle point for $\sup_{\lambda}\inf_{x}L(x,\lambda)$. 
+
+    Conversely, if strong duality holds, then any saddle point $(x^*,\lambda^*)$ satisfies \eqref{cond:KKT}. 
+    In particular, $x^*$ solve \eqref{constraint_optimization1}.
+\end{thm}
+A geometric interpretation of $\lambda^*$ in KKT conditions is explained in See Figure~\ref{fig:KKT_1}.
+\begin{figure}
+    \centering
+\includesvg[scale=0.39]{LagrangeMultipliers2D.svg}
+    \caption{KKT conditions for $g(x)=0$. Source \char57391\sc{ikipedi}A}
+    \label{fig:KKT_1}
+\end{figure}
+             
+
+
+
+
+When the constraint is given by some inequalities and qualities, i.e.,
+\begin{equation}
+    \label{constraint_optimization2}
+    \inf_x f(x) ~~~ \textrm{subject to}~~~g(x)=0,~~~h(x)\ge 0
+\end{equation}
+the range of dual variable in Hamiltonian changes:
+\begin{equation}\label{lagrangian2}
+    L(x,\lambda,\mu):= f(x) - \lambda \cdot g(x) - \mu \cdot h(x)
+\end{equation}
+\begin{equation}
+    \sup_{{\color{blue}\mu\ge0}}\sup_{\lambda}\inf_{x}L(x,\lambda,\mu)
+\end{equation}
+The reason for such modification can formally be seen after switching $\inf_x$ and $\sup_{\mu\ge0}$ in the above
+\begin{equation}
+    \sup_{\mu\ge0}\inf_{x}L(x,\lambda,\mu) =\inf_{x}\sup_{\mu\ge0}L(x,\lambda,\mu)
+\end{equation}
+If $x_1$ is such that $h(x_1)<0$, then 
+$$\sup_{\mu\ge0}L(x_1,\lambda,\mu)= f(x_1) - \lambda g(x_1) - h(x_1) \sup_{\mu\ge0} \mu =\infty$$
+Therefore, $\inf_{x}\sup_{\mu\ge0}L(x,\lambda,\mu)$ is not attained at $x_1$. Thus, any saddle point $(x^*,\lambda^*,\mu^*)$ with $\mu^*>0$ must satisfy $h(x^*)\ge0$. More general KKT conditions guarantee the strong duality in this case:
+    \begin{equation} \label{cond:KKT_general}
+    \begin{cases} \triangledown f (x^*) - \lambda^* \triangledown g (x^*) -\mu^* \triangledown 
+ h(x^*)= 0\\
+            g(x^*)=0\\
+            h(x^*)\ge0\\
+            \mu^*\ge0\\
+            \mu^*\cdot h(x^*)=0
+        \end{cases}
+    \end{equation}
+The last equality emphasizes that either $h(x^*)>0$ holds, in which case $\mu^*=0$, or $h^*(x^*)=0$, in which case $\mu^*$ is irrelevant. See Figure~\ref{fig:KKT_2}.
+\begin{figure}
+    \centering
+\includesvg[scale=2]{Inequality_constraint_diagram.svg}
+    \caption{KKT conditions for $h(x)\ge0$. The figure uses $g$ for $h$. Source \char57391\sc{ikipedi}A}
+    \label{fig:KKT_2}
+\end{figure}
+\subsubsection{Lagrange multiplier and constrained dynamic optimization}
+Let's first put the Lagrange multiplier in the context of an optimization problem:
+    \begin{equation}
+        \inf\bigg\{\int_0^T\Big(x_t^2 - \alpha_t x_t\Big) {{\dt}}\bigg\}
+    \end{equation}
+subject to $x_T=0$. The Lagrangian is
+\begin{equation}
+    \int_0^T\Big(x_t^2 - \alpha_t x_t\Big) {{\dt}} + \lambda x_T
+\end{equation}
+and KKT condition suggests that $x^*_t=2\alpha_t$ for $t<T$ and $x^*_T=0$ solves the problem. However, this is not an interesting problem. One can simply argue that changing $x$ at $T$ does not change the value of the integral, and therefore it is not really a constraint. Even if we impose a more restricted constraint such as $x_t\ge0$ on all $t$, the myopic solution is simply $x^*_t=\max\{\alpha_t,0\}/2$.
+
+However, for the constraint $\int_0^T x_t{{\dt}} = 0$, the optimization problem becomes more interesting.
+\begin{equation}
+        \sup_{\lambda}\inf_{x}\int_0^T\Big(x_t^2 - \alpha_t x_t + \lambda x_t\Big) {{\dt}} 
+\end{equation}
+KKT condition becomes $x^*_t =   (\alpha_t - \lambda^* )/2$ and $\int_0^Tx^*_t=0$. This implies that $\lambda^* = \frac{1}{T}\int_0^T\alpha_t{{\dt}}$, and therefore $x^*_t =   (\alpha_t - \frac{1}{T}\int_0^T\alpha_t{{\dt}} )/2$. 
+
+Adding restrictions to a control problem is slightly more subtle due to the dynamics of $x$. We postpone the study of such problems to the future endeavors. However, a simple control problem can be described as a constrained optimization and can be solved via the Lagrange multiplier. We discuss this approach in the next section.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Gradient descent}
+Let $f:\mathbb{R}^d\to\mathbb{R}$ be a differentiable function. We know that if $x_*$ is a local minimum of $f$, then $\nabla f(x_*)=0$. Therefore, solving $\nabla f(x)=0$ yields critical points of the function $f$ including the local and global minimums, if there is any. In very high-dimensional problems such as those in deep learning, $f$ is a highly nonlinear function. The set of critical points of $f$ can be very irregular and hard to find via solving $\nabla f(x)=0$, \citet{PRV21}. In such situation, finding a global minimum requires some luck. However, a local minimum can be found via the method of \emph{gradient descent}, GD henceforth. 
+GD is based on a simple fact. At any point $x$, direction of maximum descent (ascent) of $f$ is parallel to $-\nabla f(x)$ ($\nabla f(x)$). Therefore, if we move from point $x$ toward $-\nabla f(x)$, the value of $f$ decreases and we are closer to a local minimum than we were at $x$. In other words, for some small $\alpha>0$ $x-\alpha\nabla(x)$ is closer to a local minimum than $x$ was. 
+\begin{algorithm}
+        % Algorithm content goes here
+        \caption{Gradient descent}
+        \label{alg:gd}
+        \KwData{$x$ randomly chosen from the domain.}
+        \Parameter{Learning rate $\{\alpha_n\}_n$, number of iterations $N$, and tolerance $\epsilon>0$.}
+        \While{$|\nabla f(x_n)|>\epsilon$ \& $n\le N$}{
+        $x \leftarrow x - \alpha_n \nabla f(x)$\;
+        $n \leftarrow n + 1$
+        }
+        \Return{$x$}
+        \caption{Gradient descent algorithm}
+\end{algorithm}
+The most important parameter in GD is $\alpha$, \emph{learning rate}. Ideally, when we are further from a local minimum, we like to move faster, therefore, we choose a larger learning rate. When we are very close to the minimum, we like the learning rate to be smaller. A general rule of thumb suggests $\alpha_n$ should be such that $\alpha_n\to0$ and $\sum_n\alpha_n=\infty$. Decrease of $\alpha_n$ to 0, allows DG to slow down when it gets closer to the minimum. If $\alpha_n$ is constant, it can potentially jump over the minimum. The jutification for $\sum_n\alpha_n=\infty$ can be rigorously explained. The following theorem shows why this condition holds under some strong assumption. The theorem shows the continuous gradient descent to the global minimum of a convex function. In practice, GD is a discrete algorithm. 
+\begin{thm}
+    Let $\int_0^\infty\alpha_t\dt=\infty$ and $f$ be a convex function with a global minimum at $x_*$ such that for all $x$
+    \[
+    (x-x_*)\cdot \nabla f(x) \ge \lambda |x-x_*|^2
+    \]
+    Then, the solution of the ODE given by $\dd x_t = -\alpha_t \nabla f(x_t) \dt$ converges to $x_*$. 
+\end{thm}
+\begin{proof}
+    We use chain rule to evaluate 
+    \[
+    \dd |x_t-x_*|^2 = 2(x_t-x_*)\cdot \dx_t = -2 \alpha (x_t-x_*)\cdot\nabla f(x_t) \dt
+    \]
+    By the assumption of the theorem, we have
+    \[
+    \dd |x_t-x_*|^2 = -2 \alpha_t (x_t-x_*)\cdot\nabla f(x_t) \dt\le -2\lambda\alpha_t |x_t-x_*|^2\dt
+    \]
+    or
+    \[
+    \dd |x_t-x_*|^2 + 2\lambda\alpha_t |x_t-x_*|^2\dt \le 0
+    \]
+    By multiplying the above by $\exp(2\lambda\int_0^t\alpha_s\ds)$ and integrating, we obtain
+    \[
+    \exp(2\lambda\int_0^t\alpha_s\ds)|x_t-x_*|^2\le |x_0-x_*|^2
+    \]
+    or
+    \[
+    |x_t-x_*|^2\le |x_0-x_*|^2\exp(-2\lambda\int_0^t\alpha_s\ds)
+    \]
+    The right-hand above goes to zero as $t\to\infty$.
+\end{proof}
+
+Plain GD is not working for many applications and several versions of GD are introduced overcome the issues arising in applications. For example, if dimension is very large, $d>1e6$, evaluation of gradient of a function is very time consuming. In such cases, \emph{stochastic gradient descent}, SGD henceforth, in used. SGD randomly chooses small number of directions from $\{1,...,d\}$ e.g. $10$ out of $1e^6$ and gradient is only evaluated in those directions. To stabilize SGD, the introduced \emph{momentum} into gradient descent. A popular SGD algorithm is \emph{ADAMS} algorithm. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 
@@ -2325,7 +2382,7 @@ As you can see, the solution to \eqref{eqn:ODE_LQR1}-\eqref{eqn:Terminal_LQR2} b
 
 %BIB
 \newpage
-\bibliographystyle{siam}
+\bibliographystyle{plainnat}
 \bibliography{optimal_control}
 \end{document}
 
