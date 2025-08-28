@@ -207,7 +207,7 @@ A suitable set of controls chosen for a specific problem is referred to as the s
 An infinite horizon control problem is accommodated by setting $T=\infty$. For example, 
 \begin{equation}
     \label{prob:deterministic_control_infinite_horizon}
-    \inf_{u\in\mathcal{U}}\int_0^\infty C(t,x_t,u_t){{\dt}}+g(x_T)
+    \inf_{u\in\mathcal{U}}\int_0^\infty e^{-t}(x^2_t+u^2_t){{\dt}}
 \end{equation}
 The following exercise is an example of infinite horizon control problem.
 
