@@ -247,13 +247,13 @@ Consider the optimal control problem \eqref{prob:deterministic_control}:
 \end{equation}
 A key concept in DPP is the value function:
 \begin{defn}
-Let $x_t=x$. Then, the value function of \eqref{prob:deterministic_control} is defined by
-    \begin{equation}\label{eqn:value_deterministic}
-    V(t,x):=\inf_{u\in\mathcal{U}_{t}}\int_t^TC(s,x_s,u_s){{\ds}}+g(x_T),~~~~{\dx}_s=f(x_s,u_s){{\ds}}
+Let $x_t=x$. Then, the \emph{value function} of \eqref{prob:deterministic_control} is defined by
+\begin{equation}\label{eqn:value_deterministic}
+    V(t,x):= \inf_{u\in\mathcal{U}_{t}}\int_t^TC(s,x_s,u_s){{\ds}}+g(x_T),~~~~{\dx}_s=f(x_s,u_s){{\ds}}
 \end{equation}
 where $\mathcal{U}_{t}$ is the set of admissible controls restricted to time interval $[t,T]$.
 \end{defn}
-The value function is encoding the outcome of optimal control at time $t$ at point $x$. The function $V(t,\cdot):\mathbb{R}^d\to\mathbb{R}$ returns the optimal value of the control problem for any point $x$ at time $t$.
+The value function encodes the outcome of optimal control at time $t$ at point $x$. The function $V(t,\cdot):\mathbb{R}^d\to\mathbb{R}$ returns the optimal value of the control problem for any point $x$ at time $t$.
 
 Given the value function, the DPP is explained in the following result.
 \begin{thm}\label{thm:dpp_deterministic}
@@ -291,8 +291,68 @@ This interpretation reveals the proof of DPP.
         \inf_{u_1\in\mathcal{U}_{t,s}} \int_t^sC(r,x_r,u_1(r)){{\dr}} + V(s,x_s)
     \]
 \end{proof}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Numerical solution based on DPP}
+Let $\Delta t = \frac{T}{N}$ and set $t_i=i\Delta t$ with $i=0,...,N$. The DPP \eqref{eqn:dpp_deterministic} for $t=t_i$ and $s=t_{i+1}$ is written by
+\begin{equation}
+    V(t_{i},x) =\inf_{u\in\mathcal{U}_{t_i,t_{i+1}}}\int_{t_i}^{t_{i+1}}C(r,x_r,u_r){{\dr}}+V(t_{i+1},x_{t_{i+1}})
+\end{equation}
+We can approximate $\int_{t_i}^{t_{i+1}}C(r,x_r,u_r){{\dr}}\approx C(t_i,x_{t_i},u_{t_i})\Delta t$ to write
+\begin{equation}
+    V(t_{i},x) \approx\inf_{u}C(t_{i},x_{t_{i}},u){{\Delta t}}+V(t_{i+1},x_{t_{i+1}})
+\end{equation}
+This suggest to approximate the value function and optimal control for the control problem \eqref{prob:deterministic_control} in Algorithm~\ref{alg:dpp}. Throughout this notes, $\hat{f}$ represents an approximation of function $f$. 
+Therefore, if $V(t_{i+1},\cdot)$ is approximated by  $\hat{V}(t_{i+1},\cdot)$, then 
+\[
+\hat{V}(t_{i},x):=\inf_{u}C(t_{i},x_{t_{i}},u){{\Delta t}}+\hat{V}(t_{i+1},x_{t_{i+1}})
+\]
+suggests the approximation for $V(t_{i},\cdot)$. 
+\begin{algorithm}
+        % Algorithm content goes here
+        \Parameter{$T$, $N$, $f(t,x,u)$, $C(t,x,u)$, and $g(x)$\;
+        $\Delta t = \frac{T}{N}$}
+        \KwData{$\hat{V}(t_{N},x)=g(x)$\; $x^j_i$ for $j=1,...,J$ and $i=0,...,N-1$}
+        \For{$i \leftarrow N-1$ to $0$}
+        {$\hat{x}^j_{t_{i+1}} =x_i^j+f(t_{i},x_i^j,u)\Delta t$\;
+        $\tilde{V}(t_{i},x^j_i)\leftarrow \inf_{u}C(t_{i},{x}^j_{t_{i}},u){{\Delta t}}+\hat{V}(t_{i+1},\hat{x}^j_{t_{i+1}})$\;
+        $\hat{V}(t_{i},x)$ obtained from interpolation on $\tilde{V}(t_{i},x^j_i)$ for $j=1,...,J$\;
+        $\hat{u}^*(x_i^j)\in\mathop{\text{\normalfont argmin}}\limits_{u}C(t_{i},{x}^j_{t_{i}},u){{\Delta t}}+\hat{V}(t_{i+1},\hat{x}^j_{t_{i+1}})$;
+        }
+        \Return{$\hat{V}$ and $\hat{u}^*$.}
+        \caption{Numerical DPP}
+         \label{alg:dpp}
+\end{algorithm}
+\begin{ex}
+    Why interpolation is required in Algorithm~\ref{alg:dpp}? Can we perform the algorithm by only knowing  $\hat{V}(t_{i+1},{x}^j_{t_{i+1}})$ for all $j=1,...,J$? 
+    Note the difference between $\hat{V}(t_{i+1},{x}^j_{t_{i+1}})$ and $\hat{V}(t_{i+1},\hat{x}^j_{t_{i+1}})$ with $\hat{x}^j_{t_{i+1}} = {x}^j_{t_i} + f(t_{i},x_i^j,u)\Delta t$
+\end{ex}
+Next example provides a special case where we can evaluate the approximate value function from Algorithm~\ref{alg:dpp} without using interpolation.
+\begin{eg}
+    Consider 
+    \begin{equation}
+    \inf_{u\in\mathcal{U}} \int_0^T\left(x_t^2+u_t^2\right){{\dt}}+\frac12x_T^2-x_T,~~~~{\dx}_t=(x_t-u_t){{\dt}}
+\end{equation}
+We write the value function by \eqref{eqn:value_deterministic}. 
+\begin{equation}
+    V(t,x):= \inf_{u\in\mathcal{U}_{t}}\int_t^T\left(x_s^2+u_s^2\right){{\ds}}+g(x_T),~~~~{\dx}_s=(x_s-u_s){{\ds}}.
+\end{equation}
+We cannot find value functions using a myopic argument. We will later find a way to find the value function $V$. However, In the next exercise, we apply Algorithm!\ref{alg:dpp} to find the approximate value function.  
+\end{eg}
+\begin{ex}
+    In example above, write the approximate DPP from time $t_{i}$ to $t_{i+1}$. Then, assume that $\hat{V}(t_{i+1},x)=a_{i+1}x^2+b_{i+1}x+c_{i+1}$ for some known values $a_{i+1}$, $b_{i+1}$, and $c_{i+1}$. Use  optimization of a quadratic function to find $\hat{V}(t_{i},x)$. Note that $\hat{x}_{t_{i+1}}=x+(x^2+u^2)\Delta t$. Does $\hat{V}(t_{i},x)$ is of the form $a_{i}x^2+b_{i}x+c_{i}$? What is the relation between $(a_{i},b_{i},c_{i})$ and $(a_{i+1},b_{i+1},c_{i+1})$.
+\end{ex}
 
-One of the side-products of DPP is a partial differential equation, \emph{Hamilton-Jacobi-Bellman equation} or HJB for short, that can be solved via different methods to provide us with the solution of the control problem. 
+
+
+Consider the discretized version of the control problem \eqref{prob:deterministic_control}:
+\begin{equation}
+    \label{prob:discrete_deterministic_control}
+    \inf\Big\{\sum_{i=0}^{N-1}C(t_i,\hat{x}_{t_i},u_{t_i}){{\Delta t}}+g(\hat{x}_{T})~|~{u_{t_i}:i=0,...,N-1}\Big\}
+\end{equation}
+with $\hat{x}_{t_{i+1}} = \hat{x}_{t_i} + f(t_i,\hat{x}_{t_i},u_{t_i}){\Delta t}$. The dynamic programming 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Hamilton-Jacobi equation}
+One of the side-products of DPP is a partial differential equation, \emph{Hamilton-Jacobi equation} or HJ for short, that can be solved via different methods to provide us with the solution of the control problem. 
 To derive the HJB, we first assume that the value function is sufficiently continuously differentiable ,first order derivatives exist are are continuous. Then, we use the first Taylor polynomial with the remainder term for the value function $V(s,x_s)$ about $(t,x)$ as follows:
 \[
 V(s,x_s) = V(t,x) + V_t(t,x)(s-t) + V_x(t,x)(x_s-x) + R_2
@@ -311,9 +371,9 @@ Dividing both sides by $s-t$ and sending $s\to t$, we obtain
         0 = V_t(t,x) +\inf_{u} C(t,x,u) + V_x(t,x)f(t,x,u)
 \end{equation}
 In the above, we used the fundamental theorem of calculus to write $\lim_{s\to t} \frac{\int_t^s f(x_r,u_r){{\dr}}}{s-t}=f(t,x,u)$ and $\lim_{s\to t} \frac{\int_t^sC(r,x_r,u_r){{\dr}}}{s-t}=C(t,x,u)$.
-A PDE requires proper boundary condition. For HJB, the boundary condition is the terminal cost at $T$:
+A PDE requires proper boundary condition. For HJ, the boundary condition is the terminal cost at $T$:
 \begin{equation}
-    \label{eqn:HJB_terminal}
+    \label{eqn:HJ_terminal}
     V(T,x)=g(x)
 \end{equation}
 
@@ -333,11 +393,11 @@ Note that the infimum above is attained at $u^*=-\frac12V_x$ and, therefore, we 
 \[
 0 = V_t + x^2 -\beta x V_x -\frac14 V_x^2 
 \]
-Since there is no terminal cost, the boundary condition for the HJB is $V(T,x)=0$. 
+Since there is no terminal cost, the boundary condition for the HJ is $V(T,x)=0$. 
 \end{eg}
-An important question about the above HJB is that how can the HJB help us find the optimal control. For the above example, if we solve the HJB and find the value function, then a candidate for the optimal control is $u_t^*=-\frac12V_x(t,x_t)$ where ${\dx}_t = (-\beta x_t + u_t^* ){{\dt}}$. In general, we cannot guarantee a simple way to solve the HJB. However, for certain problems there is a simple way and for other problems numerical solutions to PDEs can be used. Next, exercise shows how to solve the HJB derived for the previous example.
+An important question is that how can the HJ equation help us find the optimal control. For the above example, if we solve the HJ and find the value function, then a candidate for the optimal control is $u_t^*=-\frac12V_x(t,x_t)$ where ${\dx}_t = (-\beta x_t + u_t^* ){{\dt}}$. In general, we cannot guarantee a simple way to solve the HJ. However, for certain problems there is a simple way and for other problems numerical solutions to PDEs can be used. Next, exercise shows how to solve the HJ derived for the previous example.
 \begin{ex}
-    We guess that the solution for the HJB 
+    We guess that the solution for the HJ
     \[
     \begin{cases}
     0 = V_t + x^2 -\beta x V_x -\frac14 V_x^2 \\
