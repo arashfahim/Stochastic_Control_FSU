@@ -303,10 +303,16 @@ We can approximate $\int_{t_i}^{t_{i+1}}C(r,x_r,u_r){{\dr}}\approx C(t_i,x_{t_i}
 \end{equation}
 This suggest to approximate the value function and optimal control for the control problem \eqref{prob:deterministic_control} in Algorithm~\ref{alg:dpp}. Throughout this notes, $\hat{f}$ represents an approximation of function $f$. 
 Therefore, if $V(t_{i+1},\cdot)$ is approximated by  $\hat{V}(t_{i+1},\cdot)$, then 
+\begin{equation}\label{eqn:approximate_deterministic_dpp}
+    \hat{V}(t_{i},x):=\inf_{u}C(t_{i},x_{t_{i}},u){{\Delta t}}+\hat{V}(t_{i+1},x_{t_{i+1}}),~~x_{t_{i+1}} = x + f(t_i,x,u)\Delta t 
+\end{equation}
+suggests the approximation for $V(t_{i},\cdot)$. Note that unlike DPP,  the infimum  in the approximate DPP \eqref{eqn:approximate_deterministic_dpp} is over a $u\in\mathbb{R}^m$ and not the functions $u:[t_i,t_{i+1}]\to\mathbb{R}^m$. Therefore, $\hat{u}^*$ given by 
 \[
-\hat{V}(t_{i},x):=\inf_{u}C(t_{i},x_{t_{i}},u){{\Delta t}}+\hat{V}(t_{i+1},x_{t_{i+1}})
+\hat{u}^*\in\mathop{\text{\normalfont argmin}}_{u}C(t_{i},x_{t_{i}},u){{\Delta t}}+\hat{V}\big(t_{i+1},x + f(t_i,x,u)\Delta t\big)  
 \]
-suggests the approximation for $V(t_{i},\cdot)$. 
+provides a constant control over the interval $[t_i,t_{i+1}$.
+
+We provide an algorithm derived from discrete DPP in Algorithm~\ref{alg:dpp}.
 \begin{algorithm}
         % Algorithm content goes here
         \Parameter{$T$, $N$, $f(t,x,u)$, $C(t,x,u)$, and $g(x)$\;
@@ -324,7 +330,7 @@ suggests the approximation for $V(t_{i},\cdot)$.
 \end{algorithm}
 \begin{ex}
     Why interpolation is required in Algorithm~\ref{alg:dpp}? Can we perform the algorithm by only knowing  $\hat{V}(t_{i+1},{x}^j_{t_{i+1}})$ for all $j=1,...,J$? 
-    Note the difference between $\hat{V}(t_{i+1},{x}^j_{t_{i+1}})$ and $\hat{V}(t_{i+1},\hat{x}^j_{t_{i+1}})$ with $\hat{x}^j_{t_{i+1}} = {x}^j_{t_i} + f(t_{i},x_i^j,u)\Delta t$
+    Note the difference between $\hat{V}(t_{i+1},{x}^j_{t_{i+1}})$ and $\hat{V}(t_{i+1},\hat{x}^j_{t_{i+1}})$ with $\hat{x}^j_{t_{i+1}} = {x}^j_{t_i} + f(t_{i},x_i^j,u)\Delta t$.
 \end{ex}
 Next example provides a special case where we can evaluate the approximate value function from Algorithm~\ref{alg:dpp} without using interpolation.
 \begin{eg}
@@ -334,22 +340,22 @@ Next example provides a special case where we can evaluate the approximate value
 \end{equation}
 We write the value function by \eqref{eqn:value_deterministic}. 
 \begin{equation}
-    V(t,x):= \inf_{u\in\mathcal{U}_{t}}\int_t^T\left(x_s^2+u_s^2\right){{\ds}}+g(x_T),~~~~{\dx}_s=(x_s-u_s){{\ds}}.
+    V(t,x):= \inf_{u\in\mathcal{U}_{t}}\int_t^T\left(x_s^2+u_s^2\right){{\ds}}+\frac12x_T^2-x_T,~~~~{\dx}_s=(x_s-u_s){{\ds}}.
 \end{equation}
 We cannot find value functions using a myopic argument. We will later find a way to find the value function $V$. However, In the next exercise, we apply Algorithm!\ref{alg:dpp} to find the approximate value function.  
 \end{eg}
 \begin{ex}
-    In example above, write the approximate DPP from time $t_{i}$ to $t_{i+1}$. Then, assume that $\hat{V}(t_{i+1},x)=a_{i+1}x^2+b_{i+1}x+c_{i+1}$ for some known values $a_{i+1}$, $b_{i+1}$, and $c_{i+1}$. Use  optimization of a quadratic function to find $\hat{V}(t_{i},x)$. Note that $\hat{x}_{t_{i+1}}=x+(x^2+u^2)\Delta t$. Does $\hat{V}(t_{i},x)$ is of the form $a_{i}x^2+b_{i}x+c_{i}$? What is the relation between $(a_{i},b_{i},c_{i})$ and $(a_{i+1},b_{i+1},c_{i+1})$.
+    In example above, write the approximate DPP from time $t_{i}$ to $t_{i+1}$. Then, assume that $\hat{V}(t_{i+1},x)=a_{i+1}x^2+b_{i+1}x+c_{i+1}$ for some known values $a_{i+1}$, $b_{i+1}$, and $c_{i+1}$. Use  optimization of a quadratic function to find $\hat{V}(t_{i},x)$. Note that you need to use $\hat{x}_{t_{i+1}}=x+(x^2+u^2)\Delta t$. Does $\hat{V}(t_{i},x)$ is of the form $a_{i}x^2+b_{i}x+c_{i}$? What is the relation between $(a_{i},b_{i},c_{i})$ and $(a_{i+1},b_{i+1},c_{i+1})$?
 \end{ex}
-
-
+\begin{rem}
 
 Consider the discretized version of the control problem \eqref{prob:deterministic_control}:
 \begin{equation}
     \label{prob:discrete_deterministic_control}
     \inf\Big\{\sum_{i=0}^{N-1}C(t_i,\hat{x}_{t_i},u_{t_i}){{\Delta t}}+g(\hat{x}_{T})~|~{u_{t_i}:i=0,...,N-1}\Big\}
 \end{equation}
-with $\hat{x}_{t_{i+1}} = \hat{x}_{t_i} + f(t_i,\hat{x}_{t_i},u_{t_i}){\Delta t}$. The dynamic programming 
+with $\hat{x}_{t_{i+1}} = \hat{x}_{t_i} + f(t_i,\hat{x}_{t_i},u_{t_i}){\Delta t}$. The DPP for this discrete-time optimal control problem is the same as the discretized DPP \eqref{eqn:approximate_deterministic_dpp}.
+\end{rem}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Hamilton-Jacobi equation}
 One of the side-products of DPP is a partial differential equation, \emph{Hamilton-Jacobi equation} or HJ for short, that can be solved via different methods to provide us with the solution of the control problem. 
@@ -495,10 +501,7 @@ The first one has an initial condition $x^*_0=x_0$, the initial position of the 
 \begin{rem}
 If $u^*_t$ is an interior minimizer of $H(t,x^*_t,\lambda^*_t,u)$, then we can write $\partial_u H(t,x^*_t,\lambda^*_t,u^*_t)=0$. However, if there are constraint on $u$, e.g., $u\ge0$, we shall stick to the inequality above. 
 \end{rem}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Linear quadratic linear control problem (LQC)}
-\label{sec:LQC}
-In LQC, the running cost and the terminal cost are quadratic functions of state  and control and the ODE is linear in the state  and control.
+
 We start with an example of a LQC problem. 
 \begin{eg}\label{eg:lqc}
     Consider the control problem with $C(x,u)= x^2 +  u^2$, $g(x) = x^2 +  x$, and $f(x,u)=x + u$:
@@ -549,7 +552,10 @@ Minimizing $H(x,\lambda,u)$ in $u$ suggests that $H_u(x,\lambda^*_t,u^*_t)=2u^*_
     \end{equation}
     (3) Consider $x^*_0$ given. Use $\lambda^*_T= 2x^*_T + 1$ to find $\lambda^*_0$, hence a special solution for the system of ODEs from Pontryagin principle as a function $x^*_0$ and $x^*_T$.  
 \end{ex}
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Linear quadratic linear control problem (LQC)}
+\label{sec:LQC}
+In LQC, the running cost and the terminal cost are quadratic functions of state  and control and the ODE is linear in the state  and control.
 The generic linear quadratic control problem (LQC) is given by
 \begin{equation}\label{prob:LQC}
 \begin{split}
