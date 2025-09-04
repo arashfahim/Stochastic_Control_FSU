@@ -308,7 +308,7 @@ Therefore, if $V(t_{i+1},\cdot)$ is approximated by  $\hat{V}(t_{i+1},\cdot)$, t
 \end{equation}
 suggests the approximation for $V(t_{i},\cdot)$. Note that unlike DPP,  the infimum  in the approximate DPP \eqref{eqn:approximate_deterministic_dpp} is over a $u\in\mathbb{R}^m$ and not the functions $u:[t_i,t_{i+1}]\to\mathbb{R}^m$. Therefore, $\hat{u}^*$ given by 
 \[
-\hat{u}^*\in\mathop{\text{\normalfont argmin}}_{u}C(t_{i},x_{t_{i}},u){{\Delta t}}+\hat{V}\big(t_{i+1},x + f(t_i,x,u)\Delta t\big)  
+\hat{u}^*(t_i,x)\in\mathop{\text{\normalfont argmin}}_{u}C(t_{i},x_{t_{i}},u){{\Delta t}}+\hat{V}\big(t_{i+1},x + f(t_i,x,u)\Delta t\big)  
 \]
 provides a constant control over the interval $[t_i,t_{i+1}$.
 
@@ -317,20 +317,21 @@ We provide an algorithm derived from discrete DPP in Algorithm~\ref{alg:dpp}.
         % Algorithm content goes here
         \Parameter{$T$, $N$, $f(t,x,u)$, $C(t,x,u)$, and $g(x)$\;
         $\Delta t = \frac{T}{N}$}
-        \KwData{$\hat{V}(t_{N},x)=g(x)$\; $x^j_i$ for $j=1,...,J$ and $i=0,...,N-1$}
+        \KwData{$\hat{V}(t_{N},x)=g(x)$\; $x^j_i$ for $j=1,...,J$ and $i=0,...,N-1$\;
+        ($x^j_i$ means the  $j$th discrete point at time $t_i$.)}
         \For{$i \leftarrow N-1$ to $0$}
-        {$\hat{x}^j_{t_{i+1}} =x_i^j+f(t_{i},x_i^j,u)\Delta t$\;
-        $\tilde{V}(t_{i},x^j_i)\leftarrow \inf_{u}C(t_{i},{x}^j_{t_{i}},u){{\Delta t}}+\hat{V}(t_{i+1},\hat{x}^j_{t_{i+1}})$\;
+        {$\hat{x}^j_{i+1}=x_i^j+f(t_{i},x_i^j,u)\Delta t$\;
+        $\tilde{V}(t_{i},x^j_i)\leftarrow \inf_{u}C(t_{i},{x}^j_{i},u){{\Delta t}}+\hat{V}(t_{i+1},\hat{x}^j_{t_{i+1}})$\;
         $\hat{V}(t_{i},x)$ obtained from interpolation on $\tilde{V}(t_{i},x^j_i)$ for $j=1,...,J$\;
-        $\hat{u}^*(x_i^j)\in\mathop{\text{\normalfont argmin}}\limits_{u}C(t_{i},{x}^j_{t_{i}},u){{\Delta t}}+\hat{V}(t_{i+1},\hat{x}^j_{t_{i+1}})$;
+        $\hat{u}^*(t_i,x_i^j)\in\mathop{\text{\normalfont argmin}}\limits_{u}C(t_{i},{x}^j_{i},u){{\Delta t}}+\hat{V}(t_{i+1},\hat{x}^j_{i+1})$;
         }
-        \Return{$\hat{V}$ and $\hat{u}^*$.}
+        \Return{$\hat{V}(t_i,\cdot)$ and $\hat{u}^*(t_i,\cdot)$ for $i=0,...,N-1$.}
         \caption{Numerical DPP}
          \label{alg:dpp}
 \end{algorithm}
 \begin{ex}
-    Why interpolation is required in Algorithm~\ref{alg:dpp}? Can we perform the algorithm by only knowing  $\hat{V}(t_{i+1},{x}^j_{t_{i+1}})$ for all $j=1,...,J$? 
-    Note the difference between $\hat{V}(t_{i+1},{x}^j_{t_{i+1}})$ and $\hat{V}(t_{i+1},\hat{x}^j_{t_{i+1}})$ with $\hat{x}^j_{t_{i+1}} = {x}^j_{t_i} + f(t_{i},x_i^j,u)\Delta t$.
+    Why interpolation is required in Algorithm~\ref{alg:dpp}? Can we perform the algorithm by only knowing  $\hat{V}(t_{i+1},{x}^j_{i+1})$ for all $j=1,...,J$? 
+    Note the difference between $\hat{V}(t_{i+1},{x}^j_{i+1})$ and $\hat{V}(t_{i+1},\hat{x}^j_{i+1})$ with $\hat{x}^j_{i+1} = {x}^j_{i} + f(t_{i},x_i^j,u)\Delta t$.
 \end{ex}
 Next example provides a special case where we can evaluate the approximate value function from Algorithm~\ref{alg:dpp} without using interpolation.
 \begin{eg}
@@ -344,11 +345,12 @@ We write the value function by \eqref{eqn:value_deterministic}.
 \end{equation}
 We cannot find value functions using a myopic argument. We will later find a way to find the value function $V$. However, In the next exercise, we apply Algorithm!\ref{alg:dpp} to find the approximate value function.  
 \end{eg}
-\begin{ex}
+\begin{ex}\label{ex:discrete_lqc}
     In example above, write the approximate DPP from time $t_{i}$ to $t_{i+1}$. Then, assume that $\hat{V}(t_{i+1},x)=a_{i+1}x^2+b_{i+1}x+c_{i+1}$ for some known values $a_{i+1}$, $b_{i+1}$, and $c_{i+1}$. Use  optimization of a quadratic function to find $\hat{V}(t_{i},x)$. Note that you need to use $\hat{x}_{t_{i+1}}=x+(x^2+u^2)\Delta t$. Does $\hat{V}(t_{i},x)$ is of the form $a_{i}x^2+b_{i}x+c_{i}$? What is the relation between $(a_{i},b_{i},c_{i})$ and $(a_{i+1},b_{i+1},c_{i+1})$?
 \end{ex}
-\begin{rem}
+Example~\eqref{ex:discrete_lqc} is a \emph{linear-quadratic} optimal control problem, LQC. In LQC, the running cost is quadratic in $x$ and $u$, the terminal cost is quadratic in $x$, and the ODE for state variable is linear in $x$ and $u$.
 
+\begin{rem}
 Consider the discretized version of the control problem \eqref{prob:deterministic_control}:
 \begin{equation}
     \label{prob:discrete_deterministic_control}
@@ -359,7 +361,7 @@ with $\hat{x}_{t_{i+1}} = \hat{x}_{t_i} + f(t_i,\hat{x}_{t_i},u_{t_i}){\Delta t}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Hamilton-Jacobi equation}
 One of the side-products of DPP is a partial differential equation, \emph{Hamilton-Jacobi equation} or HJ for short, that can be solved via different methods to provide us with the solution of the control problem. 
-To derive the HJB, we first assume that the value function is sufficiently continuously differentiable ,first order derivatives exist are are continuous. Then, we use the first Taylor polynomial with the remainder term for the value function $V(s,x_s)$ about $(t,x)$ as follows:
+To derive the HJ, we first assume that the value function is sufficiently continuously differentiable ,first order derivatives exist are are continuous. Then, we use the first Taylor polynomial with the remainder term for the value function $V(s,x_s)$ about $(t,x)$ as follows:
 \[
 V(s,x_s) = V(t,x) + V_t(t,x)(s-t) + V_x(t,x)(x_s-x) + R_2
 \]
@@ -373,8 +375,8 @@ Note that $x_s=x+\int_t^s f(x_r,u_r){{\dr}}$. Let's insert the above Taylor poly
 \]
 $V(t,x)$ on both sides can be canceled. Note that $R_2=o(s-t)$, which means $\lim_{s\to t} \frac{R_2}{s-t}=0$.
 Dividing both sides by $s-t$ and sending $s\to t$, we obtain
-\begin{equation}\label{eqn:HJB_deterministic}
-        0 = V_t(t,x) +\inf_{u} C(t,x,u) + V_x(t,x)f(t,x,u)
+\begin{equation}\label{eqn:HJ_deterministic}
+        0 = V_t(t,x) +\inf_{u} \{C(t,x,u) + V_x(t,x)f(t,x,u)\}
 \end{equation}
 In the above, we used the fundamental theorem of calculus to write $\lim_{s\to t} \frac{\int_t^s f(x_r,u_r){{\dr}}}{s-t}=f(t,x,u)$ and $\lim_{s\to t} \frac{\int_t^sC(r,x_r,u_r){{\dr}}}{s-t}=C(t,x,u)$.
 A PDE requires proper boundary condition. For HJ, the boundary condition is the terminal cost at $T$:
@@ -382,8 +384,25 @@ A PDE requires proper boundary condition. For HJ, the boundary condition is the 
     \label{eqn:HJ_terminal}
     V(T,x)=g(x)
 \end{equation}
+The nonlinear function in the HJ equation
+\begin{equation}
+    H(t,x,p):=\inf_{u} \{C(t,x,u) + pf(t,x,u)\}
+\end{equation}
+is called Hamiltonian.
+We conclude that the value function of the control problem satisfies the HJ equation: 
+\begin{equation}
+    \label{eqn:HJ_w_Hamiltonian}
+    \begin{cases}
+        0=V_t(t,x)+H(t,x,V_x(t,x))\\
+        V(T,x)=g(x)
+    \end{cases}
+\end{equation}
+The optimal control $u^*(t,x)$ must satisfy
+\begin{equation}\label{cond:optimality_deterministic}
+C(t,x,u^*(t,x)) + V_x(t,x)f(t,x,u^*(t,x)) = H(t,x,V_x(t,x))\le H(t,x,u),~~\forall u.
+\end{equation}
 
-Let's explore the HJB inside an example.
+Let's explore the HJ inside an example.
 \begin{eg}
     Consider the control problem in Section~\ref{sec:opt_control}:
 \begin{equation}
@@ -391,18 +410,18 @@ Let's explore the HJB inside an example.
 \end{equation}
 where ${\dx}_t = (-\beta x_t + u_t ){{\dt}}$.
 Here, $C(t,x,u)=x^2 + u^2$ and $f(t,x,u)=-\beta x + u$.
-The HJB is given by:
+The HJ is given by:
 \[
-0 = V_t + x^2 -\beta x V_x + \inf_{u} u^2 + V_x u
+0 = V_t + x^2 -\beta x V_x + \inf_{u} \{u^2 + V_x u\}=V_t + x^2 -\beta x V_x -\frac14 V_x^2 
 \]
-Note that the infimum above is attained at $u^*=-\frac12V_x$ and, therefore, we can write the HJB without using infimum:
+Note that the infimum above is attained at $u^*=-\frac12V_x$ and, therefore, we can write the HJ without using infimum:
 \[
-0 = V_t + x^2 -\beta x V_x -\frac14 V_x^2 
+0 = V_t + H(x,p) ~~\text{ with }~~ H(x,p)=x^2 -\beta x p -\frac14 p^2 
 \]
 Since there is no terminal cost, the boundary condition for the HJ is $V(T,x)=0$. 
 \end{eg}
 An important question is that how can the HJ equation help us find the optimal control. For the above example, if we solve the HJ and find the value function, then a candidate for the optimal control is $u_t^*=-\frac12V_x(t,x_t)$ where ${\dx}_t = (-\beta x_t + u_t^* ){{\dt}}$. In general, we cannot guarantee a simple way to solve the HJ. However, for certain problems there is a simple way and for other problems numerical solutions to PDEs can be used. Next, exercise shows how to solve the HJ derived for the previous example.
-\begin{ex}
+\begin{ex}\label{ex:lq_solution}
     We guess that the solution for the HJ
     \[
     \begin{cases}
@@ -410,7 +429,31 @@ An important question is that how can the HJ equation help us find the optimal c
     V(T,x)=0
     \end{cases}
     \]
-    takes the form $V(t,x)=a(t)x^2+b(t)x+c(t)$. Insert this guess into the HJB and find ODEs for $a(t)$, $b(t)$, and $c(t)$. Use terminal conditions to prescribe terminal conditions for $a$, $b$, and $c$. Can you solve the system of ODEs?
+    takes the form $V(t,x)=a(t)x^2+b(t)x+c(t)$. Insert this guess into the HJ and find ODEs for $a(t)$, $b(t)$, and $c(t)$. Use terminal conditions to prescribe terminal conditions for $a$, $b$, and $c$. Can you solve the system of ODEs?
+\end{ex}
+
+After solving the HJ equation and obtaining a solution, we often require a verification step. The reason for the necessity of verification is that in certain (rare) cases, there can be multiple solutions for HJ equation with the terminal condition. We want to make sure the solution matches the value function
+\begin{thm}
+\label{thm:verification_deterministic}
+    Assume that function $v(t,x)$ is once continuously differentiable with respect to $t$ and twice  continuously differentiable with respect to $x$ and satisfies the HJ equation \eqref{eqn:HJ_w_Hamiltonian}. Further more, assume that there exists a function $u^*(t,x)$ such that \eqref{cond:optimality_deterministic} holds and $u^*(t,x^*_t)$ with $x_t^*$ satisfying $\dx^*_t=f(t,x^*_t,u^*(t,x^*_t))$ constitutes an admissible control; $u^*(t,x^*_t)\in\mathcal{U}$.Then, $v=V$.
+\end{thm}
+\begin{ex}
+    Does $v(t,x)=a(t)x^2+b(t)x+c(t)$ in Exercise~\ref{ex:lq_solution} satisfies the condition of verification theorem, Theorem~\ref{thm:verification_deterministic}?
+\end{ex}
+\begin{ex}
+    Recall from Exercise~\ref{ex:eikonal} that
+    \[
+        \inf_u\int_0^\infty \mathds{1}_{\{x_t\in D\}}{\dt},~{\dx}_t=u_t{{\dt}}~\text{ with }~|u_t|\le1
+        \]
+        Write the HJ equation. Is there any boundary condition?
+
+        Write the HJ equation and boundary condition for $D=[-1,1]\subset\mathbb{R}$. Which one of the following functions satisfy the HJ equation? Which one is the value function?
+        \[
+        v_1(x) = 1-|x|, v_2(x)= \begin{cases}
+            \frac12-|x-\frac12|&0\le x\le1\\
+            \frac12-|x+\frac12|&-1\le x<0
+        \end{cases}
+        \]
 \end{ex}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -553,23 +596,47 @@ Minimizing $H(x,\lambda,u)$ in $u$ suggests that $H_u(x,\lambda^*_t,u^*_t)=2u^*_
     (3) Consider $x^*_0$ given. Use $\lambda^*_T= 2x^*_T + 1$ to find $\lambda^*_0$, hence a special solution for the system of ODEs from Pontryagin principle as a function $x^*_0$ and $x^*_T$.  
 \end{ex}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Linear quadratic linear control problem (LQC)}
+\section{Linear quadratic control problem}
 \label{sec:LQC}
-In LQC, the running cost and the terminal cost are quadratic functions of state  and control and the ODE is linear in the state  and control.
-The generic linear quadratic control problem (LQC) is given by
-\begin{equation}\label{prob:LQC}
-\begin{split}
-     \inf_{u}\int_0^T(x_t\cdot A_t x_t  + x_t\cdot C_t u_t + u_t\cdot B_t u_t+ a_t\cdot x_t  +b_t\cdot u_t ){{\dt}} + x_T\cdot A_Tx_T + a_T \cdot x_T\\
-     dx_t =  (M_t x_t + N_t u_t) dt 
-\end{split}
+A class of control problem with closed-form solution consists of \emph{linear-quadratic} optimal control problems, LQC henceforth. 
+In LQC, the running cost is quadratic in $x$ and $u$, the terminal cost is quadratic in $x$, and the ODE for state variable is linear in $x$ and $u$:
+\begin{equation}
+    \begin{split}
+        &C(t,x,u) = \left[\begin{matrix}
+        x^\top&
+        u^\top
+        \end{matrix}\right]Q_t\left[\begin{matrix}
+        x\\
+        u
+        \end{matrix}\right]+a_t\cdot x + b_t\cdot u,~\text{ and }~Q_t=\left[\begin{matrix}
+        A_t&C_t\\
+        C_t^\top&B_t
+        \end{matrix}\right]\\
+        &g(x) = x^\top A_T x+a_T \cdot x\\
+        &f(t,x,u) = M_t x + N_t u
+    \end{split}
 \end{equation}
-subject to ${\dx}_t=(C_t\cdot x_t + E_t\cdot u_t){{\dt}}$ where $A:[0,T]\to \mathbb{M}(d,d)$, $B:[0,T]\to \mathbb{M}(m,m)$, $C:[0,T]\to \mathbb{M}(d,m)$, $a:[0,T]\to \mathbb{R}^d$, $b:[0,T]\to \mathbb{R}^n$, $M:[0,T]\to \mathbb{M}(d,d)$, and $N:[0,T]\to \mathbb{M}(d,m)$ are all given functions.
-Both the running cost and the terminal cost have to be convex functions, otherwise, the value of the LQC problem is simply $-\infty$. 
+Here, $A:[0,T]\to \mathbb{M}(d,d)$, $B:[0,T]\to \mathbb{M}(m,m)$, $C:[0,T]\to \mathbb{M}(d,m)$, $a:[0,T]\to \mathbb{R}^d$, $b:[0,T]\to \mathbb{R}^m$, $M:[0,T]\to \mathbb{M}(d,d)$, and $N:[0,T]\to \mathbb{M}(d,m)$. 
+
+
+For LQC problem to be well-posed, the value is not $-\infty$, it is sufficient that $Q_t$ and $A_T$ are symmetric and positive definite. In this case $C$ and $g$ are convex functions of $(x,u)$ and $x$, respectively. See exercise below.
 \begin{ex}
     In Example~\ref{eg:lqc}, change the running cost function to $C(x,u)= x^2 -  u^2$. Make some effort to find a solution to this modified problem. Of course, since the cost function is not convex, your effort fails. Explain why the optimal control problem is ill-defined.
 \end{ex}
+
 \begin{ex}
-Assume that the cost functions of the general LQC problem \eqref{prob:LQC} are convex.
+    Write the HJB equation for the LQC problem.
+\end{ex}
+
+\begin{ex}
+Assume that the cost functions of the general LQC problem are convex.
+    verify that there exists $G:[0,T]\to \mathbb{M}(d,d)$, $H:[0,T]\to \mathbb{R}^d$, and $K:[0,T]\to \mathbb{R}$ such that 
+    $V(t,x) = x^\top G_t x + H_t\cdot x + K_t$ satisfied the HJB equation.
+\end{ex}
+
+
+\begin{ex}
+Assume that the cost functions of the general LQC problem are convex.
     Write Pontryagin principle for the general LQC and suggest a solution method. 
 \end{ex}
 
