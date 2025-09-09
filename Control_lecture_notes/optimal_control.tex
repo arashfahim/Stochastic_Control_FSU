@@ -445,15 +445,34 @@ After solving the HJ equation and obtaining a solution, we often require a verif
     \[
         \inf_u\int_0^\infty \mathds{1}_{\{x_t\in D\}}{\dt},~{\dx}_t=u_t{{\dt}}~\text{ with }~|u_t|\le1
         \]
-        Write the HJ equation. Is there any boundary condition?
+        Write the definition of value function for initial state $x_0=x\in D$.
+        
+        Write the HJ equation. 
+        
+        Is there any boundary condition?
 
-        Write the HJ equation and boundary condition for $D=[-1,1]\subset\mathbb{R}$. Which one of the following functions satisfy the HJ equation? Which one is the value function?
+        Write the HJ equation and boundary condition for the special case where $D=[-1,1]\subset\mathbb{R}$. Which one of the following functions satisfy the HJ equation? Which one is the value function?
         \[
         v_1(x) = 1-|x|, v_2(x)= \begin{cases}
             \frac12-|x-\frac12|&0\le x\le1\\
             \frac12-|x+\frac12|&-1\le x<0
         \end{cases}
         \]
+\end{ex}
+\begin{ex}
+        In epidemiology, modeling a disease in a population is done by splitting the population into three sets: susceptible, infected, and recovered. Then, then number of individuals in each set follows the following ODEs.
+        \[
+        \begin{cases}
+            \dd{S}_t=-\beta_t S_t I_t \dt\\
+            \dd{I}_t = (\beta_t I_t S_t - \gamma_t I_t)\dt\\
+            \dd{R}_t= \gamma_t I_t \dt
+        \end{cases}
+        \]
+        Here $\beta_t\in[b_0,b_1]$ and $\gamma_t\in[c_0,c_1]$ are rates at which a susceptible person gets infected and an infected person recovers, respectively. If you consider that investing in some public health  measures improves these rates, write the HJB equation for the following control problem.
+    \[
+    \inf_{\beta_t,\gamma_t}\int_0^T ((b_1-\beta_t)^2+\gamma_t^2)\dt + I^2_T
+    \]
+    Write the HJ equation.
 \end{ex}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
