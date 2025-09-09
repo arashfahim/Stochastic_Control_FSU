@@ -533,7 +533,7 @@ $H(t,x,p)= \inf_{u}\Big\{C(t,x,u) + p\cdot   f(t,x,u) \Big\}$
 \begin{frame}{LQC}
     \begin{block}
         {A linear-quadratic control problem}
-        Consider the control problem in Section~\ref{sec:opt_control}:
+        Consider the control problem:
 \begin{equation}
 \inf_{u}\bigg\{\int_0^T\Big(x_t^2 +u_t^2\Big) {{\dt}}\bigg\},~~~{\dx}_t = (-\beta x_t + u_t ){{\dt}}
 \end{equation}
@@ -544,6 +544,9 @@ Write the HJ  equation.
 After writing the HJ, plug in $V(t,x)=a(t)x^2+b(t)x+c(t)$the HJ and find ODEs for $a(t)$, $b(t)$, and $c(t)$. What are $a(T)$, $b(T)$, and $c(T)$?
     \end{block}
 \end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 
 \begin{frame}{Eikonal equation}
     \begin{block}
@@ -552,14 +555,17 @@ After writing the HJ, plug in $V(t,x)=a(t)x^2+b(t)x+c(t)$the HJ and find ODEs fo
         \[
         \inf_u\int_0^\infty \mathds{1}_{\{x_t\in D\}}{\dt},~{\dx}_t=u_t{{\dt}}~\text{ with }~|u_t|\le1
         \]
-        Write the HJ equation. Is there any boundary condition?
+        
+        Write the definition of value function for initial state $x_0=x\in D$. Write the HJ equation. 
+        Is there any boundary condition?
     \end{block}
-\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Eikonal equation}
+% \end{frame}
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% \begin{frame}{Eikonal equation}
     \begin{block}
         {Solution to Eikonal equation}
-        Write the HJ equation and boundary condition for $D=[-1,1]\subset\mathbb{R}$. Which one of the following functions satisfy the HJ equation? Which one is the value function?
+        Write the HJ equation and boundary condition for the special case where $D=[-1,1]\subset\mathbb{R}$. Which one of the following functions satisfy the HJ equation? Which one matches the value function?
         \[
         v_1(x) = 1-|x|, v_2(x)= \begin{cases}
             \frac12-|x-\frac12|&0\le x\le1\\
@@ -568,6 +574,191 @@ After writing the HJ, plug in $V(t,x)=a(t)x^2+b(t)x+c(t)$the HJ and find ODEs fo
         \]
     \end{block}
 \end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{SIR model in epidemiology}
+    \begin{block}
+        {ODEs}
+        Susceptible, infected, and recovered:
+        \[
+        \begin{cases}
+            \dd{S}_t=-\beta S_t I_t \dt\\
+            \dd{I}_t = (\beta I_t S_t - \gamma I_t)\dt\\
+            \dd{R}_t= \gamma I_t \dt
+        \end{cases}
+        \]
+    \end{block}
+    \begin{block}
+        {Controlled state variables}
+        Susceptible, infected, and recovered:
+        \[
+        \begin{cases}
+            \dd{S}_t=-\beta_t S_t I_t \dt\\
+            \dd{I}_t = (\beta_t I_t S_t - \gamma_t I_t)\dt\\
+            \dd{R}_t= \gamma_t I_t \dt
+        \end{cases}
+        \]
+        $\beta_t\in[b_0,b_1]$ and $\gamma_t\in[c_0,c_1]$ all positive.
+    \end{block}
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{frame}{SIR model in epidemiology}
+    \begin{block}
+        {Controlled state variables}
+        Susceptible, infected, and recovered:
+        \[
+        \begin{cases}
+            \dd{S}_t=-\beta_t S_t I_t \dt\\
+            \dd{I}_t = (\beta_t I_t S_t - \gamma_t I_t)\dt\\
+            \dd{R}_t= \gamma_t I_t \dt
+        \end{cases}
+        \]
+        $\beta_t\in[b_0,b_1]$ and $\gamma_t\in[c_0,c_1]$ all positive.
+    \end{block}
+    \[
+    \inf_{\beta_t,\gamma_t}\int_0^T ((b_1-\beta_t)^2+\gamma_t^2)\dt + I^2_T
+    \]
+    Write the HJ equation.
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{Consumption}
+    \begin{block}
+        {Savings account}
+        \[
+        \dd{S}_t = (rS_t - c_t)\dt
+        \]
+        $c_t\ge0$ is the rate of consumption.
+        \[
+        \inf_{c_t\ge0} \int_0^T U(c_t)\dt + S_T
+        \]
+        $U(c)=1-e^{-c}$. Write the HJ equation.
+    \end{block}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{frame}{Consumption with discounting}
+    \begin{block}
+        {Savings account}
+        \[
+        \dd{S}_t = (rS_t - c_t)\dt
+        \]
+        $c_t\ge0$ is the rate of consumption.
+        \[
+        \inf_{c_t\ge0} \int_0^T {\color{orange}e^{-kt}}U(c_t)\dt + {\color{orange}e^{-kT}}S_T
+        \]
+        $U(c)=1-e^{-c}$. Write the HJ equation.
+    \end{block}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{Dynamic programming equation with discounting}
+    \begin{block}
+        {Control problem with discounting}
+        \[
+        \inf_{u}\int_0^T {\color{orange}e^{-kt}}C(x_t,u_t)\dt+{\color{orange}e^{-kT}}g(x_T),~~~~\dx_t = f(x_t,u_t)\dt
+        \]
+    \end{block}
+    \begin{block}
+        {Value function}
+        \[
+        V(t,x):=\inf_{u}\int_t^T {\color{orange}e^{-k(s-t)}}C(x_s,u_s)\ds + {\color{orange}e^{-k(T-t)}}g(x_T)
+        \]
+    \end{block}
+    \begin{block}
+        {DPP}
+        \[
+        V(t,x)=\inf_{u}\int_t^s {\color{orange}e^{-k(r-t)}}C(x_r,u_r)\dr + {\color{orange}e^{-k(s-t)}}V(s,x_s)
+        \]
+    \end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{Dynamic programming equation with discounting}
+    \begin{block}
+        {Value function}
+        \[
+        V(t,x):=\inf_{u}\int_t^T {\color{orange}e^{-k(s-t)}}C(x_s,u_s)\ds + {\color{orange}e^{-k(T-t)}}g(x_T)
+        \]
+    \end{block}
+    \begin{block}
+        {DPP}
+        \[
+        V(t,x)=\inf_{u}\int_t^s {\color{orange}e^{-k(r-t)}}C(x_r,u_r)\dr + {\color{orange}e^{-k(s-t)}}V(s,x_s)
+        \]
+    \end{block}
+        \begin{block}
+        {HJB with discounting}
+        Write the first three terms of the Taylor polynomial for $V(s,x_s)$ about point $(t,x)$.
+    \end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{Dynamic programming equation with discounting}
+        \begin{block}
+        {HJB with discounting}
+        \[
+        \begin{split}
+             {\color{orange}e^{-k(s-t)}}V(s,x_s) = &V(t,x) + {\color{orange}e^{-k(s-t)}}\Big(\big(V_t(t,x) {\color{orange}- k V(t,x)}\big)(s-t)\\
+             &~~~~+ V_x(t,x)\int_t^s f(x_r,u_r)\dr\Big) + o((s-t)^2)
+        \end{split}
+        \]
+        \[
+        \begin{split}
+            \cancel{V(t,x)}=\inf_{u}\int_t^s &{\color{orange}e^{-k(r-t)}}C(x_r,u_r)\dr \\
+            &+ \cancel{V(t,x)} + {\color{orange}e^{-k(s-t)}}\Big(\big(V_t(t,x) {\color{orange}- k V(t,x)}\big)(s-t)\\
+             &~~~~+ V_x(t,x)\int_t^s f(x_r,u_r)\dr\Big) + o((s-t)^2)
+        \end{split}
+        \]
+    \end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{Dynamic programming equation with discounting}
+        \begin{block}
+        {HJB with discounting}
+        Divide by $s-t$ and $s\to t$:
+        \[
+        \begin{split}
+            0=\inf_{u} &C(x,u) + V_t(t,x) {\color{orange}- k V(t,x)}+ V_x(t,x)f(x,u)
+        \end{split}
+        \]
+        \[
+        \begin{split}
+            0= V_t(t,x) {\color{orange}- k V(t,x)}+\inf_{u} &\{C(x,u) + V_x(t,x)f(x,u)\}
+        \end{split}
+        \]
+        Hamiltonian: 
+        \[
+        H(x,p):= \inf_{u} \{C(x,u) + pf(x,u)\}
+        \]
+    \end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{frame}{Consumption with discounting}
+    \begin{block}
+        {Savings account}
+        \[
+        \dd{S}_t = (rS_t - c_t)\dt
+        \]
+        $c_t\ge0$ is the rate of consumption.
+        \[
+        \inf_{c_t\ge0} \int_0^T {\color{orange}e^{-kt}}U(c_t)\dt + {\color{orange}e^{-kT}}S_T
+        \]
+        $U(c)=1-e^{-c}$. Write the HJ equation by including the discounting in the DPP.
+    \end{block}
+\end{frame}
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -586,12 +777,12 @@ After writing the HJ, plug in $V(t,x)=a(t)x^2+b(t)x+c(t)$the HJ and find ODEs fo
         L(x,\lambda):= f(x) - \lambda \cdot g(x)
         \]
     \end{block}
-    \begin{blcok}
+    \begin{block}
         {Saddle point problem}
         \[
         \sup_{\lambda}\inf_{x}L(x,\lambda)
         \]
-    \end{blcok}
+    \end{block}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
