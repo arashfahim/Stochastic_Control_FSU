@@ -1,0 +1,27 @@
+\documentclass{standalone}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.11}
+\begin{document}
+\begin{tikzpicture}[scale=1.5]
+\begin{axis}[
+xmin=-0.1,
+xmax=1.1,
+ymin=-.1,
+ymax=2,
+grid=none,
+axis lines=middle,
+xlabel={$x$},          
+ylabel={$U(x) = \frac{x^\gamma}{\gamma}$,~$\gamma\in(0,1)$},   
+yticklabels={0,3},
+ytick={0,3},            
+xticklabels={-2,0,3},
+xtick={-2,0,3}, 
+]
+\addplot[blue,thick,domain=0:1,samples=201]({x},{2*x^0.5});
+
+
+\end{axis}
+\end{tikzpicture}
+
+\end{document}

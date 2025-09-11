@@ -618,42 +618,113 @@ After writing the HJ, plug in $V(t,x)=a(t)x^2+b(t)x+c(t)$the HJ and find ODEs fo
         \end{cases}
         \]
         $\beta_t\in[b_0,b_1]$ and $\gamma_t\in[c_0,c_1]$ all positive.
-    \end{block}
     \[
     \inf_{\beta_t,\gamma_t}\int_0^T ((b_1-\beta_t)^2+\gamma_t^2)\dt + I^2_T
     \]
-    Write the HJ equation.
+    Write the HJ equation in variables $x=(S,I,R)$.
+    \end{block}
 \end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{SIR model in epidemiology}
+    \begin{block}
+        {Controlled state variables}
+        Susceptible, infected, and recovered:
+        \[
+        \begin{cases}
+            \dd{S}_t=-\beta_t S_t I_t \dt\\
+            \dd{I}_t = (\beta_t I_t S_t - \gamma_t I_t)\dt\\
+            \dd{R}_t= \gamma_t I_t \dt
+        \end{cases}
+        \]
+        $\beta_t\in[b_0,b_1]$ and $\gamma_t\in[c_0,c_1]$ all positive.
+    \[
+    \inf_{\beta_t,\gamma_t}\int_0^T ((b_1-\beta_t)^2+\gamma_t^2)\dt + I^2_T
+    \]
+    Notice that $\dd(S_t+I_t+R_t)=0$. This should allow us to reduce the number of state variables $x_t=(S_t,I_t,R_t)$ to two, in place of three. Assume that the population size is given by $N$, $S_t+I_t+R_t=N$. Remove the variable $R_t$ and write the HJ equation in terms of $(S_t,I_t)$.
+    Write the HJ equation in $(S,I)$.
+    \end{block}
+\end{frame}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{frame}{Consumption}
     \begin{block}
         {Savings account}
         \[
-        \dd{S}_t = (rS_t - c_t)\dt
+        \dd{X}_t = (rX_t - c_t)\dt
         \]
         $c_t\ge0$ is the rate of consumption.
         \[
-        \inf_{c_t\ge0} \int_0^T U(c_t)\dt + S_T
+        \inf_{c_t\ge0} \int_0^T U(c_t)\dt + U(X_T)
         \]
-        $U(c)=1-e^{-c}$. Write the HJ equation.
+        $U$ is a given function called {\color{blue}utility function}.
+    \end{block}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{Consumption}
+    \begin{block}
+        {Utility function}
+        Utility function is a concave function that represent our enjoyment from consumption or wealth. The concavity signifies the fact that if our consumption or wealth level is low, increasing one more unit grants more joy compared to when our consumption or wealth level is higher and we obtain one more unit.
+        Example of a utility function:
+        \begin{center}
+            \includegraphics[width=0.35\linewidth]{Control_lecture_notes/Figs/utility1.pdf}
+            \includegraphics[width=0.35\linewidth]{Control_lecture_notes/Figs/utility2.pdf}
+        \end{center}
+        
+    \end{block}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{Consumption}
+    \begin{block}
+        {Savings account}
+        \[
+        \dd{X}_t = (rX_t - c_t)\dt
+        \]
+        $c_t\ge0$ is the rate of consumption.
+        \[
+        \inf_{c_t\ge0} \int_0^T U(c_t)\dt + U(X_T)
+        \]
+        Derive the HJ equation.
     \end{block}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
+\begin{frame}{Consumption with no terminal wealth}
+    \begin{block}
+        {Savings account}
+        \[
+        \dd{X}_t = (rX_t - c_t)\dt
+        \]
+        $c_t\ge0$ is the rate of consumption.
+        \[
+        \inf_{c_t\ge0} \int_0^T U(c_t)\dt \cancel{+ U(X_T)}
+        \]
+        Can we consume infinitely by borrowing? 
+
+        If we restrict consumption to case where borrowing is not allowed, does this solve the issue? (Relation to admissible control!)
+    \end{block}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \begin{frame}{Consumption with discounting}
     \begin{block}
         {Savings account}
         \[
-        \dd{S}_t = (rS_t - c_t)\dt
+        \dd{X}_t = (rX_t - c_t)\dt
         \]
         $c_t\ge0$ is the rate of consumption.
         \[
-        \inf_{c_t\ge0} \int_0^T {\color{orange}e^{-kt}}U(c_t)\dt + {\color{orange}e^{-kT}}S_T
+        \inf_{c_t\ge0} \int_0^T {\color{orange}e^{-kt}}U(c_t)\dt + {\color{orange}e^{-kT}}U(X_T)
         \]
-        $U(c)=1-e^{-c}$. Write the HJ equation.
+        Write the HJ equation.
     \end{block}
 \end{frame}
 
@@ -748,13 +819,13 @@ After writing the HJ, plug in $V(t,x)=a(t)x^2+b(t)x+c(t)$the HJ and find ODEs fo
     \begin{block}
         {Savings account}
         \[
-        \dd{S}_t = (rS_t - c_t)\dt
+        \dd{X}_t = (rX_t - c_t)\dt
         \]
         $c_t\ge0$ is the rate of consumption.
         \[
-        \inf_{c_t\ge0} \int_0^T {\color{orange}e^{-kt}}U(c_t)\dt + {\color{orange}e^{-kT}}S_T
+        \inf_{c_t\ge0} \int_0^T {\color{orange}e^{-kt}}U(c_t)\dt + {\color{orange}e^{-kT}}U(X)
         \]
-        $U(c)=1-e^{-c}$. Write the HJ equation by including the discounting in the DPP.
+        Write the HJ equation by including the discounting in the DPP.
     \end{block}
 \end{frame}
 
