@@ -441,6 +441,7 @@ After solving the HJ equation and obtaining a solution, we often require a verif
     Does $v(t,x)=a(t)x^2+b(t)x+c(t)$ in Exercise~\ref{ex:lq_solution} satisfies the condition of verification theorem, Theorem~\ref{thm:verification_deterministic}?
 \end{ex}
 \begin{ex}
+\label{ex:eikonal_2}
     Recall from Exercise~\ref{ex:eikonal} that
     \[
         \inf_u\int_0^\infty \mathds{1}_{\{x_t\in D\}}{\dt},~{\dx}_t=u_t{{\dt}}~\text{ with }~|u_t|\le1
@@ -459,8 +460,8 @@ After solving the HJ equation and obtaining a solution, we often require a verif
         \end{cases}
         \]
 \end{ex}
-\begin{ex}
-        In epidemiology, modeling a disease in a population is done by splitting the population into three sets: susceptible, infected, and recovered. Then, then number of individuals in each set follows the following ODEs.
+\begin{ex}\label{ex:SIR}
+        In epidemiology, modeling a disease in a population is done by splitting the population into three groups: susceptible, infected, and recovered. Then, then number of individuals in each group at time $t$ is denoted by $S_t$, $I_t$, and $R_t$ which follow the following ODEs.
         \[
         \begin{cases}
             \dd{S}_t=-\beta_t S_t I_t \dt\\
@@ -468,12 +469,107 @@ After solving the HJ equation and obtaining a solution, we often require a verif
             \dd{R}_t= \gamma_t I_t \dt
         \end{cases}
         \]
-        Here $\beta_t\in[b_0,b_1]$ and $\gamma_t\in[c_0,c_1]$ are rates at which a susceptible person gets infected and an infected person recovers, respectively. If you consider that investing in some public health  measures improves these rates, write the HJB equation for the following control problem.
+        Here $\beta_t\in[b_0,b_1]$ is the rate at which a susceptible individual gets infected and $\gamma_t\in[c_0,c_1]$ is the rate at which an infected individual recovers from the disease.  We assume that investing in some public health  measures decreases $\beta_t$ and and investing in a cure increases $\gamma_t$. Both both investments come with a cost function, $C(\beta,\gamma)=(b_1-\beta_t)^2+\gamma_t^2$. Finally, at a finite time $T$, we like to have the number of infected individuals as low as possible, $g(I)=I^2$.
     \[
-    \inf_{\beta_t,\gamma_t}\int_0^T ((b_1-\beta_t)^2+\gamma_t^2)\dt + I^2_T
+    \inf_{\substack{\beta_t\in[b_0,b_1] \\\gamma_t\in[c_0,c_1]}} \int_0^T \big((b_1-\beta_t)^2+\gamma_t^2\big)\dt + I^2_T
     \]
-    Write the HJ equation.
+    Write the HJ equation for this control problem.
 \end{ex}
+
+\begin{ex}
+    In Exercise~\ref{ex:SIR}, notice that $\dd(S_t+I_t+R_t)=0$. This should allow us to reduce the number of state variables $x_t=(S_t,I_t,R_t)$ to two, in place of three. Assume that the population size is given by $N$, $S_t+I_t+R_t=N$. Remove the variable $R_t$ and write the HJ equation in terms of $(S_t,I_t)$.
+\end{ex}
+
+\begin{ex}
+    The following problem studies the optimal consumption from a savings account. Let the balance of the savings account be given by: 
+        \[
+        \dd{X}_t = (rX_t - c_t)\dt
+        \]
+        $c_t\ge0$ is the rate of consumption.
+        \[
+        {\color{orange}\sup_{c_t\ge0}}\int_0^T U(c_t)\dt + U(X_T)
+        \]
+        Function $U$, called utility function, is a concave function that represent our enjoyment from consumption or wealth. The concavity signifies the fact that if our consumption or wealth level is low, increasing one more unit grants more joy compared to when our consumption or wealth level is higher and we obtain one more unit.
+        An example of a utility function is $U(x)=1-e^{\gamma x}$ for some $\gamma>0$. In the above problem, we are maximizing a combination running \emph{gain} on consumption and terminal gain on wealth. Therefore, the Hamiltonian in the HJ equation has a {\color{orange}supremum}. 
+
+        \begin{figure}
+            \centering
+            \includegraphics[width=0.45\linewidth]{Control_lecture_notes/Figs/utility1.pdf}\includegraphics[width=0.45\linewidth]{Control_lecture_notes/Figs/utility2.pdf}
+            \caption{Utility functions: left $U(x)=1-e^{-\gamma x}$, right $U(x)=\frac{x^{\gamma}}{\gamma}$}
+            \label{fig:utility}
+        \end{figure}
+        
+        Derive the HJ equation for this problem.
+\end{ex}
+
+\begin{ex}
+    In the above exercise, if we ignore the terminal gain, we obtain 
+    \[
+        {\color{orange}\sup_{c_t\ge0}}\int_0^T U(c_t)\dt,~~\dd{X}_t = (rX_t - c_t)\dt
+    \]
+    
+    Is there something wrong with this problem? What stops us from consuming infinite amount and go negative on the wealth?
+
+    If we restrict the consumption to those which implies $X_t\ge0$ for all $t$, does the problem go away?
+\end{ex}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{An introduction to viscosity solution}
+Exercise~\ref{ex:eikonal_2} can shed a light on the notion of solution to the HJ equations. Both functions $v_1$ and $v_2$ satisfy the HJ equation, $0=1-|v^\prime(x)|$ with boundary condition $v(-1)=v(1)=0$. See Figure~\ref{fig:v1v2}. However, $v_1$ is the one that matches the value function. That raises an issue; if we solve an HJ equation, how do we know if we obtained the correct solution, hence, the value function. In fact, with a little bit of effort, one can write infinitely many solutions for the Eikonal equations. All this solutions have points of non-differentiability. However, the right and the left derivatives at those points still satisfy the HJ equation. 
+\begin{figure}
+    \centering
+    \includegraphics[width=0.25\linewidth]{Control_lecture_notes/Figs/v1.pdf}\includegraphics[width=0.25\linewidth]{Control_lecture_notes/Figs/v2.pdf}
+    \caption{Functions $v_1$ and $v_2$ solve Eikonal equation, the HJ equation for \ref{ex:eikonal_2}. But, only  $v_1$ is the same as the value function.}
+    \label{fig:v1v2}
+\end{figure}
+The answer to this problem is quite complicated. The theory that solves the issue is the theory of \emph{viscosity solutions}, which we discuss in more details in a later chapter. Here, we explain a simpler version of this theory by focusing on the Eikonal equation, $0=1-|v^{\prime}(x)|$ with boundary condition $v(-1)=v(1)=0$. 
+
+We introduce a new equation by adding a second order term. 
+\[
+0=1-|v^{\epsilon\prime}(x)|+\epsilon V^{\epsilon\prime\prime}, ~~ v^{\epsilon}(-1)=v^{\epsilon}(1)=0
+\]
+The above equation is a second order equation with two boundary conditions, which guarantees existence of a unique differentiable solution which can be found in closed form by solving
+\[
+\begin{cases}
+    0=1+v^{\epsilon\prime}(x)+\epsilon V^{\epsilon\prime\prime}& x\in(0,1)\\
+    0=1-v^{\epsilon\prime}(x)+\epsilon V^{\epsilon\prime\prime}& x\in(-1,0)\\
+    v^{\epsilon\prime}(0)=0&\\
+    v^{\epsilon}(0-)=v^{\epsilon}(0+)&\\
+    v^{\epsilon}(-1)=v^{\epsilon}(1)=0
+\end{cases}
+\]
+\begin{ex}
+    Find a closed form solution. above system of equations.
+\end{ex}
+Then, if we evaluate $\lim_{\epsilon\to0}v^{\epsilon}$, we obtain $v_1=V$.
+
+\citet{CIL92}, codified the above construction into the theory of viscosity solutions, which perfectly fits the need of HJ equations in optimal control. For the points of non-differentiability, they introduces candidates for  derivative from above and from below. More precisely, they defined the set of \emph{superjets} as the slope of all lines that touch the function from above and the set of \emph{subjets} as the slope of all lines that touch the function from below, as shown in Figure~\ref{fig:jets}.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.45\linewidth]{Control_lecture_notes/Figs/superjets.pdf}\includegraphics[width=0.45\linewidth]{Control_lecture_notes/Figs/jets.pdf}
+    \caption{Superjets and subjets for functions $v_1$ and $v_2$ at the points of non-differentiability.}
+    \label{fig:placeholder}
+\end{figure}
+The set of superjets, $\overline{J}$, and subjets, $\underline{J}$, for all the points of non-differentiability are the closed interval $[-1,1]$. According to the theory of viscosity solutions, the members of superjet must satisfy the equation with inequality:
+\[
+\forall a\in\overline{J}=[-1,1], 1-|a| \ge 0
+\]
+which is trivially correct for for $v_1$ at $x=0$ and for $v_2$ at $x=\frac12=-\frac12$.
+Similarly,  the members of subjet must satisfy the equation with inequality in the opposite direction of superjets:
+\[
+\forall a\in\underline{J}=[-1,1], 1-|a| \le 0.
+\]
+However, for $v_2$ at $x=0$, $a\in\underline{J}=(-1,1)$ $1-|a| \not\le 0$. Therefore, $v_2$ is not a viscosity solution of the eikonal equation.
+
+Interesting results from the theory of viscosity solution are as follows.
+\begin{enumerate}[label=\arabic*)]
+    \item The value function of a control problem is a viscosity solution of the HJ equation.
+    \item HJ equation has a unique viscosity solution.
+    \item Numerical solutions to HJ equations with certain standard properties converge to the viscosity solution.
+\end{enumerate}
+Even though there are more details into these results, we continue to use these results in this note until we require more clarifications.
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1187,18 +1283,18 @@ In this case, the subsolution (resp. super) can satisfies
 		V(\pm1)\le0~~~~\textrm{(resp. $0\ge$)}
 \end{cases}
 \end{equation}
-By sending $\eps\to0$, we obtain the following inequalities for the Eikonal equation, \eqref{eqn:Eikonal_perturbed}.
+By sending $\eps\to0$, we obtain the following inequalities for the eikonal equation, \eqref{eqn:Eikonal_perturbed}.
 \begin{equation}\label{eqn:Eikonal_sub_super}
 \begin{cases}
 		0\ge1-|V^{\prime}(x)|~~~~\textrm{(resp. $0\le$)}\\
 		V(\pm1)\le0~~~~\textrm{(resp. $0\ge$)}
 \end{cases}
 \end{equation}
-We can easily check that the function $V(t,x)=1-|x|$ is a viscosity solution of the Eikonal equation, \eqref{eqn:Eikonal_perturbed}. For example, at all points $x\neq0$, the sub and superderivatives are equal to $-\textrm{sgn}(x)$, which obviously satisfy the equation with equality. At $x=0$, we only have super derivatives and the set of subderivatives is empty set. This makes the supersolution property to hold obviously by the false antecedent. The set of superderivatives contains all $m\in[-1,1]$. Since $0\le1-|m|$, then $V(t,x)=1-|x|$ is also a subsolution. All the above arguments are valid since the boundary condition $V(t,\pm1)=0$ validates the sub and supersolution properties. 
+We can easily check that the function $V(t,x)=1-|x|$ is a viscosity solution of the eikonal equation, \eqref{eqn:Eikonal_perturbed}. For example, at all points $x\neq0$, the sub and superderivatives are equal to $-\textrm{sgn}(x)$, which obviously satisfy the equation with equality. At $x=0$, we only have super derivatives and the set of subderivatives is empty set. This makes the supersolution property to hold obviously by the false antecedent. The set of superderivatives contains all $m\in[-1,1]$. Since $0\le1-|m|$, then $V(t,x)=1-|x|$ is also a subsolution. All the above arguments are valid since the boundary condition $V(t,\pm1)=0$ validates the sub and supersolution properties. 
 
 On the other hand, the function $\tilde{V}=\min\{|x|,1-|x|\}$ only satisfies the subsolution property. 
 \begin{ex}
-Show that $\tilde{V}$ is a viscosity subsolution to the Eikonal equation \eqref{eqn:Eikonal_sub_super}, but not a super solution. Explore the points $x=\pm\frac12$.
+Show that $\tilde{V}$ is a viscosity subsolution to the eikonal equation \eqref{eqn:Eikonal_sub_super}, but not a super solution. Explore the points $x=\pm\frac12$.
 \end{ex}
 
 The existence and uniqueness of the solution to the nonlinear parabolic equations in the class of functions with linear growth is studies in several papers. For instance, see \cite{CIL92}. For the HJB equations derived from the optimal control problems, the value function of the control problem is usually the viscosity solution of the HJB. The uniqueness is due to a technical lemma, Ishii's lemma. However, in most cases, if we manage to show that any viscosity solution is indeed a classical solution, $\mathrm{C}^{1,2}$, then the verification theorem, Theorem~\ref{thm:verification} shows that any classical solution is equal to the value function, and therefore, uniqueness is obtained.
