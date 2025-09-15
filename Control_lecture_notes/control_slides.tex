@@ -652,11 +652,11 @@ After writing the HJ, plug in $V(t,x)=a(t)x^2+b(t)x+c(t)$the HJ and find ODEs fo
     \begin{block}
         {Savings account}
         \[
-        \dd{X}_t = (rX_t - c_t)\dt
+        \dd{x}_t = (rx_t - c_t)\dt
         \]
         $c_t\ge0$ is the rate of consumption.
         \[
-        \inf_{c_t\ge0} \int_0^T U(c_t)\dt + U(X_T)
+        \sup_{c_t\ge0} \int_0^T U(c_t)\dt + U(x_T)
         \]
         $U$ is a given function called {\color{blue}utility function}.
     \end{block}
@@ -683,16 +683,91 @@ After writing the HJ, plug in $V(t,x)=a(t)x^2+b(t)x+c(t)$the HJ and find ODEs fo
     \begin{block}
         {Savings account}
         \[
-        \dd{X}_t = (rX_t - c_t)\dt
+        \dd{x}_t = (rx_t - c_t)\dt
         \]
         $c_t\ge0$ is the rate of consumption.
         \[
-        \inf_{c_t\ge0} \int_0^T U(c_t)\dt + U(X_T)
+        \sup_{c_t\ge0} \int_0^T U(c_t)\dt + U(x_T)
         \]
-        Derive the HJ equation.
+        HJ equation is given by:
+        \[
+        \begin{cases}
+            V_t+H(x,V_x)=0\\
+            V(T,x)=U(x)
+        \end{cases}
+        \]
+        with $H(x,p)=\sup_{c\ge0}\{U(x)-cp\}+rxp$
     \end{block}
 \end{frame}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Solving HJ equation for consumption}
+\begin{block}
+    {Utility $U(c)=\frac{c^{\gamma}}{\gamma}$ for $c\ge0$}
+    Show that the supremum in Hamiltonian is attained at $c^*(p)=p^{\frac{1}{\gamma-1}}$ and
+    \[
+        H(x,p)=\sup_{c\ge0}\Bigg\{\frac{c^{\gamma}}{\gamma}-cp\Bigg\}+rxp=\frac{1-\gamma}{\gamma}
+        p^{\frac{1}{\gamma-1}}+rxp
+    \]
+    Verify that  $V(t,x)=f(t)\frac{c^{\gamma}}{\gamma}$ solves the HJ equation 
+    \[
+    \begin{cases}
+        0=V_t+V_x^{\frac{\gamma}{\gamma-1}}+rxV_x\\
+        V(T,x)=\frac{c^{\gamma}}{\gamma}
+    \end{cases}
+    \]
+    and $f(t)$ satisfies
+    \[
+    \begin{cases}
+        0=f^{\prime}+f^{\frac{\gamma}{\gamma-1}}+\frac{r}{\gamma}f\\
+        f(T)=1
+    \end{cases}
+    \]
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Solving HJ equation for consumption}
+\begin{block}
+    {Utility $U(c)=\frac{c^{\gamma}}{\gamma}$ for $c\ge0$}
+    We solve the ODE
+    $0=f^{\prime}+f^{\frac{\gamma}{\gamma-1}}+\frac{r}{\gamma}f$
+    by the change of variable $f = y^{1-\gamma}$. 
+    
+    $y$ satisfies $y' + \frac{r}{\gamma(1-\gamma)} y + \frac{1}{1-\gamma} = 0$ and  $y(t) = \Big(1+\frac{\gamma}{r}\Big) e^{\frac{r}{\gamma(1-\gamma)}(T-t)} - \frac{\gamma}{r}$. 
+    \[
+    f(t)=\Bigg(\Big(1+\frac{\gamma}{r}\Big) e^{\frac{r}{\gamma(1-\gamma)}(T-t)} - \frac{\gamma}{r}\Bigg)^{1-\gamma}
+    \]
+    Since $1-\gamma<0$, $f(t)>1$ unless $t=T$. The optimal consumption $c^*(t,x)=\frac{1}{f^{\frac{1}{1-\gamma}}(t)}x$ or
+    \[
+    \begin{cases}
+       c^*_t=\frac{1}{f^{\frac{1}{1-\gamma}}(t)}x_t\\
+       \dx_t = \Big(r - \frac{1}{f^{\frac{1}{1-\gamma}}(t)}\Big)x_t\dt
+    \end{cases}
+    \]
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{Solving HJ equation for consumption}
+\begin{block}
+    {Utility $U(c)=\frac{c^{\gamma}}{\gamma}$ for $c\ge0$} 
+    \[
+    \begin{cases}
+       c^*_t=\frac{1}{f^{\frac{1}{1-\gamma}}(t)}x_t\\
+       \dx_t = \bigg(r - \frac{1}{f^{\frac{1}{1-\gamma}}(t)}\bigg)x_t\dt
+    \end{cases}
+    \]
+We learn from the above solution that $\frac{1}{f^{\frac{1}{1-\gamma}}(t)}<1$, therefore the optimal consumption rate percentage of wealth and the account balance never goes negative.
+\end{block}
+
+\begin{block}
+    {Coding exercise}
+    Plot the solution of 
+    $\dx_t = \bigg(r - \frac{1}{f^{\frac{1}{1-\gamma}}(t)}\bigg)x_t\dt$
+    for different values for $r>0$, $\gamma\in(0,1)$, $T$, and different initial balance $x>0.$
+\end{block}
+
+\end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -700,29 +775,31 @@ After writing the HJ, plug in $V(t,x)=a(t)x^2+b(t)x+c(t)$the HJ and find ODEs fo
     \begin{block}
         {Savings account}
         \[
-        \dd{X}_t = (rX_t - c_t)\dt
+        \dd{x}_t = (rx_t - c_t)\dt
         \]
         $c_t\ge0$ is the rate of consumption.
         \[
-        \inf_{c_t\ge0} \int_0^T U(c_t)\dt \cancel{+ U(X_T)}
+        \sup_{c_t\ge0} \int_0^T U(c_t)\dt \cancel{+ U(x_T)}
         \]
         Can we consume infinitely by borrowing? 
+.
+        If we restrict consumption to case where borrowing is not allowed, $x_t\ge0$ for all $t$, does this solve the issue? (Relation to admissible control.)
 
-        If we restrict consumption to case where borrowing is not allowed, does this solve the issue? (Relation to admissible control!)
+        Write the HJ equation with boundary condition that reflects $x_t\ge0$.
     \end{block}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{frame}{Consumption with discounting}
+\begin{frame}{Consumption with decay}
     \begin{block}
         {Savings account}
         \[
-        \dd{X}_t = (rX_t - c_t)\dt
+        \dd{x}_t = (rx_t - c_t)\dt
         \]
         $c_t\ge0$ is the rate of consumption.
         \[
-        \inf_{c_t\ge0} \int_0^T {\color{orange}e^{-kt}}U(c_t)\dt + {\color{orange}e^{-kT}}U(X_T)
+        \sup_{c_t\ge0} \int_0^T {\color{orange}e^{-kt}}U(c_t)\dt + {\color{orange}e^{-kT}}U(x_T)
         \]
         Write the HJ equation.
     \end{block}
@@ -730,9 +807,9 @@ After writing the HJ, plug in $V(t,x)=a(t)x^2+b(t)x+c(t)$the HJ and find ODEs fo
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{frame}{Dynamic programming equation with discounting}
+\begin{frame}{Dynamic programming equation with decay}
     \begin{block}
-        {Control problem with discounting}
+        {Control problem with decay}
         \[
         \inf_{u}\int_0^T {\color{orange}e^{-kt}}C(x_t,u_t)\dt+{\color{orange}e^{-kT}}g(x_T),~~~~\dx_t = f(x_t,u_t)\dt
         \]
@@ -752,7 +829,7 @@ After writing the HJ, plug in $V(t,x)=a(t)x^2+b(t)x+c(t)$the HJ and find ODEs fo
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{frame}{Dynamic programming equation with discounting}
+\begin{frame}{Dynamic programming equation with decay}
     \begin{block}
         {Value function}
         \[
@@ -766,15 +843,15 @@ After writing the HJ, plug in $V(t,x)=a(t)x^2+b(t)x+c(t)$the HJ and find ODEs fo
         \]
     \end{block}
         \begin{block}
-        {HJB with discounting}
+        {HJB with decay}
         Write the first three terms of the Taylor polynomial for $V(s,x_s)$ about point $(t,x)$.
     \end{block}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{frame}{Dynamic programming equation with discounting}
+\begin{frame}{Dynamic programming equation with decay}
         \begin{block}
-        {HJB with discounting}
+        {HJB with decay}
         \[
         \begin{split}
              {\color{orange}e^{-k(s-t)}}V(s,x_s) = &V(t,x) + {\color{orange}e^{-k(s-t)}}\Big(\big(V_t(t,x) {\color{orange}- k V(t,x)}\big)(s-t)\\
@@ -792,9 +869,9 @@ After writing the HJ, plug in $V(t,x)=a(t)x^2+b(t)x+c(t)$the HJ and find ODEs fo
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{frame}{Dynamic programming equation with discounting}
+\begin{frame}{Dynamic programming equation with decay}
         \begin{block}
-        {HJB with discounting}
+        {HJB with decay}
         Divide by $s-t$ and $s\to t$:
         \[
         \begin{split}
@@ -813,9 +890,12 @@ After writing the HJ, plug in $V(t,x)=a(t)x^2+b(t)x+c(t)$the HJ and find ODEs fo
     \end{block}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Purpose of different HJ for decay}
+    
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
-\begin{frame}{Consumption with discounting}
+\begin{frame}{Consumption with decay}
     \begin{block}
         {Savings account}
         \[
@@ -823,9 +903,9 @@ After writing the HJ, plug in $V(t,x)=a(t)x^2+b(t)x+c(t)$the HJ and find ODEs fo
         \]
         $c_t\ge0$ is the rate of consumption.
         \[
-        \inf_{c_t\ge0} \int_0^T {\color{orange}e^{-kt}}U(c_t)\dt + {\color{orange}e^{-kT}}U(X)
+        \inf_{c_t\ge0} \int_0^T {\color{orange}e^{-kt}}U(c_t)\dt
         \]
-        Write the HJ equation by including the discounting in the DPP.
+        Write the HJ equation by including the decay in the DPP.
     \end{block}
 \end{frame}
 

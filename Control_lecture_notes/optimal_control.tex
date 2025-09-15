@@ -259,8 +259,8 @@ Given the value function, the DPP is explained in the following result.
 \begin{thm}\label{thm:dpp_deterministic}
     [Dynamic Programming Principle]
     Let $0\le t<s\le T$ and $x_t=x$. Then, the DPP for \eqref{prob:deterministic_control} is given by 
-    \begin{equation}\label{eqn:dpp_deterministic}
-    V(t,x) =\inf_{u\in\mathcal{U}_{t,s}}\int_t^sC(r,x_r,u_r){{\dr}}+V(s,x_s),~~~~{\dx}_r=f(x_r,u_r){{\dr}}
+    \begin{equation} \label{eqn:dpp_deterministic}
+    V(t,x) =\inf_{u\in\mathcal{U}_{t,s}}\int_t^sC(r,x_r,u_r){{\dr}}+V(s,x_s),~~~~{\dx}_r=f(r,x_r,u_r){{\dr}}
 \end{equation}
 where $\mathcal{U}_{t,s}$ is the set of admissible controls restricted to time interval $[t,s]$.
 \end{thm}
@@ -440,26 +440,6 @@ After solving the HJ equation and obtaining a solution, we often require a verif
 \begin{ex}
     Does $v(t,x)=a(t)x^2+b(t)x+c(t)$ in Exercise~\ref{ex:lq_solution} satisfies the condition of verification theorem, Theorem~\ref{thm:verification_deterministic}?
 \end{ex}
-\begin{ex}
-\label{ex:eikonal_2}
-    Recall from Exercise~\ref{ex:eikonal} that
-    \[
-        \inf_u\int_0^\infty \mathds{1}_{\{x_t\in D\}}{\dt},~{\dx}_t=u_t{{\dt}}~\text{ with }~|u_t|\le1
-        \]
-        Write the definition of value function for initial state $x_0=x\in D$.
-        
-        Write the HJ equation. 
-        
-        Is there any boundary condition?
-
-        Write the HJ equation and boundary condition for the special case where $D=[-1,1]\subset\mathbb{R}$. Which one of the following functions satisfy the HJ equation? Which one is the value function?
-        \[
-        v_1(x) = 1-|x|, v_2(x)= \begin{cases}
-            \frac12-|x-\frac12|&0\le x\le1\\
-            \frac12-|x+\frac12|&-1\le x<0
-        \end{cases}
-        \]
-\end{ex}
 \begin{ex}\label{ex:SIR}
         In epidemiology, modeling a disease in a population is done by splitting the population into three groups: susceptible, infected, and recovered. Then, then number of individuals in each group at time $t$ is denoted by $S_t$, $I_t$, and $R_t$ which follow the following ODEs.
         \[
@@ -480,7 +460,7 @@ After solving the HJ equation and obtaining a solution, we often require a verif
     In Exercise~\ref{ex:SIR}, notice that $\dd(S_t+I_t+R_t)=0$. This should allow us to reduce the number of state variables $x_t=(S_t,I_t,R_t)$ to two, in place of three. Assume that the population size is given by $N$, $S_t+I_t+R_t=N$. Remove the variable $R_t$ and write the HJ equation in terms of $(S_t,I_t)$.
 \end{ex}
 
-\begin{ex}
+\begin{ex}\label{ex:consumption}
     The following problem studies the optimal consumption from a savings account. Let the balance of the savings account be given by: 
         \[
         \dd{X}_t = (rX_t - c_t)\dt
@@ -489,39 +469,173 @@ After solving the HJ equation and obtaining a solution, we often require a verif
         \[
         {\color{orange}\sup_{c_t\ge0}}\int_0^T U(c_t)\dt + U(X_T)
         \]
-        Function $U$, called utility function, is a concave function that represent our enjoyment from consumption or wealth. The concavity signifies the fact that if our consumption or wealth level is low, increasing one more unit grants more joy compared to when our consumption or wealth level is higher and we obtain one more unit.
-        An example of a utility function is $U(x)=1-e^{\gamma x}$ for some $\gamma>0$. In the above problem, we are maximizing a combination running \emph{gain} on consumption and terminal gain on wealth. Therefore, the Hamiltonian in the HJ equation has a {\color{orange}supremum}. 
+        Function $U$, called utility function, is a concave function that represent our enjoyment from consumption or wealth. The concavity signifies the fact that if our consumption or wealth level is low, increasing one more unit grants more joy compared to when our consumption or wealth level is higher and we obtain one more unit. In general, a utility function is an increasing concave function. Example of utility function is given in Figure~\ref{fig:utilities}.
+        
+        In the above problem, we are maximizing a combination running \emph{gain} on consumption and terminal gain on wealth. Therefore, the Hamiltonian in the HJ equation has a {\color{orange}supremum}. 
 
         \begin{figure}
             \centering
-            \includegraphics[width=0.45\linewidth]{Control_lecture_notes/Figs/utility1.pdf}\includegraphics[width=0.45\linewidth]{Control_lecture_notes/Figs/utility2.pdf}
+            \includegraphics[width=0.35\linewidth]{Control_lecture_notes/Figs/utility1.pdf}\includegraphics[width=0.35\linewidth]{Control_lecture_notes/Figs/utility2.pdf}
             \caption{Utility functions: left $U(x)=1-e^{-\gamma x}$, right $U(x)=\frac{x^{\gamma}}{\gamma}$}
-            \label{fig:utility}
+            \label{fig:utilities}
         \end{figure}
         
         Derive the HJ equation for this problem.
 \end{ex}
 
-\begin{ex}
+\begin{ex}\label{ex:consumption_no_terminal}
     In the above exercise, if we ignore the terminal gain, we obtain 
     \[
         {\color{orange}\sup_{c_t\ge0}}\int_0^T U(c_t)\dt,~~\dd{X}_t = (rX_t - c_t)\dt
     \]
-    
     Is there something wrong with this problem? What stops us from consuming infinite amount and go negative on the wealth?
 
-    If we restrict the consumption to those which implies $X_t\ge0$ for all $t$, does the problem go away?
+    If we restrict the consumption to maintain a positive balance, $X_t\ge0$ for all $t$, does the issue go away?
 \end{ex}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Exponential decay in control problems}
+We consider the case where, $C(t,x,u)={\color{blue}e^{-r t}}\bar{C}(u,x)$ and $f(t,x,u)=f(x,u)$
+\begin{equation}
+\label{prob:deterministic_decay}
+    \inf_{u}\int_0^T e^{-k t}\bar{C}(u_t,x_t)\dt + {\color{blue}e^{-k T}}g(x_T),~~\dx_t=f(x_t,u_t)\dt
+\end{equation}
+The \emph{exponential decay} term, ${\color{blue}e^{-kt}}$ emphasized on the importance of cost functions relative to the starting time. As time grow, the contribution of a unit of cost decreases. This is a common practice in applications from economics. While we can write the value function and the dynamic programming principle the same way as \eqref{eqn:value_deterministic} and \eqref{eqn:dpp_deterministic}, we can slightly modify the definition of value function and simplify the DPP and the HJ equation.
+\begin{defn}
+The value function of \eqref{prob:deterministic_decay} for $x_t=x$ is defined by
+\begin{equation}\label{eqn:value_deterministic_decay}
+    V(t,x):= \inf_{u\in\mathcal{U}_{t}}\int_t^Te^{-k(s-t)}\bar{C}(x_s,u_s){{\ds}}+e^{-k(T-t)}g(x_T),~~~~{\dx}_s=f(x_s,u_s){{\ds}}
+\end{equation}
+where $\mathcal{U}_{t}$ is the set of admissible controls restricted to time interval $[t,T]$.
+\end{defn}
+The dynamic programming principle is modified by:
+\begin{thm}\label{thm:dpp_deterministic_decay}
+    [Dynamic Programming Principle]
+    Let $0\le t<s\le T$ and $x_t=x$. Then, the DPP for \eqref{prob:deterministic_control} is given by 
+    \begin{equation} \label{eqn:dpp_deterministic_decay}
+    V(t,x) =\inf_{u\in\mathcal{U}_{t,s}}\int_t^s e^{-k(r-t)}\bar{C}(x_r,u_r){{\dr}}+e^{-k(s-t)}V(s,x_s),~~~~{\dx}_r=f(x_r,u_r){{\dr}}
+\end{equation}
+where $\mathcal{U}_{t,s}$ is the set of admissible controls restricted to time interval $[t,s]$.
+\end{thm}
+\begin{proof}
+    The proof is quite similar to Theorem~\ref{thm:dpp_deterministic}.
+\end{proof}
+    We apply Taylor series on $e^{-k(s-t)}V(s,x_s)$ around $(t,x)$.
+    \[
+        \begin{split}
+             {e^{-k(s-t)}}V(s,x_s) = &V(t,x) + {e^{-k(s-t)}}\Big(\big(V_t(t,x) {- k V(t,x)}\big)(s-t)\\
+             &~~~~+ V_x(t,x)\cdot\int_t^s f(x_r,u_r)\dr\Big) + o((s-t)^2)
+        \end{split}
+        \]
+       We use Taylor series inside \eqref{eqn:dpp_deterministic_decay} to write
+        \[
+        \begin{split}
+            0=\inf_{u}\int_t^s &{e^{-k(r-t)}}\bar{C}(x_r,u_r)\dr \\
+            &+  {e^{-k(s-t)}}\Big(\big(V_t(t,x) {- k V(t,x)}\big)(s-t)\\
+             &~~~~+ V_x(t,x)\cdot\int_t^s f(x_r,u_r)\dr\Big) + o((s-t)^2)
+        \end{split}
+        \]
+        Dividing both sides by $s-t$ and sending $s\to t$ yields the HJ equation.
+        \begin{equation}
+            \label{eqn:HJ_deterministic_decay}
+            0=V_t(t,x) - k V(t,x)+\inf_{u}\Big\{\bar{C}(x,u) + V_x(t,x)\cdot f(x_r,u_r)\Big\}
+        \end{equation}
+        The term ${\color{blue}-kV}$ in the HJ equation is coming from the discounting. 
+        The boundary (terminal) condition remains the same, $V(T,x)=g(x)$. 
+        \begin{equation}
+        \label{eqn:HJ_decay_w_Hamiltonian}
+            \begin{cases}
+                0=V_t(t,x) - k V(t,x)+H(x,V_x)\\
+                V(T,x)=g(x)
+            \end{cases}
+        \end{equation}
+        with
+        \[
+        H(x,p)=\inf_{u}\Big\{\bar{C}(x,u) + p\cdot f(x_r,u_r)\Big\}
+        \]
+        The relation between the HJ equation with decay term in \eqref{eqn:HJ_deterministic_decay} and the HJ equation in \eqref{eqn:HJ_deterministic} can easily be verifies by the change of variable $\bar{V}(t,x)=e^{k(T-t)}V(t,x)$. $V(t,x)$ satisfies \eqref{eqn:HJ_decay_w_Hamiltonian} if and only if $\bar{V}(t,x)$ satisfies \eqref{eqn:HJ_w_Hamiltonian}. 
+        \begin{ex}
+            Show that $V(t,x)$ satisfies \eqref{eqn:HJ_decay_w_Hamiltonian} if and only if $\bar{V}(t,x)$ satisfies \eqref{eqn:HJ_w_Hamiltonian}. 
+        \end{ex}
+    
+    A good question to ask ourselves is that for Problem \eqref{prob:deterministic_decay} if the the HJ equation with or without decay term can be obtained via a simple change of variable, why do we introduce a different value function and DPP for exponential decay?
+    The answer lies in the case when $T=\infty$:
+    \begin{equation}
+    \label{prob:deterministic_decay_infinite}
+        \inf_{u}\int_0^\infty e^{-k t}\bar{C}(u_t,x_t)\dt ,~~\dx_t=f(x_t,u_t)\dt
+    \end{equation}
+    Since $f(x_t,u_t)$ does not depend on $t$, the solution $x_s$ of ${\dx}_s=f(x_s,u_s){\ds}$ with $x_t=x$ is the same as a time shift of $\bar{x}_r$ the solution of ${\dx}_r=f(x_r,u_r){\ds}$ with $x_0=x$ by $t$.
+    \[
+        V(t,x)= \inf_{u\in\mathcal{U}_{t}}\int_t^\infty e^{-k(s-t)}\bar{C}(x_s,u_s){{\ds}}{{\ds}}=\inf_{u\in\mathcal{U}}\int_0^\infty e^{-kr}\bar{C}(\bar{x}_{r},u_{r}){{\dr}}
+    \]
+    Therefore, value function is time homogeneous
+    and is given by
+    \begin{equation} \label{eqn:value_decay_infinite}
+    V(x)=\inf_{u\in\mathcal{U}}\int_0^\infty e^{-kr}\bar{C}(\bar{x}_{r},u_{r}){{\dr}}
+    \end{equation}
+    and the HJ equation is given by 
+    \begin{equation} \label{eqn:HJ_decay_w_Hamiltonian_homogeneous}
+                0=- k V(t,x)+H(x,V_x)            
+    \end{equation}
+    \begin{ex}
+    Consider the consumption problems, Exercise~\ref{ex:consumption} and Exercise~\ref{ex:consumption_no_terminal}, in infinite horizon with decay term:
+    \[
+        {\sup_{c_t\ge0}}\int_0^\infty e^{-kt}U(c_t)\dt,~~\dd{X}_t = (rX_t - c_t)\dt
+    \]
+    Here, set of admissible consumption are those such that we maintain $X_t\ge0$ for all $t\ge0$. Write the value function by using \eqref{eqn:value_decay_infinite} and the HJ equation by \eqref{eqn:HJ_decay_w_Hamiltonian_homogeneous}. Find proper boundary condition and solve the HJ equation with the boundary condition.
+    \end{ex}
+        
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{An introduction to viscosity solution}
-Exercise~\ref{ex:eikonal_2} can shed a light on the notion of solution to the HJ equations. Both functions $v_1$ and $v_2$ satisfy the HJ equation, $0=1-|v^\prime(x)|$ with boundary condition $v(-1)=v(1)=0$. See Figure~\ref{fig:v1v2}. However, $v_1$ is the one that matches the value function. That raises an issue; if we solve an HJ equation, how do we know if we obtained the correct solution, hence, the value function. In fact, with a little bit of effort, one can write infinitely many solutions for the Eikonal equations. All this solutions have points of non-differentiability. However, the right and the left derivatives at those points still satisfy the HJ equation. 
+To motivate viscosity solutions, we introduce the following example.
+\begin{eg}
+\label{eg:eikonal_2}
+    Recall from Exercise~\ref{ex:eikonal} that
+    \[
+        \inf_u\int_0^\infty \mathds{1}_{\{x_t\in D\}}{\dt},~{\dx}_t=u_t{{\dt}}~\text{ with }~|u_t|\le1
+    \]
+    The value function for initial state $x_0=x\in D$ is given by
+    \[
+        V(x)=\inf_u\int_0^\infty \mathds{1}_{\{x_t\in D\}}{\dt},~{\dx}_t=u_t{{\dt}}~\text{ with }~|u_t|\le1
+    \]
+    Here $C(x,u)=C(x)=\mathds{1}_{\{x\in D\}}$ and $f(x,u)=f(u)=u$.
+    Notice that the value function \emph{does not} depend on $t$, because the total cost is a function of duration of time until exit and not the function of current time.
+
+    The HJ equation is given by
+    \[
+    H(V_x)=0,~~~H(x,p):=\inf_{|u|\le1}\{\mathds{1}_{\{x\in D\}}+p\cdot u\}
+    \]
+    We can restrict the Hamiltonian to points $x\in D$ and write 
+    \[
+    H(p):=\inf_{|u|\le1}\{1+p\cdot u\}=1+\inf_{|u|\le1}\{p\cdot u\}
+    \]
+    The infimum above is attained for $u=-\frac{u}{|u|}$. Therefore,
+    \[
+    H(p)=|p|
+    \]
+    Outside (or on the boundary of) $D$, the exit time is zero. Therefore, we restrict the Hamiltonian to inside of the domain and impose the boundary condition $V(x)=0$ for $x\in\partial D$. We conclude that the HJ equation with the boundary condition is given by
+    \[
+    \begin{cases}
+        1-|V_x|=0&x\in D\\
+        V(x)=0&x\in \partial D
+    \end{cases}
+    \]
+\end{eg}
+Example~\ref{eg:eikonal_2} can shed a light on the notion of solution to the HJ equations. Take $D=[-1,1]\subset \mathbb{R}$ and consider the following functions,  shown in Figure~\ref{fig:v1v2}:
+        \[
+        v_1(x) = 1-|x|, v_2(x)= \begin{cases}
+            \frac12-|x-\frac12|&0\le x\le1\\
+            \frac12-|x+\frac12|&-1\le x<0
+        \end{cases}
+        \]
+The minimal exit time of $[-1,1]$ is given by $v_1$. Additionally, except at point $x=0$, $v_1$ is differentiable, satisfies the HJ equation, and the optimal direction and speed is given by $V_x=\text{\normalfont sgn}(x)$. $v_2$ is not the value function  , but it also satisfies the HJ equation except at three points, $x=0,\pm\frac12$. 
+ In fact, with a little bit of effort, one can write infinitely many solutions for the Eikonal equations. All this solutions have points of non-differentiability. However, the right and the left derivatives at those points still satisfy the HJ equation. 
 \begin{figure}
     \centering
     \includegraphics[width=0.25\linewidth]{Control_lecture_notes/Figs/v1.pdf}\includegraphics[width=0.25\linewidth]{Control_lecture_notes/Figs/v2.pdf}
-    \caption{Functions $v_1$ and $v_2$ solve Eikonal equation, the HJ equation for \ref{ex:eikonal_2}. But, only  $v_1$ is the same as the value function.}
+    \caption{Functions $v_1$ and $v_2$ solve Eikonal equation, the HJ equation for \ref{eg:eikonal_2}. But, only  $v_1$ is the same as the value function.}
     \label{fig:v1v2}
 \end{figure}
-The answer to this problem is quite complicated. The theory that solves the issue is the theory of \emph{viscosity solutions}, which we discuss in more details in a later chapter. Here, we explain a simpler version of this theory by focusing on the Eikonal equation, $0=1-|v^{\prime}(x)|$ with boundary condition $v(-1)=v(1)=0$. 
+That raises an issue; \emph{if we solve an HJ equation, how do we know if we obtained the correct solution, hence, the value function?} The answer to this problem is quite complicated. The theory that solves the issue is the theory of \emph{viscosity solutions}, which we discuss in more details in a later chapter. Here, we explain a simpler version of this theory by focusing on the Eikonal equation, $0=1-|v^{\prime}(x)|$ with boundary condition $v(-1)=v(1)=0$. 
 
 We introduce a new equation by adding a second order term. 
 \[
@@ -546,9 +660,9 @@ Then, if we evaluate $\lim_{\epsilon\to0}v^{\epsilon}$, we obtain $v_1=V$.
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.45\linewidth]{Control_lecture_notes/Figs/superjets.pdf}\includegraphics[width=0.45\linewidth]{Control_lecture_notes/Figs/jets.pdf}
+    \includegraphics[width=0.35\linewidth]{Control_lecture_notes/Figs/superjets.pdf}\includegraphics[width=0.35\linewidth]{Control_lecture_notes/Figs/jets.pdf}
     \caption{Superjets and subjets for functions $v_1$ and $v_2$ at the points of non-differentiability.}
-    \label{fig:placeholder}
+    \label{fig:jets}
 \end{figure}
 The set of superjets, $\overline{J}$, and subjets, $\underline{J}$, for all the points of non-differentiability are the closed interval $[-1,1]$. According to the theory of viscosity solutions, the members of superjet must satisfy the equation with inequality:
 \[
@@ -568,7 +682,12 @@ Interesting results from the theory of viscosity solution are as follows.
     \item Numerical solutions to HJ equations with certain standard properties converge to the viscosity solution.
 \end{enumerate}
 Even though there are more details into these results, we continue to use these results in this note until we require more clarifications.
-
+\begin{figure}
+    \centering
+    \includegraphics[height=0.5\textheight]{Control_lecture_notes/Figs/HJ_chart.pdf}
+    \caption{Summary of HJ solution method for control problems}
+    \label{fig:placeholder}
+\end{figure}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
