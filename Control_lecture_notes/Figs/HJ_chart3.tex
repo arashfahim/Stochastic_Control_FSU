@@ -59,7 +59,7 @@ fill=gray!30]
 % Nodes
 \node (control) [nonactivebox,label={[align=left]Control problem}] {$\inf_{u }J(u),~~~~J(u):=\int_0^T C(s,x_s,u_s){{\ds}}+g(x_T),~{\dx}_s=f(x_s,u_s){{\ds}}$};
 \node (value) [nonactivebox, below of=control, yshift=-1cm,label={[align=left,xshift=-2cm]Value function}] {$V(t,x):= \inf_{u}\int_t^TC(s,x_s,u_s){{\ds}}+g(x_T),~{\dx}_s=f(x_s,u_s){{\ds}}$};
-\node (hj) [nonactivebox, below of=value, yshift=-1cm,label={[align=left,xshift=-2.5cm]HJ satisfied by value function}] {$
+\node (hj) [box, below of=value, yshift=-1cm,label={[align=left,xshift=-2.5cm]HJ satisfied by value function}] {$
     \begin{cases}
         0=V_t(t,x)+H\big(t,x,V_x(t,x)\big)\\
         V(T,x)=g(x)
