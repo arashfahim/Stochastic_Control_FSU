@@ -682,14 +682,16 @@ Interesting results from the theory of viscosity solution are as follows.
     \item Numerical solutions to HJ equations with certain standard properties converge to the viscosity solution.
 \end{enumerate}
 Even though there are more details into these results, we continue to use these results in this note until we require more clarifications.
-\begin{figure}
+
+\subsection{Summary}
+The steps of solving deterministic control problems via HJ problem are described in Chart~\ref{fig:chart1}:
+\begin{figure}[ht!]
     \centering
     \includegraphics[height=0.5\textheight]{Control_lecture_notes/Figs/HJ_chart.pdf}
     \caption{Summary of HJ solution method for control problems}
-    \label{fig:placeholder}
+    \label{fig:chart1}
 \end{figure}
-
-
+It is important to note that when the HJ equation is derived, solving HJ equation is an standalone problem. After solving the HJ equation, the solution and its derivatives are used to find an optimal control and the corresponding optimal trajectory.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Pontryagin principle}
@@ -833,7 +835,7 @@ Minimizing $H(x,\lambda,u)$ in $u$ suggests that $H_u(x,\lambda^*_t,u^*_t)=2u^*_
 \section{Linear quadratic control problem}
 \label{sec:LQC}
 A class of control problem with closed-form solution consists of \emph{linear-quadratic} optimal control problems, LQC henceforth. 
-In LQC, the running cost is quadratic in $x$ and $u$, the terminal cost is quadratic in $x$, and the ODE for state variable is linear in $x$ and $u$:
+In LQC, the running cost is quadratic in $x$ and $u$, the terminal cost is quadratic in $x$, and the ODE for state variable is linear in $x$ and $u$. We assume that $x$ is a $d$-dimensional column vector and $u$ is an $m$-dimensional column vector.
 \begin{equation}
     \begin{split}
         &C(t,x,u) = \left[\begin{matrix}
@@ -853,7 +855,7 @@ In LQC, the running cost is quadratic in $x$ and $u$, the terminal cost is quadr
 Here, $A:[0,T]\to \mathbb{M}(d,d)$, $B:[0,T]\to \mathbb{M}(m,m)$, $C:[0,T]\to \mathbb{M}(d,m)$, $a:[0,T]\to \mathbb{R}^d$, $b:[0,T]\to \mathbb{R}^m$, $M:[0,T]\to \mathbb{M}(d,d)$, and $N:[0,T]\to \mathbb{M}(d,m)$. 
 
 
-For LQC problem to be well-posed, the value is not $-\infty$, it is sufficient that $Q_t$ and $A_T$ are symmetric and positive definite. In this case $C$ and $g$ are convex functions of $(x,u)$ and $x$, respectively. See exercise below.
+For LQC problem to be well-posed, the value is not $-\infty$, it is sufficient to assume that $Q_t$ and $A_T$ are symmetric and positive definite. In this case $C$ and $g$ are convex functions of $(x,u)$ and $x$, respectively. See exercise below.
 \begin{ex}
     In Example~\ref{eg:lqc}, change the running cost function to $C(x,u)= x^2 -  u^2$. Make some effort to find a solution to this modified problem. Of course, since the cost function is not convex, your effort fails. Explain why the optimal control problem is ill-defined.
 \end{ex}
@@ -864,8 +866,8 @@ For LQC problem to be well-posed, the value is not $-\infty$, it is sufficient t
 
 \begin{ex}
 Assume that the cost functions of the general LQC problem are convex.
-    verify that there exists $G:[0,T]\to \mathbb{M}(d,d)$, $H:[0,T]\to \mathbb{R}^d$, and $K:[0,T]\to \mathbb{R}$ such that 
-    $V(t,x) = x^\top G_t x + H_t\cdot x + K_t$ satisfied the HJB equation.
+    Verify that there exists $G:[0,T]\to \mathbb{M}(d,d)$, $H:[0,T]\to \mathbb{R}^d$, and $K:[0,T]\to \mathbb{R}$ such that 
+    $V(t,x) = x^\top G_t x + H_t\cdot x + K_t$ satisfied the HJ equation.
 \end{ex}
 
 
@@ -2316,9 +2318,9 @@ and KKT condition suggests that $x^*_t=2\alpha_t$ for $t<T$ and $x^*_T=0$ solves
 
 However, for the constraint $\int_0^T x_t{{\dt}} = 0$, the optimization problem becomes more interesting.
 \begin{equation}
-        \sup_{\lambda}\inf_{x}\int_0^T\Big(x_t^2 - \alpha_t x_t + \lambda x_t\Big) {{\dt}} 
+        \sup_{\lambda}\inf_{x}\int_0^T\Big(x_t^2 - (\alpha_t  + \lambda )x_t\Big) {{\dt}} 
 \end{equation}
-KKT condition becomes $x^*_t =   (\alpha_t - \lambda^* )/2$ and $\int_0^Tx^*_t=0$. This implies that $\lambda^* = \frac{1}{T}\int_0^T\alpha_t{{\dt}}$, and therefore $x^*_t =   (\alpha_t - \frac{1}{T}\int_0^T\alpha_t{{\dt}} )/2$. 
+KKT condition becomes $x^*_t =   (\alpha_t + \lambda^* )/2$ and $\int_0^Tx^*_t=0$. This implies that $\lambda^* = -\frac{1}{T}\int_0^T\alpha_t{{\dt}}$, and therefore $x^*_t =   (\alpha_t - \frac{1}{T}\int_0^T\alpha_t{{\dt}} )/2$. 
 
 Adding restrictions to a control problem is slightly more subtle due to the dynamics of $x$. We postpone the study of such problems to the future endeavors. However, a simple control problem can be described as a constrained optimization and can be solved via the Lagrange multiplier. We discuss this approach in the next section.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

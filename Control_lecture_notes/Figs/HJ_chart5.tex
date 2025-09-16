@@ -66,7 +66,7 @@ fill=gray!30]
     \end{cases}$\\
      $H(t,x,p):=\inf_{u} \big\{C(t,x,u) + pf(t,x,u)\big\}$};
 \node (solve) [nonactivebox, below of=hj, yshift=-1cm,label={[align=left,xshift=-2.5cm]PDE solver}]{Find $V(t,x)$ and $V_x(t,x)$ numerically or analytically};    
-\node (optimal) [nonactivebox, below of=solve, yshift=-1cm,label={[align=left,xshift=-2.5cm]Optimal control using $V_x(t,x)$}] {$u^*(t,x)\in\mathop{\text{argmin}}\limits_{u}\Big\{C(t,x,u) + V_x(t,x)\cdot f\big(t,x,u\big)\Big\}$};
+\node (optimal) [box, below of=solve, yshift=-1cm,label={[align=left,xshift=-2.5cm]Optimal control using $V_x(t,x)$}] {$u^*(t,x)\in\mathop{\text{argmin}}\limits_{u}\Big\{C(t,x,u) + V_x(t,x)\cdot f\big(t,x,u\big)\Big\}$};
 \node (trajectory) [nonactivebox, below of=optimal, yshift=-1cm,label={[align=left,xshift=-2.9cm]Optimal trajectory of state variable}]{${\dx}^*_s=f\big(x^*_s,u^*(t,x^*_s)\big){{\ds}}$};
 \
 
