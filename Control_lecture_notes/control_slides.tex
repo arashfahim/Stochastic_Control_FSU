@@ -10,6 +10,7 @@
 
 }
 \usepackage{pgfplots}
+\usepackage{svg}
 \pgfplotsset{compat=1.18}
 \usepackage{booktabs} 
 \usepackage{tikz}
@@ -801,7 +802,7 @@ We learn from the above solution that $\frac{1}{f^{\frac{1}{1-\gamma}}(t)}<1$, t
         \[
         \sup_{c_t\ge0} \int_0^T {\color{orange}e^{-kt}}U(c_t)\dt + {\color{orange}e^{-kT}}U(x_T)
         \]
-        Write the HJ equation.
+        Write the HJ equation. Hint: $C(t,x,u)={\color{orange}e^{-kt}}U(u)$
     \end{block}
 \end{frame}
 
@@ -811,19 +812,19 @@ We learn from the above solution that $\frac{1}{f^{\frac{1}{1-\gamma}}(t)}<1$, t
     \begin{block}
         {Control problem with decay}
         \[
-        \inf_{u}\int_0^T {\color{orange}e^{-kt}}C(x_t,u_t)\dt+{\color{orange}e^{-kT}}g(x_T),~~~~\dx_t = f(x_t,u_t)\dt
+        \inf_{u}\int_0^T {\color{orange}e^{-kt}}\bar{C}(x_t,u_t)\dt+{\color{orange}e^{-kT}}g(x_T),~~~~\dx_t = f(x_t,u_t)\dt
         \]
     \end{block}
     \begin{block}
         {Value function}
         \[
-        V(t,x):=\inf_{u}\int_t^T {\color{orange}e^{-k(s-t)}}C(x_s,u_s)\ds + {\color{orange}e^{-k(T-t)}}g(x_T)
+        V(t,x):=\inf_{u}\int_t^T {\color{orange}e^{-k(s-t)}}\bar{C}(x_s,u_s)\ds + {\color{orange}e^{-k(T-t)}}g(x_T)
         \]
     \end{block}
     \begin{block}
         {DPP}
         \[
-        V(t,x)=\inf_{u}\int_t^s {\color{orange}e^{-k(r-t)}}C(x_r,u_r)\dr + {\color{orange}e^{-k(s-t)}}V(s,x_s)
+        V(t,x)=\inf_{u}\int_t^s {\color{orange}e^{-k(r-t)}}\bar{C}(x_r,u_r)\dr + {\color{orange}e^{-k(s-t)}}V(s,x_s)
         \]
     \end{block}
 \end{frame}
@@ -833,18 +834,18 @@ We learn from the above solution that $\frac{1}{f^{\frac{1}{1-\gamma}}(t)}<1$, t
     \begin{block}
         {Value function}
         \[
-        V(t,x):=\inf_{u}\int_t^T {\color{orange}e^{-k(s-t)}}C(x_s,u_s)\ds + {\color{orange}e^{-k(T-t)}}g(x_T)
+        V(t,x):=\inf_{u}\int_t^T {\color{orange}e^{-k(s-t)}}\bar{C}(x_s,u_s)\ds + {\color{orange}e^{-k(T-t)}}g(x_T)
         \]
     \end{block}
     \begin{block}
         {DPP}
         \[
-        V(t,x)=\inf_{u}\int_t^s {\color{orange}e^{-k(r-t)}}C(x_r,u_r)\dr + {\color{orange}e^{-k(s-t)}}V(s,x_s)
+        V(t,x)=\inf_{u}\int_t^s {\color{orange}e^{-k(r-t)}}\bar{C}(x_r,u_r)\dr + {\color{orange}e^{-k(s-t)}}V(s,x_s)
         \]
     \end{block}
         \begin{block}
         {HJB with decay}
-        Write the first three terms of the Taylor polynomial for $V(s,x_s)$ about point $(t,x)$.
+        Write the first three terms of the Taylor polynomial for ${\color{orange}e^{-k(s-t)}}V(s,x_s)$ about point $(t,x)$.
     \end{block}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -860,7 +861,7 @@ We learn from the above solution that $\frac{1}{f^{\frac{1}{1-\gamma}}(t)}<1$, t
         \]
         \[
         \begin{split}
-            \cancel{V(t,x)}=\inf_{u}\int_t^s &{\color{orange}e^{-k(r-t)}}C(x_r,u_r)\dr \\
+            \cancel{V(t,x)}=\inf_{u}\int_t^s &{\color{orange}e^{-k(r-t)}}\bar{C}(x_r,u_r)\dr \\
             &+ \cancel{V(t,x)} + {\color{orange}e^{-k(s-t)}}\Big(\big(V_t(t,x) {\color{orange}- k V(t,x)}\big)(s-t)\\
              &~~~~+ V_x(t,x)\int_t^s f(x_r,u_r)\dr\Big) + o((s-t)^2)
         \end{split}
@@ -875,12 +876,12 @@ We learn from the above solution that $\frac{1}{f^{\frac{1}{1-\gamma}}(t)}<1$, t
         Divide by $s-t$ and $s\to t$:
         \[
         \begin{split}
-            0=\inf_{u} &C(x,u) + V_t(t,x) {\color{orange}- k V(t,x)}+ V_x(t,x)f(x,u)
+            0=\inf_{u} &\bar{C}(x,u) + V_t(t,x) {\color{orange}- k V(t,x)}+ V_x(t,x)f(x,u)
         \end{split}
         \]
         \[
         \begin{split}
-            0= V_t(t,x) {\color{orange}- k V(t,x)}+\inf_{u} &\{C(x,u) + V_x(t,x)f(x,u)\}
+            0= V_t(t,x) {\color{orange}- k V(t,x)}+\inf_{u} &\{\bar{C}(x,u) + V_x(t,x)f(x,u)\}
         \end{split}
         \]
         Hamiltonian: 
@@ -891,7 +892,21 @@ We learn from the above solution that $\frac{1}{f^{\frac{1}{1-\gamma}}(t)}<1$, t
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{Purpose of different HJ for decay}
-    
+    \begin{block}
+        {Infinite horizon}
+        Time-homogeneity
+        \[
+        V(x)=\inf_{u}\int_t^\infty {\color{orange}e^{-k(s-t)}}\bar{C}(x_s,u_s)\ds=\inf_{u}\int_0^\infty {\color{orange}e^{-ks}}\bar{C}(x_s,u_s)\ds
+        \]
+    \end{block}
+    \begin{block}
+        {HJ equation}
+        \[
+        \begin{split}
+            0= {\color{orange}- k V(x)}+\inf_{u} &\{\bar{C}(x,u) + V_x(x)f(x,u)\}
+        \end{split}
+        \]
+    \end{block}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -899,16 +914,29 @@ We learn from the above solution that $\frac{1}{f^{\frac{1}{1-\gamma}}(t)}<1$, t
     \begin{block}
         {Savings account}
         \[
-        \dd{X}_t = (rX_t - c_t)\dt
+        \dd{x}_t = (rx_t - c_t)\dt
         \]
         $c_t\ge0$ is the rate of consumption.
         \[
-        \inf_{c_t\ge0} \int_0^T {\color{orange}e^{-kt}}U(c_t)\dt
+        \sup_{c_t\ge0} \int_0^\infty {\color{orange}e^{-kt}}U(c_t)\dt
         \]
-        Write the HJ equation by including the decay in the DPP.
+        where consumption strategy must satisfy $x_t\ge0$ for all $t\ge0$.
+        Write the HJ equation with proper boundary condition. Solve the HJ equation for $U(c)=\frac{c^\gamma}{\gamma}$ for $\gamma\in(0,1)$. Hint: find a constant $f$ such that $V(x)=f\frac{x^\gamma}{\gamma}$ solves the HJ equation. Is the optimal consumption a constant multiple of $x$?
     \end{block}
+    \begin{block}
+    {Coding exercise}
+        Plot optimal wealth 
+        $\dx_t = \bigg(r - c^*\bigg)x_t\dt$
+        for different values for $r>0$, $\gamma\in(0,1)$, and different initial balance $x>0.$
+\end{block}
 \end{frame}
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Summary of HJ method}
+    \begin{figure}
+        \centering
+        \includegraphics[height=0.75\textheight]{Control_lecture_notes/Figs/HJ_chart.pdf}
+    \end{figure}
+\end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -931,11 +959,189 @@ We learn from the above solution that $\frac{1}{f^{\frac{1}{1-\gamma}}(t)}<1$, t
     \begin{block}
         {Saddle point problem}
         \[
+        \sup_{\lambda}\inf_{x}L(x,\lambda)=\sup_{\lambda}H(\lambda)
+        \]
+        with $H(\lambda):=\inf_{x}L(x,\lambda)$ called Hamiltonian.
+    \end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Lagrange multiplier}
+    \begin{block}
+        {Saddle point problem}
+        \[
         \sup_{\lambda}\inf_{x}L(x,\lambda)
         \]
     \end{block}
+        \begin{block}
+        {Strong duality}
+        If 
+        $\sup_{\lambda}\inf_{x}L(x,\lambda) =\inf_{x}\sup_{\lambda}L(x,\lambda)$
+        holds, we call it strong duality.
+        \[
+        \begin{split}
+            \inf_{x}\sup_{\lambda}L(x,\lambda)= \inf_{x}\sup_{\lambda}f(x)-\lambda\cdot g(x)= \inf_{x}f(x)-\inf_{\lambda}\lambda \cdot g(x)
+        \end{split}
+        \]
+        If at a point $x$, $g(x)\neq0$, then $\inf_{\lambda}\lambda \cdot g(x)=-\infty$. Therefore, $x$ is not a saddle point.
+    \end{block}
 \end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Geometric interpretation of Lagrange multiplier}
+    \begin{figure}
+        \centering
+        \includesvg[scale=0.42]{LagrangeMultipliers2D.svg}
+        \caption{At the infimum point, $\nabla f$ and $\nabla g$ are parallel, $\nabla f=\lambda\nabla g$.}
+        \label{fig:Lagrange}
+    \end{figure}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Karush-Kuhn-Tucker (KKT) condition}
+    \begin{block}
+        {KKT}
+        Assume the differentiability of $f$ and $g$.
+    If $x^*$ solves $\inf_x f(x)$   subject to $g(x)=0$ and $\lambda^*$ solves $\sup_{\lambda}H(\lambda)$ such that 
+    \begin{equation} \label{cond:KKT}
+    \begin{cases} \triangledown f(x^*) - \lambda^* \cdot \triangledown g(x^*) = 0\\
+            g (x^*)=0
+        \end{cases}
+    \end{equation}
+    then, strong duality holds and $(x^*,\lambda^*)$ is a saddle point for $\sup_{\lambda}\inf_{x}L(x,\lambda)$. 
 
+    Conversely, if strong duality holds, then any saddle point $(x^*,\lambda^*)$ satisfies \eqref{cond:KKT}. 
+    In particular, $x^*$ solve 
+    \[
+        \inf_x f(x) ~~~ \textrm{subject to}~~~g(x)=0
+    \]
+    \end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Constrained optimal control problem}
+\begin{block}
+    {Simple example}
+    \[
+        \inf_{u}\int_0^T\Big(x_t^2 - \alpha_t x_t\Big) {{\dt}}
+    \]
+    where $\dx_t=u_t\dt$ subject to $\int_0^Tx_t\dt = 0$.
+    Lagrangian
+    \[
+    L(u,\lambda):=\int_0^T\Big(x_t^2 - \alpha_t x_t\Big) {{\dt}}-\lambda\int_0^Tx_t\dt =  \int_0^T\Big(x_t^2 - (\alpha_t + \lambda) x_t\Big) {{\dt}}
+    \]
+    Myopic solution with KKT:
+    \[
+    x^*_t =   (\alpha_t + \lambda^* )/2~~\text{ and }~~\int_0^Tx^*_s\ds = 0
+    \]
+    Therefore,
+    \[
+    \lambda^*=-\frac1T\int_0^T\alpha_s\ds~~\text{ and }~~x^*_t =   \frac{\alpha_t - \frac{1}{T}\int_0^T\alpha_s{{\ds}}}{2}
+    \]
+\end{block}
+    
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Pontryagin principle}
+\begin{frame}{Pontryagin principle: real application of Lagrange multiplier}
+    \begin{block}
+        {What is the constraint?}
+    \begin{equation}
+        \inf_{u}\bigg\{\int_0^T\Big(x_t^2 - \alpha_t x_t\Big) {{\dt}}+x_T^2\bigg\}
+    \end{equation}
+    Constraint: {\color{orange}${\dx}_t = (-\beta x_t + u_t ){{\dt}}$}
+    \end{block}
+    \begin{block}
+        {Lagrangian}
+        \[
+        L(u,\lambda)= \int_0^T\Big(x_t^2 - \alpha_t x_t\Big) {{\dt}} +x_T^2 - {\color{orange}\int_0^T \lambda_t\cdot({\dx}_t-(-\beta x_t + u_t ){{\dt}})}
+        \]
+        
+    \end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Pontryagin principle: real application of Lagrange multiplier}
+    \begin{block}
+        {Simplify Lagrangian}
+        Integration by parts
+    \[
+    \int_0^T \lambda_t\cdot {\dx}_t = \lambda_Tx_T-\lambda_0x_0-\int_0^T x_t\cdot {\dd}\lambda_t
+    \]
+        \[
+        \begin{split}
+        L(u,\lambda)=& \int_0^T\Big(x_t^2 - \alpha_t x_t\Big) {{\dt}}+x_T^2 \\
+        &~~- \Big(\lambda_Tx_T-\lambda_0x_0 -\int_0^T x_t\cdot({\dd}\lambda_t-(-\beta x_t + u_t ){{\dt}})\Big)  \\
+        =& \int_0^T\Big(\big(x_t^2 - \alpha_t x_t -x_t\cdot(-\beta x_t + u_t)\big)\dt + x_t\cdot{\dd}\lambda_t  \Big) \\
+        &~~+ x_T^2- \lambda_Tx_T +\lambda_0 x_0
+        \end{split}\]
+        
+    \end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Pontryagin principle: real application of Lagrange multiplier}
+    \begin{block}
+        {Hamiltonian (new)}
+        \[
+        \begin{split}
+        L(u,\lambda)=& \int_0^T\Big(\big({\color{orange}x_t^2 - \alpha_t x_t -x_t\cdot(-\beta x_t + u_t})\big)\dt + x_t\cdot{\dd}\lambda_t  \Big) \\
+        &~~+ x_T^2- \lambda_Tx_T +\lambda_0 x_0
+        \end{split}\]
+        $H(t,x,\lambda,u)={\color{orange}x^2 - \alpha_t x -x\cdot\big(-\beta x + u)}$
+    \end{block}
+    \begin{block}
+        {Myopically perform KKT}
+        Minimizing $x_T^2- \lambda_Tx_T$ wrt $x_T$: $\lambda^*_T=2x^*_T$\\
+        Minimizing Hamiltonian wrt $u$: $H(t,x^*_t,\lambda^*_t,u^*_t)=\inf_{u}H(t,x^*_t,\lambda^*_t,u)$
+        Minimizing integrand wrt $x_t$: 
+        \[
+        \dd\lambda^*_t + H_x(t,x^*_t,\lambda^*_t,u^*_t)=0
+        \]
+    \end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Putting all together}
+    \begin{block}
+        {Pontriagyn maximum principle}
+        If we can find functions $x^*_t$, $\lambda^*_t$, and $u^*_t$ such that 
+    \[
+    \begin{cases}
+        {\dd}\lambda^*_t+ \partial_x H(t,x^*_t,\lambda^*_t,u^*_t){{\dt}}={\dd}\lambda^*_t+ (-\lambda^*_t \beta  +2x^*_t -\alpha_t){{\dt}}=0\\
+        \hspace{7cm}(\textrm{minimize integrand wrt $x$})\\
+        \lambda^*_T=2x_T^* ~(\textrm{minimize terminal wrt $x_T$})\\
+        H(t,x^*_t,\lambda^*_t,u^*_t)\le H(t,x^*_t,\lambda^*_t,u)~\textrm{ for all } u ~(\textrm{minimize integrand wrt $u$})\\
+        {\dx}^*_t = (-\beta x^*_t + u^*_t) {{\dt}} ~(\textrm{constraint})
+        \end{cases}
+    \]
+    Then, $u^*_t$ is an optimal control and $x^*_t$ is an optimal trajectory.
+    \end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{General case}
+    \begin{block}
+        {Pontriagyn maximum principle}
+        Define
+        \[
+        H(t,x,\lambda,u) := C(t,x,u)-x\cdot f(t,x,u)
+        \]
+        If we can find functions $x^*_t$, $\lambda^*_t$, and $u^*_t$ such that 
+    \[
+    \begin{cases}
+        {\dd}\lambda^*_t+ \partial_x H(t,x^*_t,\lambda^*_t,u^*_t){{\dt}}=0,~(\textrm{minimize integrand wrt $x$})\\
+        \lambda^*_T=g_x(x_T^*) ~(\textrm{minimize terminal wrt $x_T$})\\
+        H(t,x^*_t,\lambda^*_t,u^*_t)\le H(t,x^*_t,\lambda^*_t,u)~\textrm{ for all } u ~(\textrm{minimize integrand wrt $u$})\\
+        {\dx}^*_t = f(t,x^*_t,u^*_t) {{\dt}} ~(\textrm{constraint})
+        \end{cases}
+    \]
+    Then, $u^*_t$ is an optimal control and $x^*_t$ is an optimal trajectory.
+    \end{block}
+\end{frame}
+\begin{frame}{Pontriagyn maximum principle}
+\begin{block}
+    {Example}
+    Write Pontriagyn maximum principle for the control problem with 
+    \[
+     \inf_{u}\int_0^T(x_t^2 + u_t^2 ){{\dt}} + x^2_T + x_T,~\text{ subject to  }~{\dx}_t=( x_t +  u_t){{\dt}}
+    \]
+    Can you solve the equations and find $x^*$, $\lambda^*$, and $u^*$?
+\end{block}
+    
+\end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
