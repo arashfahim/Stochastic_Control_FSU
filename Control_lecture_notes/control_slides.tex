@@ -855,15 +855,15 @@ We learn from the above solution that $\frac{1}{f^{\frac{1}{1-\gamma}}(t)}<1$, t
         {HJB with decay}
         \[
         \begin{split}
-             {\color{orange}e^{-k(s-t)}}V(s,x_s) = &V(t,x) + {\color{orange}e^{-k(s-t)}}\Big(\big(V_t(t,x) {\color{orange}- k V(t,x)}\big)(s-t)\\
-             &~~~~+ V_x(t,x)\int_t^s f(x_r,u_r)\dr\Big) + o((s-t)^2)
+             {\color{orange}e^{-k(s-t)}}V(s,x_s) = &V(t,x) + \Big(\big(V_t(t,x) {\color{orange}- k V(t,x)}\big)(s-t)\\
+             &~~~~+ V_x(t,x)\int_t^s f(x_r,u_r)\dr\Big) + O((s-t)^2)
         \end{split}
         \]
         \[
         \begin{split}
             \cancel{V(t,x)}=\inf_{u}\int_t^s &{\color{orange}e^{-k(r-t)}}\bar{C}(x_r,u_r)\dr \\
-            &+ \cancel{V(t,x)} + {\color{orange}e^{-k(s-t)}}\Big(\big(V_t(t,x) {\color{orange}- k V(t,x)}\big)(s-t)\\
-             &~~~~+ V_x(t,x)\int_t^s f(x_r,u_r)\dr\Big) + o((s-t)^2)
+            &+ \cancel{V(t,x)} + \Big(\big(V_t(t,x) {\color{orange}- k V(t,x)}\big)(s-t)\\
+             &~~~~+ V_x(t,x)\int_t^s f(x_r,u_r)\dr\Big) + O((s-t)^2)
         \end{split}
         \]
     \end{block}
@@ -876,17 +876,17 @@ We learn from the above solution that $\frac{1}{f^{\frac{1}{1-\gamma}}(t)}<1$, t
         Divide by $s-t$ and $s\to t$:
         \[
         \begin{split}
-            0=\inf_{u} &\bar{C}(x,u) + V_t(t,x) {\color{orange}- k V(t,x)}+ V_x(t,x)f(x,u)
+            0=\inf_{u} &\bar{C}(x,u) + V_t(t,x) {\color{orange}- k V(t,x)}+ V_x(t,x)\cdot f(x,u)
         \end{split}
         \]
         \[
         \begin{split}
-            0= V_t(t,x) {\color{orange}- k V(t,x)}+\inf_{u} &\{\bar{C}(x,u) + V_x(t,x)f(x,u)\}
+            0= V_t(t,x) {\color{orange}- k V(t,x)}+\inf_{u} &\{\bar{C}(x,u) + V_x(t,x)\cdot f(x,u)\}
         \end{split}
         \]
         Hamiltonian: 
         \[
-        H(x,p):= \inf_{u} \{C(x,u) + pf(x,u)\}
+        H(x,p):= \inf_{u} \{\bar{C}(x,u) + p\cdot f(x,u)\}
         \]
     \end{block}
 \end{frame}
@@ -913,9 +913,7 @@ We learn from the above solution that $\frac{1}{f^{\frac{1}{1-\gamma}}(t)}<1$, t
 \begin{frame}{Consumption with decay}
     \begin{block}
         {Savings account}
-        \[
-        \dd{x}_t = (rx_t - c_t)\dt
-        \]
+        $\dd{x}_t = (rx_t - c_t)\dt$.
         $c_t\ge0$ is the rate of consumption.
         \[
         \sup_{c_t\ge0} \int_0^\infty {\color{orange}e^{-kt}}U(c_t)\dt
@@ -1053,6 +1051,12 @@ We learn from the above solution that $\frac{1}{f^{\frac{1}{1-\gamma}}(t)}<1$, t
         L(u,\lambda)= \int_0^T\Big(x_t^2 - \alpha_t x_t\Big) {{\dt}} +x_T^2 - {\color{orange}\int_0^T \lambda_t\cdot({\dx}_t-(-\beta x_t + u_t ){{\dt}})}
         \]
         
+    \end{block}
+    \begin{block}
+        {Integration by parts}
+        Apply integration by parts on 
+        ${\color{orange}\int_0^T \lambda_t\cdot{\dx}_t}$
+        and substitute it into Lagrangian.
     \end{block}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
