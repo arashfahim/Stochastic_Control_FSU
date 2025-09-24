@@ -1121,7 +1121,7 @@ We learn from the above solution that $\frac{1}{f^{\frac{1}{1-\gamma}}(t)}<1$, t
         {Pontriagyn maximum principle}
         Define
         \[
-        H(t,x,\lambda,u) := C(t,x,u)-x\cdot f(t,x,u)
+        H(t,x,\lambda,u) := C(t,x,u)-\lambda\cdot f(t,x,u)
         \]
         If we can find functions $x^*_t$, $\lambda^*_t$, and $u^*_t$ such that 
     \[
@@ -1136,6 +1136,14 @@ We learn from the above solution that $\frac{1}{f^{\frac{1}{1-\gamma}}(t)}<1$, t
     \end{block}
 \end{frame}
 \begin{frame}{Pontriagyn maximum principle}
+
+\begin{block}
+    {Relation between Pontriagyn principle and value function}
+    If the value function is differentiable and the condition of Pontriagyn principle holds, then
+    \[
+    \lambda^*_t=V_x(t,x^*_t)
+    \]
+\end{block}
 \begin{block}
     {Example}
     Write Pontriagyn maximum principle for the control problem with 
