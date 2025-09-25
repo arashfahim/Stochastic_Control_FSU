@@ -71,6 +71,7 @@
 \newcommand{\dr}{\text{\normalfont d}r}
 \newcommand{\dx}{\text{\normalfont d}x}
 \newcommand{\dX}{\text{\normalfont d}X}
+\newcommand{\dW}{\text{\normalfont d}W}
 
 \title[MAP~5210]{	
 Methods Of Optimal Control}
@@ -1164,5 +1165,70 @@ We learn from the above solution that $\frac{1}{f^{\frac{1}{1-\gamma}}(t)}<1$, t
 \end{block}
 \end{frame}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Stochastic control}
+\begin{frame}{Noise}
+    \begin{block}
+        {Observations are often noisy!}
+        \includegraphics[scale=.3]{Control_lecture_notes/Figs/rf.jpg}
+    \end{block}
+\end{frame}
+\begin{frame}{Noise}
+    \begin{block}
+        {Observations are often noisy!}
+        Fantasy: $\dX_t=b(t,X_t,u_t)\dt$
 
+        Real world: $\dX_t=b(t,X_t,u_t)\dt+\text{noise}$
+    \end{block}
+    \begin{block}{white noise} Denoted by $\dW_t$, at two different times $t_1$ and $t_2$, $\dW_{t_1}$ and $\dW_{t_2}$ are independent.
+
+        To many's disappointment, white noise does not exist in a conventional sense. \textbf{\emph{Brownian motion}, a.k.a. \emph{Wiener process} describes the noise}
+    \end{block}
+\end{frame}
+\begin{frame}{Stochastic}
+\begin{block}{Stochastic process}
+A stochastic process $\{X_t\}_{t}$ is a set of random variables indexed by time $t\in[0,\infty)$. It represents evolution of an uncertain quantity over time. At each time $t$, $X_t$ is a random variable with a certain distribution that depends on $t$. Furthermore, the joint distribution of $X_{t_1},...,X_{t_n}$ for different times $t_1,...,t_n$ is important in shaping a stochastic process.
+
+An observation, denoted by $\omega$, is one \emph{realization} of a stochastic process. The function $X(\omega):[0,\infty)\to\mathbb{R}^d$ is called a sample path of $X$.
+\end{block}
+    
+\end{frame}
+\begin{frame}{Stochastic}
+    \includegraphics[width=0.95\linewidth]{Control_lecture_notes/Figs/bm_1d_100.png}
+\end{frame}
+\begin{frame}{Wiener process or Brownian motion}
+    A Wiener process or Brownian motion is a stochastic process with the following property.
+    \begin{enumerate}[label = \bfseries \arabic*)]
+        \item $W_0$ is distributed according to a known distribution, $\mu$. $\mu$ can be a Dirac delta at a point, $W_0=0$.
+        \item For any $t_{1}<\cdots<t_{n}$, $W_{t_{n}}-W_{t_{n-1}},...,W_{t_{2}}-W_{t_{1}}$ are independent and have Gaussian distribution with mean zero and variance $t_{n}-t_{n-1},...,t_{2}-t_{1}$.
+        \item Sample paths of $W$ are continuous functions of $t$.
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{Random walk}
+    \includegraphics[width=0.75\linewidth]{Control_lecture_notes/Figs/rw_2d_1.png}
+\end{frame}
+
+\begin{frame}{Random walk to Wiener process}
+    \begin{block}
+        {Step size}
+        For $N\in\mathbb{N}$, we modify the step size to $\sqrt{1/N}$ and modify the time between two steps by $1/N$
+    \end{block}
+\end{frame}
+
+\begin{frame}{Random walk $1$}
+    \includegraphics[width=0.8\linewidth]{Control_lecture_notes/Figs/rw_2d_1.png}
+\end{frame}
+\begin{frame}{Random walk $0.1$}
+    \includegraphics[width=0.8\linewidth]{Control_lecture_notes/Figs/rw_2d_10.png}
+\end{frame}
+\begin{frame}{Random walk $0.01$}
+    \includegraphics[width=0.8\linewidth]{Control_lecture_notes/Figs/rw_2d_100.png}
+\end{frame}
+\begin{frame}{Random walk $0.001$}
+    \includegraphics[width=0.8\linewidth]{Control_lecture_notes/Figs/rw_2d_1000.png}
+\end{frame}
 \end{document} 
