@@ -361,6 +361,7 @@ with $\hat{x}_{t_{i+1}} = \hat{x}_{t_i} + f(t_i,\hat{x}_{t_i},u_{t_i}){\Delta t}
 \end{rem}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Hamilton-Jacobi equation}
+\label{sec:HJ}
 One of the side-products of DPP is a partial differential equation, \emph{Hamilton-Jacobi equation} or HJ for short, that can be solved via different methods to provide us with the solution of the control problem. 
 To derive the HJ, we first assume that the value function is sufficiently continuously differentiable ,first order derivatives exist are are continuous. Then, we use the first Taylor polynomial with the remainder term for the value function $V(s,x_s)$ about $(t,x)$ as follows:
 \[
@@ -885,13 +886,13 @@ In the next section, we describe the dynamics of the state variable with a noise
 \section{Noise and Brownian motion}
 Recall from Section~\ref{chap:deterministic} that the dynamics of state variable is given by
 \[
-\dx_t=f(t,x_t,u_t)\dt
+\dX_t=b(t,X_t,u_t)\dt
 \]
 When the dynamics is noisy, we simply need to write
 \[
-\dx_t=f(t,x_t,u_t)\dt+\text{noise}
+\dX_t=b(t,X_t,u_t)\dt+\text{noise}
 \]
-But, what is the noise. Simplest way to model noise is through \emph{white noise}. White noise, denoted by $\dW_t$ is a stochastic process that evolves by time $t$ and for two different time $t_1$ and $t_2$, $\dW_{t_1}$ and $\dW_{t_2}$ are independent. To many's disappointment, it turns out such a stochastic process does not exist in a conventional way and we have to introduce something called \emph{Brownian motion}, a.k.a. \emph{Wiener process} that described the noise.
+But, what is the noise. Simplest way to model noise is through \emph{white noise}. White noise, denoted by $\dW_t$ is a stochastic process that evolves by time $t$ and for two different times $t_1$ and $t_2$, $\dW_{t_1}$ and $\dW_{t_2}$ are independent. To many's disappointment, it turns out such a stochastic process does not exist in a conventional sense and we have to introduce something called \emph{Brownian motion}, a.k.a. \emph{Wiener process} that describes the noise.
 A Wiener process is defined by certain properties:
 \begin{defn}
 A stochastic process $\{X_t\}_{t}$ is a set of random variables indexed by time $t\in[0,\infty)$. It represents evolution of an uncertain quantity over time. At each time $t$, $X_t$ is a random variable with a certain distribution that depends on $t$. Furthermore, the joint distribution of $X_{t_1},...,X_{t_n}$ for different times $t_1,...,t_n$ is important in shaping a stochastic process.
@@ -904,7 +905,7 @@ An observation, denoted by $\omega$, is one \emph{realization} of a stochastic p
     \caption{Eight different sample paths of a stochastic process. The randomness causes each sample paths to be different.}
     \label{fig:random_var}
 \end{figure}
-\begin{defn}
+\begin{defn}\label{defn:bm}
     A Wiener process or Brownian motion is a stochastic process with the following property.
     \begin{enumerate}[label = \bfseries \arabic*)]
         \item $W_0$ is distributed according to a known distribution, $\mu$. $\mu$ can be a Dirac delta at a point, $W_0=0$.
@@ -913,13 +914,169 @@ An observation, denoted by $\omega$, is one \emph{realization} of a stochastic p
     \end{enumerate}
 \end{defn}
 For practical purposes, we do not need the above definition. A Wiener process can be understood through the lens of random walk. Let's in dimension $d$, consider a sequence of independent random variables which take $2d$ values $S:=\{\pm e_1,...,\pm e_d\}$, where $\{e_i=(0,...,0,\underbrace{1}_{i^\text{th}},0,...,0):i=1,...,d\}$ with equal probabilities is the standard basis with for $\mathbb{R}^d$. In dimension $1$, there are two directions. In dimension $d=2$, there are four directions. The set $S$ represents the steps of the walk. At each time, the random walk randomly chooses a step from set $S$ and moves accordingly. A sample paths of a 2-$d$ random walk is shown in Figure~\ref{fig:rw}.
+\begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\linewidth]{Control_lecture_notes/Figs/rw_2d_1.png}
-    \caption{A sample paths of a 2-$d$ random walk.}
+    \includegraphics[width=0.75\linewidth]{Control_lecture_notes/Figs/rw_2d_1.png}
+    \caption{A sample paths of a 2-$d$ random walk starting at $(0,0)$ with 400 steps.}
     \label{fig:rw}
 \end{figure}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+To obtain a Wiener process from a random walk, we modify the size of the steps and the timing between two steps. For $N\in\mathbb{N}$, we modify the step size to $\sqrt{1/N}$ and modify the time between two steps by $1/N$. As $N\to\infty$, we obtain a process that possesses the properties described in Definition~\ref{defn:bm}. 
+\begin{figure}
+    \centering
+    \includegraphics[width=0.45\linewidth]{Control_lecture_notes/Figs/rw_2d_1.png}\includegraphics[width=0.45\linewidth]{Control_lecture_notes/Figs/rw_2d_10.png}
+    \includegraphics[width=0.45\linewidth]{Control_lecture_notes/Figs/rw_2d_100.png}
+    \includegraphics[width=0.45\linewidth]{Control_lecture_notes/Figs/rw_2d_1000.png}
+    \caption{Top left: a random walk with step size $1$ and pacing $1$. Top right: a random walk with step size $\sqrt{0.1}$ and pacing $0.1$. Bottom left: a random walk with step size $0.1$ and pacing $0.01$. Bottom right: a random walk with step size $\sqrt{0.001}$ and pacing $0.001$. As $N\to\infty$, a random walk with step size $\sqrt{1/N}$ and pacing $1/N$ converges to a Wiener process given in Definition~\ref{defn:bm}. Specifically, the continuous sample paths are preserved under the limit.}
+    \label{fig:bm_construction}
+\end{figure}
+At a point in the random walk, the slope of the path is $\frac{\sqrt{1/N}}{1/N}=\sqrt{1/N}\to\infty$. Therefore, it is expected that the derivative of the Wiener process, $\dW_t$, does not exist. This derivative is what we heuristically know as the white noise. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Stochastic differential equation}
+\label{sec:sde}
+To include noise in $\dX_t=b(t,X_t,u_t)\dt+\text{noise}$, we can still write  $\dX_t=f(t,X_t,u_t)\dt+\dW_t$. However, we should interpret the equation as in integral equation:
+\[
+X_t=X_0+\int_0^t b(s,X_s,u_s)\ds+W_t
+\]
+
+The magnitude of noise $W_t$ is governed by a multiplicative constant, $\sigma W_t$. In this case, the variance of the noise is $\sigma^2 t$.   
+\[
+X_t=X_0+\int_0^t b(s,X_s,u_s)\ds+\sigma W_t
+\]
+While $\sigma$ can be a constant, we can think about a generalization where $\sigma$ a function of time $t$ and state $X_t$, i.e. $\sigma(t,X_t) \dW_t$. This means for different $(t,x)$ the magnitude of noise evolves in time and bases on the current value of state variable. For example, $X_t\dW_t$ means when $X_t$ is close to zero, the noise is small. If $X_t$ is large, the noise is significant. 
+
+Since we are in the control context, we can talk about controlling the noise magnitude, $\sigma(t,X_t,u_t) \dW_t$. For instance, for $\sigma(t,x,u)=ux$, $u_tX_t\dW_t$, when we set $u=0$, the noise vanishes. 
+
+To summarize, the general noise term added to an ODE is written by 
+\[
+\dX_t= b(t,X_t,u_t)\dt+\sigma(t,X_t,u_t)\dW_t
+\]
+or in integral form
+\[
+X_t=X_0+\int_0^t b(s,X_s,u_s)\ds+{\color{orange}\int_0^t \sigma(s,X_s,u_s)\dW_s}
+\]
+This is what we refer to by \emph{stochastic differential equation} or SDE.
+
+The integral $\int_0^t \sigma(s,X_s,u_s)\dW_s$ is called Itô integral and is defines by
+\begin{equation}
+\label{eqn:ito_sum}
+\int_0^t \sigma(s,X_s,u_s)\dW_s = \lim_{|t_n-t_{n-1}|\to0}\sum_{n=1}^{N} \sigma(t_{n-1},X_{t_{n-1}},u_{t_{n-1}})(W_{t_{n}}-W_{t_{n-1}})    
+\end{equation}
+
+We can call the above summation an Itô sum, which is different from a Riemann sum. The time chosen in the interval $[t_{n-1},t_{n}]$ in the Itô sum is always the left point of the interval $t_{n-1}$. Any other choice of point leads to an integral different from Itô's.  This is important because in the Itô sum \eqref{eqn:ito_sum} $\sigma(t_{n-1},X_{t_{n-1}},u_{t_{n-1}})$ and $W_{t_{n}}-W_{t_{n-1}}$ are independent. Recall property (2) from the definition of Wiener process; Definition~\ref{defn:bm}.
+\subsection{What do we need to know about Wiener process and Itô integral?}
+For starters, we need to know that \emph{$W_{t_{n}}-W_{t_{n-1}}$ has mean zero}. 
+We also need to recall that by property (2) in Definition~\ref{defn:bm}, \emph{$W_{t_{n}}-W_{t_{n-1}}$ is independent of the past including any term that has index $t_{n-1}$ or smaller index}.
+As a result of this, 
+\[
+\begin{split}
+    \mathbb{E}\left[\sigma(t_{n-1},X_{t_{n-1}},u_{t_{n-1}})(W_{t_{n}}-W_{t_{n-1}})\right]=\mathbb{E}\left[\sigma(t_{n-1},X_{t_{n-1}},u_{t_{n-1}})\right]\underbrace{\mathbb{E}\left[W_{t_{n}}-W_{t_{n-1}}\right]}_{=0}=0
+\end{split}
+\]
+and therefore, 
+\[
+\mathbb{E}\left[\int_0^t \sigma(s,X_s,u_s)\dW_s\right]=0
+\]
+On the other hand, we need to know 
+\[
+\mathbb{E}\left[(W_{t_{n}}-W_{t_{n-1}})^2]\right]=t_n-t_{n-1}
+\]
+We also need to remember that \emph{$\mathbb{E}\left[(W_{t_{n}}-W_{t_{n-1}})^2\right]=t_{n}-t_{n-1}$}.
+Therefore, 
+\[
+\begin{split}
+    \mathbb{E}&\left[\left(\sigma(t_{n-1},X_{t_{n-1}},u_{t_{n-1}})(W_{t_{n}}-W_{t_{n-1}})\right)^2\right]\\
+    &\hspace{1cm}=\mathbb{E}\left[\sigma^2(t_{n-1},X_{t_{n-1}},u_{t_{n-1}})\right]\underbrace{\mathbb{E}\left[(W_{t_{n}}-W_{t_{n-1}})^2\right]}_{=t_{n}-t_{n-1}}\\
+    &\hspace{1cm}=\mathbb{E}\left[(\sigma^2(t_{n-1},X_{t_{n-1}},u_{t_{n-1}})(t_{n}-t_{n-1})\right]
+\end{split}
+\]
+Further calculations:
+\[
+\begin{split}
+    &\left(\sum_{n=1}^{N} \sigma(t_{n-1},X_{t_{n-1}},u_{t_{n-1}})(W_{t_{n}}-W_{t_{n-1}})\right)^2=  \sum_{n=1}^{N} \sigma^2(t_{n-1},X_{t_{n-1}},u_{t_{n-1}})(W_{t_{n}}-W_{t_{n-1}})^2\\
+    &\hspace{2.5cm}+2\sum_{1\le n<m\le N} \sigma(t_{n-1},X_{t_{n-1}},u_{t_{n-1}})(W_{t_{n}}-W_{t_{n-1}})\sigma(t_{m-1},X_{t_{m-1}},u_{t_{m-1}})(W_{t_{m}}-W_{t_{m-1}})
+\end{split}
+\]
+\[
+\begin{split}
+    \mathbb{E}\left[\sum_{n=1}^{N} \sigma^2(t_{n-1},X_{t_{n-1}},u_{t_{n-1}})(W_{t_{n}}-W_{t_{n-1}})^2\right] 
+    \\
+    = &\sum_{n=1}^{N}\mathbb{E}\left[\sigma^2(t_{n-1},X_{t_{n-1}},u_{t_{n-1}})(W_{t_{n}}-W_{t_{n-1}})^2\right] \\
+    = &\sum_{n=1}^{N}\mathbb{E}\left[\sigma^2(t_{n-1},X_{t_{n-1}},u_{t_{n-1}})({t_{n}}-{t_{n-1}})\right]
+    \\
+    \to &
+    \mathbb{E} \left[\int_0^t\sigma^2(t_{s},X_{t_{s}},u_{t_{s}})\ds\right]
+\end{split}
+\]
+On the other hand, since $m>n$, $W_{t_{m}}-W_{t_{m-1}}$ is independent of 
+\[
+\sigma(t_{n-1},X_{t_{n-1}},u_{t_{n-1}})(W_{t_{n}}-W_{t_{n-1}})\sigma(t_{m-1},X_{t_{m-1}},u_{t_{m-1}})
+\]
+and 
+\[
+\begin{split}
+    \mathbb{E}& \left[\sum_{1\le n<m\le N} \sigma(t_{n-1},X_{t_{n-1}},u_{t_{n-1}})(W_{t_{n}}-W_{t_{n-1}})\sigma(t_{m-1},X_{t_{m-1}},u_{t_{m-1}})(W_{t_{m}}-W_{t_{m-1}})\right]\\
+    &= 
+    \sum_{1\le n<m\le N} \mathbb{E}\left[\sigma(t_{n-1},X_{t_{n-1}},u_{t_{n-1}})(W_{t_{n}}-W_{t_{n-1}})\sigma(t_{m-1},X_{t_{m-1}},u_{t_{m-1}})\right]\underbrace{\mathbb{E}\left[W_{t_{m}}-W_{t_{m-1}}\right]}_{=0}=0
+\end{split}
+\]
+Therefore, 
+\[
+\mathbb{E}\left[\left(\int_0^t\sigma(s,X_s,u_s)\dW_s\right)^2\right]=\mathbb{E}\left[\int_0^t\sigma^2(s,X_s,u_s)\ds\right]
+\]
+In other words;
+
+{\centering{\fbox{%
+    \parbox{0.95\textwidth}{%
+    The noise term $\int_0^t\sigma(s,X_s,u_s)\dW_s$ has mean zero and variance (magnitude)
+    \[
+    \mathbb{E} \left[\int_0^t\sigma^2(s,X_s,u_s)\ds\right]
+    \]
+    }%
+    }
+}
+}
+
+The magnitude of the noise term is the cumulated magnitude of noise over time.
+
+We also observed that 
+\emph{$W_{t_{n}}-W_{t_{n-1}}\sim O(\sqrt{t_{n}-t_{n-1}})$}. This has implications in the use of Taylor series similar to what we did in derivation of HJ equation from DPP in Section~\ref{sec:HJ}.
+To clarify, Consider a function $f$ at its Taylor series about a point $x$.
+\[
+f(y) = f(x) + f^{\prime}(x) (y-x) + \frac12f^{\prime\prime}(x) (y-x)^2 + \cdots
+\]
+If we replace $y=x+\int_t^s b(r,X_r,u_r)\ds$, we obtain 
+\[
+\begin{split}
+f(y)& = f(x) + f^{\prime}(x) \int_t^s b(r,X_r,u_r)\dr + \frac12f^{\prime\prime}(x) \left(\int_t^s b(r,X_r,u_r)\dr\right)^2 + \cdots\\
+& \approx f(x) + f^{\prime}(x) b(t,X_t,u_t)(s-t) + \frac12f^{\prime\prime}(x) b^2(t,X_t,u_t)(s - t)^2 + \cdots\\
+& \approx f(x) + f^{\prime}(x) b(t,X_t,u_t)(s-t) +O((\Delta t)^2)
+\end{split}
+\]
+This is the simple chair rule:
+\[
+f(X_s)=f(X_t)+\int_t^s f^\prime(X_r)b(r,X_r,u_r)\dr
+\]
+
+When $y=x+\int_t^s \sigma(r,X_r,u_r)\dW_r$, 
+\[
+\begin{split}
+f(y)& = f(x) + f^{\prime}(x)\int_t^s \sigma(r,X_r,u_r)\dW_r + \frac12f^{\prime\prime}(x) \left(\int_t^s \sigma(r,X_r,u_r)\dr\right)^2 + \cdots\\
+& \approx f(x) + f^{\prime}(x) \sigma(r,X_r,u_r)(W_s-W_r) + \frac12f^{\prime\prime}(x) \sigma^2(t,X_t,u_t)(W_s-W_r)^2 + \cdots\\
+& \approx f(x) + f^{\prime}(x) \sigma(t,X_t,u_t)(W_s-W_r) + \frac12\sigma^{\prime\prime}(x) f^2(t,X_t,u_t)(s-r)+o(\Delta t)
+\end{split}
+\]
+Now with the stochastic term, this is a complicated chain rule:
+\[
+f(X_s)=f(X_t)+\int_t^s f^\prime(X_r)\sigma(r,X_r,u_r)\dW_r + {\color{orange}\frac12\int_t^s f^{\prime\prime}(X_r)\sigma^2(r,X_r,u_r)\dr}
+\]
+
+Having a complete form for stochastic differential equation $y=x+\int_t^s b(r,X_r,u_r)\dr+\int_t^s \sigma(r,X_r,u_r)\dW_r$, we obtain the \emph{Itô's formula};
+\[
+f(X_s)=f(X_t)+\int_t^s f^\prime(X_r)\sigma(r,X_r,u_r)\dW_r + {\color{orange}\int_t^s \left(f^\prime(X_r)b(r,X_r,u_r)+\frac12f^{\prime\prime}(X_r)\sigma^2(r,X_r,u_r)\right)\dr}
+\]
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
