@@ -965,6 +965,7 @@ The integral $\int_0^t \sigma(s,X_s,u_s)\dW_s$ is called Itô integral and is de
 
 We can call the above summation an Itô sum, which is different from a Riemann sum. The time chosen in the interval $[t_{n-1},t_{n}]$ in the Itô sum is always the left point of the interval $t_{n-1}$. Any other choice of point leads to an integral different from Itô's.  This is important because in the Itô sum \eqref{eqn:ito_sum} $\sigma(t_{n-1},X_{t_{n-1}},u_{t_{n-1}})$ and $W_{t_{n}}-W_{t_{n-1}}$ are independent. Recall property (2) from the definition of Wiener process; Definition~\ref{defn:bm}.
 \subsection{What do we need to know about Wiener process and Itô integral?}
+\label{sec:toknow_Wiener}
 For starters, we need to know that \emph{$W_{t_{n}}-W_{t_{n-1}}$ has mean zero}. 
 We also need to recall that by property (2) in Definition~\ref{defn:bm}, \emph{$W_{t_{n}}-W_{t_{n-1}}$ is independent of the past including any term that has index $t_{n-1}$ or smaller index}.
 As a result of this, 
@@ -1038,9 +1039,9 @@ In other words;
 }
 }
 
-The magnitude of the noise term is the cumulated magnitude of noise over time.
-
-We also observed that 
+%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Itô's formula}
+We heuristically deduced that 
 {$W_{t_{n}}-W_{t_{n-1}}\sim O(\sqrt{t_{n}-t_{n-1}})$}. This has implications in the use of Taylor series similar to what we did in derivation of HJ equation from DPP in Section~\ref{sec:HJ}.
 To clarify, Consider a function $f$ at its Taylor series about a point $x$.
 \[
@@ -1067,7 +1068,7 @@ f(y)& = f(x) + f^{\prime}(x)\int_t^s \sigma(r,X_r,u_r)\dW_r + \frac12f^{\prime\p
 & \approx f(x) + f^{\prime}(x) \sigma(t,X_t,u_t)(W_s-W_r) + \frac12\sigma^{\prime\prime}(x) f^2(t,X_t,u_t)(s-r)+o(\Delta t)
 \end{split}
 \]
-Now with the stochastic term, this is a complicated chain rule:
+Now with the stochastic term, this is a more complicated chain rule:
 \[
 f(X_s)=f(X_t)+\int_t^s f^\prime(X_r)\sigma(r,X_r,u_r)\dW_r + {\color{orange}\frac12\int_t^s f^{\prime\prime}(X_r)\sigma^2(r,X_r,u_r)\dr}
 \]
@@ -1076,6 +1077,33 @@ Having a complete form for stochastic differential equation $y=x+\int_t^s b(r,X_
 \[
 f(X_s)=f(X_t)+\int_t^s f^\prime(X_r)\sigma(r,X_r,u_r)\dW_r + {\color{orange}\int_t^s \left(f^\prime(X_r)b(r,X_r,u_r)+\frac12f^{\prime\prime}(X_r)\sigma^2(r,X_r,u_r)\right)\dr}
 \]
+When function $f$ depends on $(t,x)$, 
+Itô formula is given by
+\[
+\begin{split}
+    f(s,X_s)=f(t,X_t)+&\int_t^s f_x(r,X_r)\sigma(r,X_r,u_r)\dW_r\\
+    +& {\int_t^s \left(f_t(r,X_r)+f_x(r,X_r)b(r,X_r,u_r)+\frac12f_{xx}(r,X_r)\sigma^2(r,X_r,u_r)\right)\dr}
+\end{split}
+\]
+The above Itô's formula is for 1-dimensional state variable $x$. For higher dimensions, $f_x$ is the gradient vector and $f_{xx}$ is the Hessian matrix. Then, the Itô formula is written by using the dot product of vectors and Frobenius product of matrices.
+\[
+\begin{split}
+    f(s,X_s)=f(t,X_t)+&\int_t^s f_x(r,X_r)\cdot \sigma(r,X_r,u_r)\dW_r\\
+    +& {\int_t^s \left(f_t(r,X_r)+f_x(r,X_r)\cdot b(r,X_r,u_r)+\frac12f_{xx}(r,X_r)\cdot\sigma^{\top}\sigma(r,X_r,u_r)\right)\dr}
+\end{split}
+\]
+In the above, $X$ is a $d$-dimensional stochastic process, $b$ is a $d$-dimensional vector field, $\sigma$ is a $d\times d$ matrix field, and $X$ is given by
+\[
+dX_t = b(t,X_t,u_t)\dt +\sigma(t,X_t,u_t)dW_t
+\]
+where $W$ is a $d$-dimensional Brownian motion. 
+In the Itô's formula, $f_x(r,X_r)\cdot b(r,X_r,u_r)$ is the dot product of gradient and vector field $b$ and $f_{xx}\cdot\sigma^{\top}\sigma$ is the Frobenius product of Hessian  and matrix $\sigma^{\top}\sigma$ defined by 
+\[
+A\cdot B = \text{\normalfont Tr}[AB^\top]
+\]
+Frobenius product is simply dot product if you write matrices as $d^2$ vectors. If $A=[A_{ij}]_{i,j=1,...,d}$ and $B=[B_{ij}]_{i,j=1,...,d}$, then 
+$A\cdot B = \sum_{i=1}^d\sum_{j=1}^d A_{i,j}B_{i,j}$, the sum of product of elements with the same indeces.
+%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Controlled SDE}
 The state process is a controlled SDE given by
 \begin{equation}\label{eqn:state_process}
@@ -1114,41 +1142,41 @@ It is easy to model stochastic control problems from real applications.  However
 In this example, we show that if the collection of admissible controls are not determined properly, the control problem becomes trivially useless. Consider a game with consecutive rounds. At each round the player makes a bet and a coin is flipped. Upon receiving favorable outcome, the player gains as much as his bet. Otherwise, he loses as much as his bet. 
 The doubling strategy suggests to double the bet for the next round if you lose this round. As a result, if the player's bet in the first round is $x$ and the first win happens at round $n$, he has lost $x(1+\cdots+2^{n-1})=x(2^{n}-1)$. In the $n$th round, he wins $x2^n$, which makes his total wealth $x$ more. This is an obvious arbitrage strategy. However, it requires the play to tolerate large amount of debt, i.e., $x(2^{n}-1)$. Note that even if the coin is largely biased against the player, the doubling strategy works. 
 
-	Consider the wealth process as described by \eqref{eg:wealth} and assume that asset price $S$ is a martingale by setting $\mu=0$.
- In this case, $X_t=X_0+\sigma\int_0^tu_s{\dd}B_s$. Further, assume $X_0=0$.
- Let's try to maximize expected value of wealth by applying an investment strategy $u$:
- \begin{equation}\label{st.petersburg}
-     V = \sup_{u}\mathbb{E}[X_T],~~~\dX_t =  u_t\dW_t
- \end{equation}
- Is the stochastic integral above zero? Why?
-$M_t:=\int_0^t u_sdW_s$ is a local martingale.
- Now, consider the strategy that chooses 
- \[
- u_t=
- \begin{cases}
-     u & \max_{0\le t} X_t < M\\
-     0 & \max_{0\le t} X_t \ge M
- \end{cases}
- \]
- where $u>0$ is an arbitrary positive number. If $X_t$ never hits $M$, the investment yields $X_T$.
+% 	Consider the wealth process as described by \eqref{eg:wealth} and assume that asset price $S$ is a martingale by setting $\mu=0$.
+%  In this case, $X_t=X_0+\sigma\int_0^tu_s{\dd}B_s$. Further, assume $X_0=0$.
+%  Let's try to maximize expected value of wealth by applying an investment strategy $u$:
+%  \begin{equation}\label{st.petersburg}
+%      V = \sup_{u}\mathbb{E}[X_T],~~~\dX_t =  u_t\dW_t
+%  \end{equation}
+%  Is the stochastic integral above zero? Why?
+% $M_t:=\int_0^t u_sdW_s$ is a local martingale.
+%  Now, consider the strategy that chooses 
+%  \[
+%  u_t=
+%  \begin{cases}
+%      u & \max_{0\le t} X_t < M\\
+%      0 & \max_{0\le t} X_t \ge M
+%  \end{cases}
+%  \]
+%  where $u>0$ is an arbitrary positive number. If $X_t$ never hits $M$, the investment yields $X_T$.
  
-Note that for $X^u_t=\sigma u W_t$, probability of hitting $M$ before $T$ is
-\begin{equation}
-    \mathbb{P}\big(\max_{t\le T} X_t^u\ge M\big) =  \mathbb{P}\bigg(\max_{t\le T} W_t\ge \frac{M}{\sigma u}\bigg) =  2\mathbb{P}\bigg(W_T\ge \frac{M}{\sigma u}\bigg)
-\end{equation}
-The last equality is coming from the Schwartz reflection principle for Brownian motion. If we send $u\to\infty$ and $M\to\infty$  such that $\frac{M}{u}\to0$, we obtain $\mathbb{P}(B_T\ge \frac{M}{\sigma u})\to \frac12$. 
+% Note that for $X^u_t=\sigma u W_t$, probability of hitting $M$ before $T$ is
+% \begin{equation}
+%     \mathbb{P}\big(\max_{t\le T} X_t^u\ge M\big) =  \mathbb{P}\bigg(\max_{t\le T} W_t\ge \frac{M}{\sigma u}\bigg) =  2\mathbb{P}\bigg(W_T\ge \frac{M}{\sigma u}\bigg)
+% \end{equation}
+% The last equality is coming from the Schwartz reflection principle for Brownian motion. If we send $u\to\infty$ and $M\to\infty$  such that $\frac{M}{u}\to0$, we obtain $\mathbb{P}(B_T\ge \frac{M}{\sigma u})\to \frac12$. 
 
-On the other hand, from the strategy described above, we have 
-\begin{equation}
-    \mathbb{E}[X_T] = \mathbb{E}[M\mathds{1}_{\{\max_{t\le T} X_t\ge M\}}]+  \mathbb{E}[X_T\mathds{1}_{\{\max_{t\le T} X_t< M\}}]= 2M\mathbb{P}\bigg(W_T\ge \frac{M}{\sigma u}\bigg)+\mathbb{E}[X_T\mathds{1}_{\{\max_{t\le T} X_t< M\}}]
-\end{equation}
-% where $\tau=\inf\{t:X_t\ge M\}\wedge T$
-Now, answer the following questions:
-\begin{enumerate}
-    \item Is it true that $\mathbb{E}[X_t^u1_{\{\max_{t\le T} X_t^u< M\}}]\to 0 $ as $u\to\infty$ and $M\to\infty$  such that $\frac{M}{u}\to0$?
-    \item What is the limit of $2M\mathbb{P}(W_T\ge \frac{M}{\sigma u})$? $V=\infty$?
-    \item If the stochastic integral in \eqref{st.petersburg} is zero, then $V=0$, why did we also get $V=\infty$?
-\end{enumerate}
+% On the other hand, from the strategy described above, we have 
+% \begin{equation}
+%     \mathbb{E}[X_T] = \mathbb{E}[M\mathds{1}_{\{\max_{t\le T} X_t\ge M\}}]+  \mathbb{E}[X_T\mathds{1}_{\{\max_{t\le T} X_t< M\}}]= 2M\mathbb{P}\bigg(W_T\ge \frac{M}{\sigma u}\bigg)+\mathbb{E}[X_T\mathds{1}_{\{\max_{t\le T} X_t< M\}}]
+% \end{equation}
+% % where $\tau=\inf\{t:X_t\ge M\}\wedge T$
+% Now, answer the following questions:
+% \begin{enumerate}
+%     \item Is it true that $\mathbb{E}[X_t^u1_{\{\max_{t\le T} X_t^u< M\}}]\to 0 $ as $u\to\infty$ and $M\to\infty$  such that $\frac{M}{u}\to0$?
+%     \item What is the limit of $2M\mathbb{P}(W_T\ge \frac{M}{\sigma u})$? $V=\infty$?
+%     \item If the stochastic integral in \eqref{st.petersburg} is zero, then $V=0$, why did we also get $V=\infty$?
+% \end{enumerate}
 \end{ex}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Value function}
@@ -1230,12 +1258,10 @@ $(\int_t^s  b(r,X_r,u_r)\dr)^2=O((\tau-t)^2)$, $\int_t^s  b(r,X_r,u_r)\dr\int_t^
 \end{split}
 \]
 In addition, 
-\[
-\begin{split}
-    \mathbb{E}\left[\int_t^s  \sigma(r,X_r,u_r)\dW_r\right]&=0\\
-    \mathbb{E}\left[\left(\int_t^s  \sigma(r,X_r,u_r)\dW_r\right)^2\right]&=\mathbb{E}\left[\int_t^s  \sigma^2(r,X_r,u_r)\dr\right]
-\end{split}
-\]
+\begin{align}
+    \mathbb{E}\left[\int_t^s  \sigma(r,X_r,u_r)\dW_r\right]&=0\label{dpp:mean_zero}\\
+    \mathbb{E}\left[\left(\int_t^s  \sigma(r,X_r,u_r)\dW_r\right)^2\right]&=\mathbb{E}\left[\int_t^s  \sigma^2(r,X_r,u_r)\dr\right]\label{dpp:variance}
+\end{align}
 Therefore,
 \[
 \begin{split}
@@ -1251,12 +1277,26 @@ Insert the Taylor expansion into DPP:
 \]
 Take $\Delta t:=s-t$, divide by $\Delta t$, and send $\Delta t\to 0$, we get the HJB equation:
 \[
-\begin{cases}
-    0= V_t(t,x) + \inf_{u\in U}\left\{ C(t,x,u)  + V_x(t,x)\cdot b(t,x,u)+\frac12 V_{xx}(t,x) \sigma^2(t,x,u)\right\}\\
+    \begin{cases}
+    0= V_t(t,x) + \inf_{u\in U}\left\{ C(t,x,u)  + V_x(t,x) b(t,x,u)+\frac12 V_{xx}(t,x) \sigma^2(t,x,u)\right\}\\
     V(T,x)=g(x)
 \end{cases}
 \]
+Using the notation of Hamiltonian, we write
+\begin{align}
+     &\begin{cases}
+    0= V_t(t,x) + H(t,x,V_x,V_{xx})\\
+    V(T,x)=g(x)
+\end{cases}\label{eqn:HJB}\\
+&\hspace{4cm}H(t,x,p,\Gamma):=\inf_{u\in U}\left\{ C(t,x,u)  + p\cdot b(t,x,u)+\frac12 \Gamma \sigma^2(t,x,u)\right\}\label{eqn:Hamilton_1d}
+\end{align}
 where we added terminal cost as a boundary condition.
+If we consider higher dimensions, we should write Hamiltonian as  
+\begin{equation}
+H(t,x,p,\Gamma):=\inf_{u\in U}\left\{ C(t,x,u)  + p\cdot b(t,x,u)+\frac12 \Gamma\cdot\sigma^{\top}\sigma(t,x,u)\right\}
+\end{equation}
+
+
 The DPP in Theorem~\ref{thm:stoch_dpp_no_stopping} is a special case of the general DPP for stochastic control problems. To explain the general DPP, we need the notion of \emph{stopping time} in a probabilistic setting. When we deal with stochastic processes, the occurrence time of events are random. For example, let $\tau$ be the first time a 2-$d$ Wiener process exits a given circle.  For two different sample paths, the exit time is different.
 A stopping time is a random time that can be determined whether it has happen or not based on the observed events. See Figure~\ref{fig:exit_time}.
 \begin{figure}[ht!]
@@ -1272,12 +1312,62 @@ Let $\mathcal{F}_t$ represents all events that are revealed at or before time $t
 The DPP with stopping time is presented next.
 \begin{thm}\label{thm:stoch_dpp_stopping}
     If the value function is continuous and have linear growth, then for any stopping time $\tau$ such that $t<\tau<T$, we have 
-    \begin{equation}\label{eqn:stoch_dpp_no_stopping}
+    \begin{equation}\label{eqn:stoch_dpp_stopping}
         V(t,x)= \inf_{u\in\mathcal{U}_{t,\tau}}\mathbb{E}\Big[\int_t^\tau C(r,X_r,u_r){\dr} + V(\tau,X_\tau)\Big],~~X_t=x
     \end{equation}
 \end{thm}
-Why is stopping time in DPP important?
-
+\subsection{Why is stopping time in DPP important?}
+In Section~\ref{sec:toknow_Wiener}, we show that for the Itô sum
+\[
+\int_0^t \sigma(s,X_s,u_s)\dW_s = \sum_{n=1}^{N} \sigma(t_{n-1},X_{t_{n-1}},u_{t_{n-1}})(W_{t_{n}}-W_{t_{n-1}}) 
+\]
+we have
+\[
+\mathbb{E}\left[\int_0^t \sigma(s,X_s,u_s)\dW_s\right]=0
+\]
+However, to show this is true for a general stochastic integral, defined by the limit of Itô sums, i.e., 
+\begin{equation*}
+\int_0^t \sigma(s,X_s,u_s)\dW_s = \lim_{|t_n-t_{n-1}|\to0}\sum_{n=1}^{N} \sigma(t_{n-1},X_{t_{n-1}},u_{t_{n-1}})(W_{t_{n}}-W_{t_{n-1}})    
+\end{equation*}
+we require to be able to commutate the limit and expected value: 
+\[
+\begin{split}
+    \mathbb{E}\bigg[&\lim_{|t_n-t_{n-1}|\to0}\sum_{n=1}^{N} \sigma(t_{n-1},X_{t_{n-1}},u_{t_{n-1}})(W_{t_{n}}-W_{t_{n-1}}) \bigg]\\
+    &=\lim_{|t_n-t_{n-1}|\to0}\sum_{n=1}^{N} \mathbb{E}\Big[\sigma(t_{n-1},X_{t_{n-1}},u_{t_{n-1}})(W_{t_{n}}-W_{t_{n-1}})\Big]=0
+\end{split}
+\]
+This commutation of limit and expected value is not a straightforward operation. In fact, there are limit theorems, e.g., Legesgue dominated convergence, monotone convergence, and Fatou's lemma, that come with restrictive conditions for such commutations.
+For example, if 
+\[
+\mathbb{E}\left[\int_0^t \sigma^2(s,X_s,u_s)\ds\right]<\infty,
+\]
+then the commutation is possible and 
+\[
+\begin{split}
+\mathbb{E}\bigg[&\int_0^t \sigma(s,X_s,u_s)\dW_s\bigg]\\
+    &=\mathbb{E}\bigg[\lim_{|t_n-t_{n-1}|\to0}\sum_{n=1}^{N} \sigma(t_{n-1},X_{t_{n-1}},u_{t_{n-1}})(W_{t_{n}}-W_{t_{n-1}}) \bigg]\\
+    &=\lim_{|t_n-t_{n-1}|\to0}\sum_{n=1}^{N} \mathbb{E}\Big[\sigma(t_{n-1},X_{t_{n-1}},u_{t_{n-1}})(W_{t_{n}}-W_{t_{n-1}})\Big]=0
+\end{split}
+\]
+Otherwise, one cannot show that the stochastic integral is mean-zero. In such cases, the mean of stochastic integral does not even exist. For example, in the derivation of HJB equation for stochastic control problems, specifically in \eqref{dpp:mean_zero}, there is no guarantee that the expectation of the stochastic integral is zero. $\sigma(r,X_r,u_r)$ is a very general function and there cannot be any restriction imposed on $X$ or $u$. However, if we write the DPP with a spesific stopping time, then the issue is resolved. In \eqref{eqn:stoch_dpp_stopping}. we can choose the stopping time to be
+\begin{equation}\label{eqn:tau_s}
+    \tau=\min\Big\{s,\inf\{r>t: |\sigma(r,X_r,u_r)|\ge M \}\Big\}
+\end{equation}
+for some $M>0$. Therefore, we are sure that  $\sigma(r,X_r,u_r)$ is bounded inside
+\[
+\int_0^\tau \sigma(r,X_r,u_r)\dW_r
+\]
+As a result, 
+\[
+\mathbb{E}\bigg[\int_0^\tau \sigma^2(r,X_r,u_r)\ds\big]<\infty
+\]
+and the stochastic integral vanishes. 
+\begin{rem}
+    The above discussion is not completely rigorous. In \eqref{eqn:tau_s}, we cannot assume that $u_r$ behaves continuously. The control may simply jump to a high value and invalidate our argument. Usually, in many cases, we either assume $u\in U$ and $U$ is bounded, or we assume $|\sigma(r,X_r,u_r)|\le C(1+|X_r|)$ and define 
+    \[
+    \tau=\min\Big\{s,\inf\{r>t: |X_r|\ge M \}\Big\}
+    \]
+\end{rem}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1405,7 +1495,7 @@ Note that ${\tau^h}=O(h)$. Therefore, we divide by $h$ and send $h\to0$:
     \end{split}
 \end{equation}
 The HJB is given by the following PDE:
-\begin{equation}\label{eqn:HJB}
+\begin{equation}
     \begin{cases}
         0=\partial_t V(t,x)+\inf_{u}\Big\{C(t,x,u) +
          \frac12 D^2V(t,x) \cdot a(t,x,u) + \nabla V(t,x)\cdot \mu(t,x,u)\Big\}\\
