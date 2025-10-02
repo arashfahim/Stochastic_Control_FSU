@@ -257,7 +257,7 @@ where $\mathcal{U}_{t}$ is the set of admissible controls restricted to time int
 The value function encodes the outcome of optimal control at time $t$ at point $x$. The function $V(t,\cdot):\mathbb{R}^d\to\mathbb{R}$ returns the optimal value of the control problem for any point $x$ at time $t$.
 
 Given the value function, the DPP is explained in the following result.
-\begin{thm}\label{thm:dpp_deterministic}
+\begin{thm}\label{thm:stoch_dpp_no_stopping_deterministic}
     [Dynamic Programming Principle]
     Let $0\le t<s\le T$ and $x_t=x$. Then, the DPP for \eqref{prob:deterministic_control} is given by 
     \begin{equation} \label{eqn:dpp_deterministic}
@@ -268,7 +268,7 @@ where $\mathcal{U}_{t,s}$ is the set of admissible controls restricted to time i
 DPP can be interpreted as the tradeoff between two intervals $[t,s]$ and $[s,T]$. More precisely, to obtain the optimal value of the control problem at time $t$, DPP finds a balance between the running cost on $[t,s]$, $\int_t^sC(r,x_r,u_r){{\dr}}$, and the continuation cost on $[s,T]$, $V(t,x_s)$. Note that choosing a control $u$ on $[t,s]$, determines the position of $x_s$.
 This interpretation reveals the proof of DPP.
 \begin{proof}
-    [Proof of DPP, Theorem~\ref{eqn:dpp_deterministic}]
+    [Proof of DPP, Theorem~\ref{thm:stoch_dpp_no_stopping_deterministic}]
     To show that DPP holds, we need to decompose a control $u$ on $[t,T]$ into two pieces, $u_1$ on $[t,s]$ and $u_2$ on $[s,T]$. More formally,
     \[
     u(r) =\begin{cases}
@@ -510,7 +510,7 @@ The value function of \eqref{prob:deterministic_decay} for $x_t=x$ is defined by
 where $\mathcal{U}_{t}$ is the set of admissible controls restricted to time interval $[t,T]$.
 \end{defn}
 The dynamic programming principle is modified by:
-\begin{thm}\label{thm:dpp_deterministic_decay}
+\begin{thm}\label{thm:stoch_dpp_no_stopping_deterministic_decay}
     [Dynamic Programming Principle]
     Let $0\le t<s\le T$ and $x_t=x$. Then, the DPP for \eqref{prob:deterministic_control} is given by 
     \begin{equation} \label{eqn:dpp_deterministic_decay}
@@ -519,7 +519,7 @@ The dynamic programming principle is modified by:
 where $\mathcal{U}_{t,s}$ is the set of admissible controls restricted to time interval $[t,s]$.
 \end{thm}
 \begin{proof}
-    The proof is quite similar to Theorem~\ref{thm:dpp_deterministic}.
+    The proof is quite similar to Theorem~\ref{thm:stoch_dpp_no_stopping_deterministic}.
 \end{proof}
     We apply Taylor series on $e^{-k(s-t)}V(s,x_s)$ around $(t,x)$.
     \[
@@ -932,7 +932,7 @@ To obtain a Wiener process from a random walk, we modify the size of the steps a
 At a point in the random walk, the slope of the path is $\frac{\sqrt{1/N}}{1/N}=\sqrt{1/N}\to\infty$. Therefore, it is expected that the derivative of the Wiener process, $\dW_t$, does not exist. This derivative is what we heuristically know as the white noise. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Stochastic differential equation}
+\section{Stochastic differential equation (SDE)}
 \label{sec:sde}
 To include noise in $\dX_t=b(t,X_t,u_t)\dt+\text{noise}$, we can still write  $\dX_t=f(t,X_t,u_t)\dt+\dW_t$. However, we should interpret the equation as in integral equation:
 \[
@@ -1032,6 +1032,7 @@ In other words;
     \[
     \mathbb{E} \left[\int_0^t\sigma^2(s,X_s,u_s)\ds\right]
     \]
+    provided that the above expectation is finite.
     }%
     }
 }
@@ -1040,7 +1041,7 @@ In other words;
 The magnitude of the noise term is the cumulated magnitude of noise over time.
 
 We also observed that 
-\emph{$W_{t_{n}}-W_{t_{n-1}}\sim O(\sqrt{t_{n}-t_{n-1}})$}. This has implications in the use of Taylor series similar to what we did in derivation of HJ equation from DPP in Section~\ref{sec:HJ}.
+{$W_{t_{n}}-W_{t_{n-1}}\sim O(\sqrt{t_{n}-t_{n-1}})$}. This has implications in the use of Taylor series similar to what we did in derivation of HJ equation from DPP in Section~\ref{sec:HJ}.
 To clarify, Consider a function $f$ at its Taylor series about a point $x$.
 \[
 f(y) = f(x) + f^{\prime}(x) (y-x) + \frac12f^{\prime\prime}(x) (y-x)^2 + \cdots
@@ -1075,110 +1076,214 @@ Having a complete form for stochastic differential equation $y=x+\int_t^s b(r,X_
 \[
 f(X_s)=f(X_t)+\int_t^s f^\prime(X_r)\sigma(r,X_r,u_r)\dW_r + {\color{orange}\int_t^s \left(f^\prime(X_r)b(r,X_r,u_r)+\frac12f^{\prime\prime}(X_r)\sigma^2(r,X_r,u_r)\right)\dr}
 \]
+\subsection{Controlled SDE}
+The state process is a controlled SDE given by
+\begin{equation}\label{eqn:state_process}
+	\begin{cases}
+	    {\dX}_t =b(t,X_t,u_t){{\dt}}+\sigma(t,X_t,u_t){\dd}B_t\\
+     X_0=x\in\mathbb{R}^d
+	\end{cases}
+\end{equation}
+The objective function is similar to deterministic case; there is a running cost and a terminal cost. However, it takes the expected value of the randomness.
+\begin{equation}
+J(x;u)=\mathbb{E}\left[\int_0^T C(s,X_s^u,u_s){{\ds}}+g(X_T^u)\right].
+\end{equation}
+We also assume there is a set of admissible controls, $\mathcal{U}$. The goal is
+\[
+\inf_{u\in\mathcal{U}}J(x;u)
+\]
+Since the problem setting is stochastic, control variables are also stochastic processes. We can choose the control process to behaves randomly following the randomness in the state variable and/or the Wiener process.
+
+Similar to deterministic case, we have myopic solutions. 
+\begin{eg}
+Let $\alpha_t$ be a given stochastic process, e.g. a Wiener process. Consider the stochastic control problem
+    \begin{equation}\label{simple_stoch_control}
+        \inf_{u\in\mathcal{U}}\mathbb{E}\bigg[\int_0^T\Big(x_t^2 - \alpha_t x_t\Big) {\dt}\bigg]
+    \end{equation}
+with controlled state process is given by
+\begin{equation}\label{dynamic_SDE_x}
+    {\dX}_t =  u_t {{\dt}}+\sigma dW_t, ~~ x_0=x
+\end{equation}
+If we can choose $u$ such that $X_t=\alpha_t/2$ or $x+\int_0^tu_s\ds+\sigma W_t=\alpha_t/2$. Under this condition, we have a myopic solution. However, this is very restrictive, even more restrictive to the deterministic case. For example, let assume $\alpha_t$ is deterministic and differentiable. Then, for $x+\int_0^tu_s\ds+\sigma W_t=\alpha_t/2$ to hold, $\int_0^tu_s\ds$ and $\sigma W_t$ should cancel each other. But, Brownian motion is never differentiable. This is a twist added by the stochastic term.
+\end{eg}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Admissibility}
+It is easy to model stochastic control problems from real applications.  However, if not carefully done, the stochastic control problem becomes degenerate.
+
+\begin{ex}[St. Petersburg game and doubling strategy]\label{eg:admissibility_paradox}
+In this example, we show that if the collection of admissible controls are not determined properly, the control problem becomes trivially useless. Consider a game with consecutive rounds. At each round the player makes a bet and a coin is flipped. Upon receiving favorable outcome, the player gains as much as his bet. Otherwise, he loses as much as his bet. 
+The doubling strategy suggests to double the bet for the next round if you lose this round. As a result, if the player's bet in the first round is $x$ and the first win happens at round $n$, he has lost $x(1+\cdots+2^{n-1})=x(2^{n}-1)$. In the $n$th round, he wins $x2^n$, which makes his total wealth $x$ more. This is an obvious arbitrage strategy. However, it requires the play to tolerate large amount of debt, i.e., $x(2^{n}-1)$. Note that even if the coin is largely biased against the player, the doubling strategy works. 
+
+	Consider the wealth process as described by \eqref{eg:wealth} and assume that asset price $S$ is a martingale by setting $\mu=0$.
+ In this case, $X_t=X_0+\sigma\int_0^tu_s{\dd}B_s$. Further, assume $X_0=0$.
+ Let's try to maximize expected value of wealth by applying an investment strategy $u$:
+ \begin{equation}\label{st.petersburg}
+     V = \sup_{u}\mathbb{E}[X_T],~~~\dX_t =  u_t\dW_t
+ \end{equation}
+ Is the stochastic integral above zero? Why?
+$M_t:=\int_0^t u_sdW_s$ is a local martingale.
+ Now, consider the strategy that chooses 
+ \[
+ u_t=
+ \begin{cases}
+     u & \max_{0\le t} X_t < M\\
+     0 & \max_{0\le t} X_t \ge M
+ \end{cases}
+ \]
+ where $u>0$ is an arbitrary positive number. If $X_t$ never hits $M$, the investment yields $X_T$.
+ 
+Note that for $X^u_t=\sigma u W_t$, probability of hitting $M$ before $T$ is
+\begin{equation}
+    \mathbb{P}\big(\max_{t\le T} X_t^u\ge M\big) =  \mathbb{P}\bigg(\max_{t\le T} W_t\ge \frac{M}{\sigma u}\bigg) =  2\mathbb{P}\bigg(W_T\ge \frac{M}{\sigma u}\bigg)
+\end{equation}
+The last equality is coming from the Schwartz reflection principle for Brownian motion. If we send $u\to\infty$ and $M\to\infty$  such that $\frac{M}{u}\to0$, we obtain $\mathbb{P}(B_T\ge \frac{M}{\sigma u})\to \frac12$. 
+
+On the other hand, from the strategy described above, we have 
+\begin{equation}
+    \mathbb{E}[X_T] = \mathbb{E}[M\mathds{1}_{\{\max_{t\le T} X_t\ge M\}}]+  \mathbb{E}[X_T\mathds{1}_{\{\max_{t\le T} X_t< M\}}]= 2M\mathbb{P}\bigg(W_T\ge \frac{M}{\sigma u}\bigg)+\mathbb{E}[X_T\mathds{1}_{\{\max_{t\le T} X_t< M\}}]
+\end{equation}
+% where $\tau=\inf\{t:X_t\ge M\}\wedge T$
+Now, answer the following questions:
+\begin{enumerate}
+    \item Is it true that $\mathbb{E}[X_t^u1_{\{\max_{t\le T} X_t^u< M\}}]\to 0 $ as $u\to\infty$ and $M\to\infty$  such that $\frac{M}{u}\to0$?
+    \item What is the limit of $2M\mathbb{P}(W_T\ge \frac{M}{\sigma u})$? $V=\infty$?
+    \item If the stochastic integral in \eqref{st.petersburg} is zero, then $V=0$, why did we also get $V=\infty$?
+\end{enumerate}
+\end{ex}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{}
+\subsection{Value function}
+Fo a stochastic control problem
+\begin{equation}\label{problem:_stoch_generic}
+\inf_{u\in\mathcal{U}}J(u),~~~~J(u):=\mathbb{E}\left[\int_0^T C(t,X_t,u_t){{\dt}}+g(X_T)\right].
+\end{equation}
+where 
+\[
+{\dX}_t =b(t,X_t,u_t){{\dt}}+\sigma(t,X_t,u_t){\dd}B_t
+\]
+We define the value function as below
+
+\begin{defn}[Value function]
+    The value function of the control problem is defined by
+\begin{equation}
+V(t,\omega)=\inf_{u\in\mathcal{U}_{t,T}}\mathbb{E}\left[\int_{t}^{T}C(s,X_s^u,u_s){{\ds}}+g(X_T^u)\Big|\mathcal{F}_t\right]
+\end{equation}
+$\mathcal{U}_{t,T}$ is the set of admissible controls on $[t,T]$ and the condition, $\mathcal{F}_t$, inside the conditional expectation represents the path of $X$ before or at time $t$.
+\end{defn}
+There is a well-celebrated result, independently published by \cite{haussmann1986existence} and \cite{el1987compactification}, that shows we can restrict the set of controls to a simpler one. 
+% \cite{Krylov1973selection}.
+\begin{thm}
+    For any well-defined (proper admissibility condition and finite value function) stochastic control problem, the value function does not change if we reduce the set of controls to \textbf{Markovian controls}, i.e., $u_t:=\phi(t,X_t)$ for some function $\phi(t,X_t)$. 
+\end{thm}
+Markovian controls are also called feedback controls, In deterministic control, the existence of optimal feedback control controls is a straightforward fact. 
+\begin{coro}\label{coro:Markov_value_function}
+   The value function takes the form $V(t,\omega)= V(t,X_t)$. Additionally, 
+\begin{equation}\label{eqn:value_function_omega}
+\begin{split}
+    V(t,x) &=\inf_{\phi(t,x)\in\mathcal{U}^{m}_{t,T}}\mathbb{E}\left[\int_{t}^{T}C(s,X_s^u,u_s){{\ds}}+g(X_T^u)\Big|{\color{blue}X_t=x}\right]
+\end{split}
+\end{equation}
+where $\mathcal{U}^{m}_{t,T}$ is he set of all admissible Markovian controls $u_t=\phi(t,X_t)$.
+\end{coro}
+In other words, from the path of $X$ until time $t$, $\mathcal{F}_t$, all that matters is the end point $X_t$ and all the previous values that $X_s$ took for $s<t$ are irrelevant. 
+
+It is worth mentioning there are three type of controls:
+\begin{enumerate}
+    \item Open-loop controls which do not care about the current state of the system. In our case, an open-loop control is a deterministic control. In Example~\ref{simple_control}, if $\alpha_t$ is differentiable, then $u_t=\frac{\alpha_t^{\prime}}{2}$ is a closed-loop control. 
+    \item A closed-loop or feedback control is a control that depends on the path of the state process, i.e., $u_t = \phi(t,\mathcal{F}_{t})$.
+    \item A Markovian control is a special case of feedback control that only depends on the latest value of the state variable, $u_t=\phi(t,X_t)$. Non-Markovian controls are only relevant if the cost function or the terminal cost depend on the path of $X$ or $X$ is not a controlled Markov process.
+\end{enumerate}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Dynamic programming principle (DPP) for stochastic control }
+Dynamic programming principle is not as simple as the deterministic case, Theorem~\ref{thm:stoch_dpp_no_stopping_deterministic}. In deterministic case, we can break a control on $[t,T]$ into one on $[t,s]$ and another on $[s,T]$. Conversely, we can patch two controls on $[t,s]$ and $[s,T]$ to create one from $[t,T]$. In stochastic control, the splitting and patching does not work. Specifically, patching can create non-measurable control processes, which makes it mathematically inaccurate. However, one can use a measurable selection theorem to patch properly and avoid the issue. Other methods used quantization  to solve the issue by avoid measurable selection theorems. For more information, see \cite{Touzi12} and references therein.
+
+
+\begin{thm}\label{thm:stoch_dpp_no_stopping}
+    If the value function is continuous and have linear growth, then for $t<s<T$, we have 
+    \begin{equation}\label{eqn:stoch_dpp_no_stopping}
+        V(t,x)= \inf_{u\in\mathcal{U}_{t,s}}\mathbb{E}\Big[\int_t^s C(r,X_r,u_r){\dr} + V(s,X_s)\Big],~~X_t=x
+    \end{equation}
+\end{thm}
+To obtain an Hamilton-Jacobi-Bellman (HJB) equation from DPP, we require to take $s-t$ very small and expand $V(s,X_s)$ about $(t,x)$.
+\[
+\begin{split}
+    V(s,X_s)  = & V(t,x) + V_t(t,x)(s-t) +V_x(t,x)(X_s-x) + \frac12 V_{xx}(t,x)(X_s-x)^2 + \cdots\\
+     =&V(t,x) + V_t(t,x)(s-t) \\
+     &+V_x(t,x)\left(\int_t^s b(r,X_r,u_r)\dr +\int_t^s \sigma(r,X_r,u_r)\dW_r\right) \\
+     &+ \frac12 V_{xx}(t,x)\left(\int_t^s b(r,X_r,u_r)\dr +\int_t^s\sigma(r,X_r,u_r)\dW_r\right)^2 + \cdots
+\end{split}
+\]
+In the expansion
+\[
+\begin{split}
+    \left(\int_t^s  b(r,X_r,u_r)\dr +\int_t^s  \sigma(r,X_r,u_r)\dW_r\right)^2 = &\left(\int_t^s  b(r,X_r,u_r)\dr\right)^2 \\
+    &+2\int_t^s  b(r,X_r,u_r)\dr\int_t^s  \sigma(r,X_r,u_r)\dW_r\\
+    &+\left(\int_t^s  \sigma(r,X_r,u_r)\dW_r\right)^2
+\end{split}
+\]
+$(\int_t^s  b(r,X_r,u_r)\dr)^2=O((\tau-t)^2)$, $\int_t^s  b(r,X_r,u_r)\dr\int_t^s  \sigma(r,X_r,u_r)\dW_r=O((\tau-t)^{3/2}$, and $(\int_t^s  \sigma(r,X_r,u_r)\dW_r)^2=O(tau-t)$. Therefore, the first two terms are high order terms and we can ignore them. 
+\[
+\begin{split}
+    V(s,X_s)  = & V(t,x) + V_t(t,x)(s-t) +V_x(t,x)(X_s-x) + \frac12 V_{xx}(t,x)(X_s-x)^2 + \cdots\\
+     =&V(t,x) + V_t(t,x)(s-t) \\
+     &+V_x(t,x)\left(\int_t^s  b(r,X_r,u_r)\dr +\int_t^s  \sigma(r,X_r,u_r)\dW_r\right) \\
+     &+ \frac12 V_{xx}(t,x)\left(\int_t^s  \sigma(r,X_r,u_r)\dW_r\right)^2 + \cdots
+\end{split}
+\]
+In addition, 
+\[
+\begin{split}
+    \mathbb{E}\left[\int_t^s  \sigma(r,X_r,u_r)\dW_r\right]&=0\\
+    \mathbb{E}\left[\left(\int_t^s  \sigma(r,X_r,u_r)\dW_r\right)^2\right]&=\mathbb{E}\left[\int_t^s  \sigma^2(r,X_r,u_r)\dr\right]
+\end{split}
+\]
+Therefore,
+\[
+\begin{split}
+    \mathbb{E}[V(s,X_s)]  = & V(t,x) + V_t(t,x)\mathbb{E}[s-t]+V_x(t,x)\mathbb{E}\left[\int_t^s  b(r,X_r,u_r)\dr\right] \\
+     &+ \frac12 V_{xx}(t,x)\mathbb{E}\left[\int_t^s  \sigma^2(r,X_r,u_r)\dr\right] + \cdots
+\end{split}
+\]
+Insert the Taylor expansion into DPP:
+\[
+\begin{split}
+    0= \inf_{u\in\mathcal{U}_{t,s}}\mathbb{E}\Big[\int_t^s  C(r,X_r,u_r){\dr} + V_t(t,x)(s-t) +\int_t^s  b(r,X_r,u_r)\dr+\frac12 V_{xx}(t,x)\int_t^s  \sigma^2(r,X_r,u_r)\dr\Big]
+\end{split}
+\]
+Take $\Delta t:=s-t$, divide by $\Delta t$, and send $\Delta t\to 0$, we get the HJB equation:
+\[
+\begin{cases}
+    0= V_t(t,x) + \inf_{u\in U}\left\{ C(t,x,u)  + V_x(t,x)\cdot b(t,x,u)+\frac12 V_{xx}(t,x) \sigma^2(t,x,u)\right\}\\
+    V(T,x)=g(x)
+\end{cases}
+\]
+where we added terminal cost as a boundary condition.
+The DPP in Theorem~\ref{thm:stoch_dpp_no_stopping} is a special case of the general DPP for stochastic control problems. To explain the general DPP, we need the notion of \emph{stopping time} in a probabilistic setting. When we deal with stochastic processes, the occurrence time of events are random. For example, let $\tau$ be the first time a 2-$d$ Wiener process exits a given circle.  For two different sample paths, the exit time is different.
+A stopping time is a random time that can be determined whether it has happen or not based on the observed events. See Figure~\ref{fig:exit_time}.
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=0.5\linewidth]{Control_lecture_notes/Figs/bm_2d_hitting_time.png}
+    \caption{Two paths of random walks started at the center of the disk. One exits after $42188$ steps  and the other after $77374$ steps.}
+    \label{fig:exit_time}
+\end{figure}
+\begin{defn}
+Let $\mathcal{F}_t$ represents all events that are revealed at or before time $t$. The a random variable $\tau:\Omega\to[0,\infty)$ is called a stopping time if for all $t\ge0$, the event $\{\tau\le t\}$ belong to $\mathcal{F}_t$.
+    In simple words, a stopping time cannot depend on some secret information that are not observed. 
+\end{defn}
+The DPP with stopping time is presented next.
+\begin{thm}\label{thm:stoch_dpp_stopping}
+    If the value function is continuous and have linear growth, then for any stopping time $\tau$ such that $t<\tau<T$, we have 
+    \begin{equation}\label{eqn:stoch_dpp_no_stopping}
+        V(t,x)= \inf_{u\in\mathcal{U}_{t,\tau}}\mathbb{E}\Big[\int_t^\tau C(r,X_r,u_r){\dr} + V(\tau,X_\tau)\Big],~~X_t=x
+    \end{equation}
+\end{thm}
+Why is stopping time in DPP important?
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Old old stuff Stochastic Control}
 We explain the components of a stochastic control problem.
-\section{State process}
-Given a progressively measurable process\footnote{A process is called progressively measurable if for any $t$, the restriction to $[0,t]\times\Omega$ is $\mathcal{B}[0,t]\otimes\mathcal{F}_t$-measurable.} $u_t$ taking values in a set $\mathbf{U}\subseteq \mathbb{R}^m$, which will be clarified later, the state process is given by the SDE
-\begin{equation}\label{eqn:state_process}
-	\begin{cases}
-	    {\dx}^u_t =\mu(t,X_t^u,u_t){{\dt}}+\sigma(t,X_t^u,u_t){\dd}B_t\\
-     X^u_0=x\in\mathbb{R}^d
-	\end{cases}
-\end{equation}
-\begin{rem}
-    If we assume that $\mu(t,x,u)$ and $\sigma(t,x,u)$ are Lipschitz continuous in $(t,x)$ uniformly in $u$, i.e.,
-    \begin{equation}
-       \sup_{u\in\mathbf{U}}\{ |\mu(t,x,u)-\mu(s,y,u)|+|\sigma(t,x,u)-\sigma(s,y,u)|\}\le K(|t-s|+|x-y|)
-    \end{equation}
-    Then for any progressively measurable $u_t$, \eqref{eqn:state_process} has a \underline{strong} solution.
-\end{rem}
-\begin{rem}
-    In the deterministic control, $\sigma\equiv0$.
-\end{rem}
-
-\begin{eg}
-	Take $u\equiv0$ in ${\dX}^u_t=u_tX_t^u {{\dt}}$. Then, $X_t^0=X_0$. For $u\equiv 1$, $X_t^1=X_0e^t$ and For $u_t=-t$, $X_t^u=X_0e^{-t^2/2}$. In general, $X_t^u=X_0e^{\int_0^tu_s{{\ds}}}$.
-\end{eg}
-\begin{eg}\label{eg:wealth}
-In Black-Scholes model, the price of an asset satisfies ${{\ds}}_t=S_t(\mu {{\dt}}+\sigma {\dd}B_t)$. If the interest rate $r=0$ and $u_t$ is the amount of money invested in the asset, the wealth process from a self-financing portfolio satisfies
-	\begin{equation}
-	    {\dX}^u_t=u_t(\mu {{\dt}}+\sigma {\dd}B_t)
-	\end{equation} 
- Then, $X_t^u=X_0\exp\big(\sigma\int_0^tu_s{\dd}B_s+(\mu-\sigma^2/2)\int_0^t u^2_s{{\ds}}\big)$, where $X_0$ is the initial wealth.
-	\end{eg}
-\section{Objective function}
-The goal is to  minimize (or maximize) an objective function of the following form. Set $X_0^u=x$ for all $u$ and define
-\begin{equation}
-J(x;u)=\mathbb{E}\left[\int_0^T C(s,X_s^u,u_s){{\ds}}+g(X_T^u)\right].
-\end{equation}
-where $C:[0,T]\times\mathbb{R}^d\times\mathbb{R}^m\to\mathbb{R}$ is called running cost and $g:\mathbb{R}^d\to\mathbb{R}$ is the terminal cost. 
-We assume that $C(t,x,u)$ is Lipschitz in $(t,x)$ uniformly in $u$ and $g$ is Lipschitz. Here, we only focus on minimization as minimization can be obtained by a negative sign. 
-
-
-The value of the problem is
-\begin{equation}
-	V:=\inf_{u}J(x;u).
-\end{equation}
-If a process $u^*$ exists such that   $V=J(x;u^*)$, we call $u^*$ and optimal control. 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Admissibility}
-It is easy to model stochastic control problems from real applications.  However, if not carefully done, the stochastic control problem becomes degenerate.
-
-\begin{ex}[St. Peterburg paradox]\label{eg:admissibility_paradox}
-	Consider the wealth process as described by \eqref{eg:wealth} and assume that asset price $S$ is a martingale by setting $\mu=0$.
- In this case, $X_t=X_0+\sigma\int_0^tu_s{\dd}B_s$. Further, assume $X_0=0$.
- Let's try to maximize expected value of wealth by applying an investment strategy $u$:
- \begin{equation}\label{st.petersburg}
-     V = \sup_{u}\mathbb{E}[X_T^u]=\sigma\sup_{u}\mathbb{E}\bigg[\int_0^T u_s{\dd}B_s\bigg].
- \end{equation}
- Is the stochastic integral above zero? Why?
-
- Now, consider the strategy that chooses $u_t=u>0$, where $u$ is large and liquidate the investment as soon as $X_t^u=M$. If $X_t^u$ never hits $M$, the investment yields $X_T^u$.
- 
-Note that for $X^u_t=\sigma u B_t$, probability of hitting $M$ before $T$ is
-\begin{equation}
-    \mathbb{P}\big(\max_{t\le T} X_t^u\ge M\big) =  \mathbb{P}\bigg(\max_{t\le T} B_t\ge \frac{M}{\sigma u}\bigg) =  2\mathbb{P}\bigg(B_T\ge \frac{M}{\sigma u}\bigg)
-\end{equation}
-The last equality is coming from the Schwartz reflection principle for Brownian motion. If we send $u\to\infty$ and $M\to\infty$  such that $\frac{M}{u}\to0$, we obtain $\mathbb{P}(B_T\ge \frac{M}{\sigma u})\to \frac12$. 
-
-On the other hand, from the strategy described above, we have 
-\begin{equation}
-    \mathbb{E}[X_T^u] = \mathbb{E}[M1_{\{\max_{t\le T} X_t^u\ge M\}}]+  \mathbb{E}[X_T^u1_{\{\max_{t\le T} X_t^u< M\}}]= 2M\mathbb{P}\bigg(B_T\ge \frac{M}{\sigma u}\bigg)+\mathbb{E}[X_T^u1_{\{\max_{t\le T} X_t^u< M\}}]
-\end{equation}
-Now, answer the following questions:
-\begin{enumerate}
-    \item Is it true that $\mathbb{E}[X_t^u1_{\{\max_{t\le T} X_t^u< M\}}]\to 0 $ as $u\to\infty$ and $M\to\infty$  such that $\frac{M}{u}\to0$?
-    \item What is the limit of $2M\mathbb{P}(B_T\ge \frac{M}{\sigma u})$? $V=\infty$?
-    \item If the stochastic integral in \eqref{st.petersburg} is zero, then $V=0$, why did we also get $V=\infty$?
-\end{enumerate}
-
-
-
-
-
-\end{ex}
-The above example shows that if someone can have unlimited borrowing power, the value functions is infinite. From the practical point of view, this is not possible. If we define a set admissible controls to be all progressively measurable $u$ such that $c_t\ge0$ and $X_T^u\ge -C$  for some credit limit $C\ge0$\footnote{$C\ge0$ is no-short-selling condition.} $\mathbb{P}$-a.s., then the  strategies in Example~\ref{eg:admissibility_paradox} are not admissible.  
-
-Another consideration is that the choice of control $u$ should be made such that the state process in \eqref{eqn:state_process} admits a solution for which $J(x;u)$ is defined and finite. For instance, in Example~\ref{eg:admissibility_paradox}, there are choices for $\theta_t$ such that ${\dX}_t=\sigma \theta_t {\dd}B_t$ does not have a (strong) solution, see \cite{tsirel1976example} for an example when strong solution does not exist. The set of admissible controls should be chosen such that it includes the (unknown) optimal control we are looking for. If too restricted, we would not get optimality; if two wide, we get bizaar solutions such as in St. Petersburg paradox, \ref{eg:admissibility_paradox}.
-
-Based on the above discussion, we define the set of admissible controls for \ref{eg:admissibility_paradox} can be 
-\begin{equation}\label{eqn:admissible}
-	\begin{split}
-		\mathcal{A}_C&=\Big\{u\ :  \mathbb{P}\textrm{-a.s.}, u~\textrm{is progressively measurable}, \textrm{SDE ${\dX}^u_t=\sigma u_t {\dd}B_t$ has a "strong" solution $X_t^u$},\\ 
-		&\hspace*{8cm} \textrm{and}~ X_T^u\ge -C~\mathbb{P}\textrm{-a.s.} \Big\}.
-	\end{split}
-\end{equation}
-In the above, $C\ge0$ is a given constant. Because $u\equiv0$ is an optimal control for the St. Petersburg problem, 
-we can also choose $\mathcal{A}_0$ as the set of admissible strategies.
-
-Next, we provide a more practical problem.
 
 \begin{ex}[Merton problem]
     In the same setting as \ref{eg:admissibility_paradox}, consider
@@ -1191,55 +1296,7 @@ Next, we provide a more practical problem.
 \end{ex}
 
 
-%%%%%%%
-\section{Value function}
-Assume that we have a generic control problem
-\begin{equation}\label{problem:generic}
-\inf_{u\in\mathcal{A}}J(u),~~~~J(u):=\mathbb{E}\left[\int_0^T C(s,X_s^u,u_s){{\ds}}+g(X_T^u)\right].
-\end{equation}
-where and $X_t^u$ satisfies \eqref{eqn:state_process} and $\mathcal{A}$ is a set of admissible controls, which we assume given.
 
-One way to solve this problem is to define a value function and obtain a dynamic programming equation on the value function.
-
-\begin{defn}[Value function]
-    The value function of the control problem is defined by
-\begin{equation}
-V(t,\omega)=\textrm{essinf}_{u\in\mathcal{A}_{t,T}}\mathbb{E}\left[\int_{t}^{T}C(s,X_s^u,u_s){{\ds}}+g(X_T^u)\Big|\mathcal{F}_t\right]
-\end{equation}
-In the above, $\mathcal{A}_{t,T}$ the restriction of the set of admissible controls on the time interval $[t,T]$. \footnote{Essential infimum. Using essential infimum  is necessary because the supremum of random variables in not necessarily measurable (a random variable). For a family of random variables $\{\chi_u\}_{u\in\mathcal{A}_{t,T}}$, $\textrm{essinf}_{u\in\mathcal{A}_{t,T}}\chi_u$ is $\mathbb{P}$-a.s unique and is a by the smallest random variable that is larger or equal to $\chi_u$ for all $u\in\mathcal{A}_{t,T}$. In our case, $\chi_u=\mathbb{E}\left[\int_{t}^{T}C(s,X_s^u,u_s){{\ds}}+g(X_T^u)\Big|\mathcal{F}_t\right]$.}
-\end{defn}
-
-Note that $V(t,\omega)$ is a $\mathcal{F}_t$-measurable random variable and in this form it is not useful. However, the following result gives us a lifeline. This well-celebrated result was independently found by \cite{haussmann1986existence} and \cite{el1987compactification} by using Markov selection theorem from \cite{Krylov1973selection}.
-\begin{thm}
-    For any well-defined (proper admissibility condition and finite value function) stochastic control problem, the value function does not change if we reduce the set of controls to \textbf{Markovian controls}, i.e., $u_t:=\phi(t,X_t^u)$. 
-\end{thm}
-Markovian controls are also called feedback controls, especially if the problem is deterministic. 
-\begin{coro}\label{coro:Markov_value_function}
-    For the value function we have $V(t,\omega)= V(t,X_t^u)$ where
-\begin{equation}\label{eqn:value_function_omega}
-\begin{split}
-    V(t,x)&=\inf_{u\in\mathcal{A}_{t,T}}\mathbb{E}\left[\int_{t}^{T}C(s,X_s^u,u_s){{\ds}}+g(X_T^u)\Big|X^u_t=x\right]\\
-    &= \inf_{u\in\mathcal{A}^f_{t,T}}\mathbb{E}\left[\int_{t}^{T}C(s,X_s^u,u_s){{\ds}}+g(X_T^u)\Big|X^u_t=x\right]
-\end{split}
-\end{equation}
-where $\mathcal{A}^f_{t,T}$ is he set of all Markovian controls $u_t=\phi(t,X^u_t)$; in particular the following SDE has a strong solution for all $x$
-\begin{equation}\label{eqn:state_Markov_control}
-	\begin{cases}
-		{\dX}_s =\mu(s,X_s,\phi(s,X_s)){{\ds}}+\sigma(s,X_s,\phi(s,X_s)){\dd}B_s\\
-		X_t=x
-	\end{cases}
-\end{equation}
-\end{coro}
-\begin{rem}[Discussion of strong and week solution]
-    The requirement of existence of strong solution for \eqref{eqn:state_Markov_control} is for the sake of simplicity. We recall that an SDE has a strong solution when for all filtered probability space hosting a Brownian motion, the SDE has a solution. An SDE has a weak solution if there exists a filtered probability space hosting a Brownian motion in which the SDE has a solution. For more discussion and example of nonexistence of strong solutions see \cite{tsirel1976example} and the discussion in \cite{rogers2000diffusions}.
-\end{rem}
-It is worth mentioning there are three type of controls:
-\begin{enumerate}
-    \item Open-loop controls which do not care about the current state of the system. In our case, an open-loop control is a deterministic control. Control $u_t=\alpha^\prime_t+\beta \alpha_t$ in Example\ref{prob:deterministic_control}  is open-loop because it does not depend on the state of system $x_t$.
-    \item A closed-loop or feedback control is a control that depends on the path of the state process, i.e., $u_t = \phi(t,X_{\cdot\wedge t})=\phi(t,X_s:s\le t)$ or equivalently $u_t$ is adapted to the filtration generated by $X$, $\{\mathcal{F}_t^X\}_t$, measurable. Note that a closed-loop control is automatically adapter to the filtration generated by the Brownian motion.
-    \item A Markovian control is a special case of feedback control that only depends on the latest value of the state variable, $u_t=\phi(t,X_t)$. In this course, when we discuss the existence of optimal control, we mean Markovian optimal control unless otherwise is specified.
-\end{enumerate}
-\
 
 
 
@@ -1316,18 +1373,10 @@ This provides us with a recursive formula to solve a discrete-time control probl
 
 
 
-%%%%%%%%%%%%%%%
-\section{Dynamic programming principle in continuous time}
-In continuous time, dynamic programming principle is more complicated. Early results used measurable selection theorems to overcome these complications. Later, quantization methods were used to avoid measurable selection theorems. For more information, see \cite{Touzi12} and references therein.
-\begin{thm}\label{thm:dpp}
-    If the value function is continuous and have linear growth, then for any stopping time $\tau$, we have 
-    \begin{equation}\label{eqn:dpp}
-        V(t,x)=\inf_{u}\mathbb{E}_{t,x}\Big[\int_t^\tau C(s,X^u_s,u_s){{\ds}} + V(\tau,X_\tau^u)\Big]
-    \end{equation}
-\end{thm}
+
 %%%%%%%%%%%%%%%
 \section{Hamilton-Jacobi-Bellman equation}
-In Theorem~\ref{thm:dpp}, for fixed $h,\epsilon>0$ take $\tau=\tau^h=\inf\{s>0, |X_s^u-x|\ge \epsilon\}\wedge (t+h)$. Assume that the value function is $C^{1,2}$, once continuously differentiable on $t$ and twice continuously differentiable on $x$.By applying It\^o's formula on $V({\tau^h},X_{\tau^h}^u)$, we obtain
+In Theorem~\ref{thm:stoch_dpp_no_stopping}, for fixed $h,\epsilon>0$ take $\tau=\tau^h=\inf\{s>0, |X_s^u-x|\ge \epsilon\}\wedge (t+h)$. Assume that the value function is $C^{1,2}$, once continuously differentiable on $t$ and twice continuously differentiable on $x$.By applying It\^o's formula on $V({\tau^h},X_{\tau^h}^u)$, we obtain
 \begin{equation}
 \begin{split}
     V({\tau^h},X_{\tau^h}^u)=&V(t,x)\\
