@@ -1383,9 +1383,9 @@ we require to be able to commutate the limit and expected value:
 \]
 This commutation of limit and expected value is not a straightforward operation. In fact, there are limit theorems, e.g., Legesgue dominated convergence, monotone convergence, and Fatou's lemma, that come with restrictive conditions for such commutations.
 For example, if 
-\[
-\mathbb{E}\left[\int_0^t \sigma^2(s,X_s,u_s)\ds\right]<\infty,
-\]
+\begin{equation}\label{cond:square_integrability}
+    \mathbb{E}\left[\int_0^t \sigma^2(s,X_s,u_s)\ds\right]<\infty
+\end{equation}
 then the commutation is possible and 
 \[
 \begin{split}
@@ -1394,7 +1394,7 @@ then the commutation is possible and
     &=\lim_{|t_n-t_{n-1}|\to0}\sum_{n=1}^{N} \mathbb{E}\Big[\sigma(t_{n-1},X_{t_{n-1}},u_{t_{n-1}})(W_{t_{n}}-W_{t_{n-1}})\Big]=0
 \end{split}
 \]
-Otherwise, one cannot show that the stochastic integral is mean-zero. In such cases, the mean of stochastic integral does not even exist. For example, in the derivation of HJB equation for stochastic control problems, specifically in \eqref{dpp:mean_zero}, there is no guarantee that the expectation of the stochastic integral is zero. $\sigma(r,X_r,u_r)$ is a very general function and there cannot be any restriction imposed on $X$ or $u$. However, if we write the DPP with a spesific stopping time, then the issue is resolved. In \eqref{eqn:stoch_dpp_stopping}. we can choose the stopping time to be
+Otherwise, one cannot show that the stochastic integral is mean-zero. In such cases, the mean of stochastic integral does not even exist. For example, in the derivation of HJB equation for stochastic control problems, specifically in \eqref{dpp:mean_zero}, there is no guarantee that the expectation of the stochastic integral is zero. $\sigma(r,X_r,u_r)$ is a general function and $u_r$ is arbitrary. Therefore, we can not guaranty the square integrability  in \eqref{cond:square_integrability}. However, if we write the DPP with a specific stopping time, then the issue is resolved. In \eqref{eqn:stoch_dpp_stopping}. we can choose the stopping time to be
 \begin{equation}\label{eqn:tau_s}
     \tau=\min\Big\{s,\inf\{r>t: |\sigma(r,X_r,u_r)|\ge M \}\Big\}
 \end{equation}
