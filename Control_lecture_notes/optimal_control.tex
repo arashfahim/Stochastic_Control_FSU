@@ -1291,13 +1291,58 @@ Using the notation of Hamiltonian, we write
 &\hspace{4cm}H(t,x,p,\Gamma):=\inf_{u\in U}\left\{ C(t,x,u)  + p\cdot b(t,x,u)+\frac12 \Gamma \sigma^2(t,x,u)\right\}\label{eqn:Hamilton_1d}
 \end{align}
 where we added terminal cost as a boundary condition.
+\begin{ex}\label{ex:merton}
+    The wealth of in individual who splits his investment in the stock market and money market is given by
+    \[
+    \dd X_t = (\theta_t \mu + r(X_t-\theta_t))\dt + \theta_t \sigma \dW_t
+    \]
+    Here, $\mu\in\mathbb{R}$ is the rate of return on the stock, $r\ge0$ is the interest rate of money market,  and $\theta_t$ is the control variable that represents the amount invested in risky asset. 
+    For a given utility function, $U$, write the HJB for 
+    \[
+    \sup_{\theta_t}\mathbb{E}[U(X_T)]
+    \]
+    To avoid doubling strategy, we define the set of all admissible investment strategies as all $\theta_t$ such that $X_t\ge0$ for all $t$.
+\end{ex}
+\begin{ex}\label{ex:merton_w_consumption}
+    In Exercise~\ref{ex:merton}, we allow the consumptions to be withdrawn from the investment at any time.
+    \[
+    \dd X_t = (\theta_t \mu + r(X_t-\theta_t)-c_t)\dt + \theta_t \sigma \dW_t
+    \]
+    Here, $\mu\in\mathbb{R}$ is the rate of return on the stock, $r\ge0$ is the interest rate of money market,  and $\theta_t$ is the control variable that represents the amount invested in risky asset. 
+    For a given utility function, $U$, write the HJB for 
+    \[
+    \sup_{\theta_t,c_t\ge0}\mathbb{E}\left[\int_0^TU(c_t)\dt + U(X_T)\right]
+    \]
+    To avoid doubling strategy, we define the set of all admissible investment as in Exercise~\ref{ex:merton}.
+\end{ex}
+\begin{ex}
+    In Exercises~\ref{ex:merton} and \ref{ex:merton_w_consumption}, assume that $U(x)=\frac{x^\gamma}{\gamma}$ for $gamma\in(0,1)$. Find a solution of the form $V(t,x)=f(t)U(x)$ for the HJB equation.
+\end{ex}
+
 If we consider higher dimensions, we should write Hamiltonian as  
 \begin{equation}
 H(t,x,p,\Gamma):=\inf_{u\in U}\left\{ C(t,x,u)  + p\cdot b(t,x,u)+\frac12 \Gamma\cdot\sigma^{\top}\sigma(t,x,u)\right\}
 \end{equation}
+\begin{ex}
+The dynamics of portion of susceptible individuals and infected individuals in a population follows.
+\begin{align*}
+\dd{S}_t &= \left( \mu(1 - S_t) - \beta_t S_t I_t \right) \dt + G_1(S_t) \dW_t^{1}- G_2(S_t,I_t) \dW_t^{2} \\
+\dd{I}_t &= \left( \beta_t S_t I_t - (\gamma_t + \mu)I_t \right) \dt + G_2(S_t,I_t)  \dW_t^{2} - G_3(I_t)  \dW_t^{3}
+\end{align*}
+where $\dW^1$, $\dW^2$, and $\dW^3$,  are independent Wiener processes, $\beta_t>0$ and $\gamma_t>0$ are control variables, and the diffusion coefficients are defined as:
+\begin{align*}
+G_1(s) &= \sqrt{\mu(1 + s)} \\
+G_2(s,i) &= \sqrt{\beta s i} \\
+G_3(i) &= \sqrt{(\gamma + \mu)i}
+\end{align*}
+Write the HJB equation for the stochastic control problem
+\[
+\inf_{\beta_t,\gamma_t}\mathbb{E}\left[\int_0^T (b-\beta_t)^2+\gamma_t^2 )\dt + I_T^2\right]
+\]
+\end{ex}
 
-
-The DPP in Theorem~\ref{thm:stoch_dpp_no_stopping} is a special case of the general DPP for stochastic control problems. To explain the general DPP, we need the notion of \emph{stopping time} in a probabilistic setting. When we deal with stochastic processes, the occurrence time of events are random. For example, let $\tau$ be the first time a 2-$d$ Wiener process exits a given circle.  For two different sample paths, the exit time is different.
+\subsection{DPP with stopping time}
+The DPP in Theorem~\ref{thm:stoch_dpp_no_stopping} is a special case of the general DPP for stochastic control problems. To explain the general DPP, we need the notion of \emph{stopping time} in a probabilistic setting. When we deal with stochastic processes, the occurrence time of an event is random. For example, let $\tau$ be the first time a 2-$d$ Wiener process exits a given circle.  For two different sample paths, the exit time is different.
 A stopping time is a random time that can be determined whether it has happen or not based on the observed events. See Figure~\ref{fig:exit_time}.
 \begin{figure}[ht!]
     \centering
