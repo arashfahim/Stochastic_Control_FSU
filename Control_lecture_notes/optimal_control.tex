@@ -1413,6 +1413,191 @@ and the stochastic integral vanishes.
     \tau=\min\Big\{s,\inf\{r>t: |X_r|\ge M \}\Big\}
     \]
 \end{rem}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Numerical optimal control}
+In this chapter, we present some of the most recent numerical methods to solve optimal control problems. The first numerical methods presented here are based on solving HJ or HJB equations. Since HJ or HJB equations are nonlinear PDEs, are nonlinear PDE solvers can be potential solutions. However, some of the classical methods  of solving nonlinear PDE, such as finite difference, finite elements, finite volume, and the likes, are only practical in low dimensions ($d\le3$). Moreover, learning such methods heavily relies on numerical analysis techniques, which is outside the interest of these notes. Therefore, we only present most recent methods that can be applied in higher dimensions.
+
+Before we continue to learn the numerical methods, we shall emphasize on that we are trying to find the optimal control and/or the value function for each possible value of $t$ and $x$. Therefore, we first study the approximation methods of functions. 
+
+\section{Approximating functions}
+Let's assume that we want to approximate a function $f:[a,b]^d\to\mathbb{R}$ using only information at finite number of points, i.e., $f(x_i)=y_i$.
+
+\subsection{Regression}
+Simplest of all methods is regression. In regression, we choose a basis set of functions $\{\phi_1,\cdots,\phi_K\}$ and find coefficients $a_1,...,a_K\in\mathbb{R}^d$ such that 
+\[
+f(x)\approx \hat{f}(x):=\sum_{k=1}^Ka_k\cdot \phi_k(x)
+\]
+Let $\{(x^j,y^j):i=1,...,J\}$ be such that $y^j=f(x^j)$, then we set values for $a_1,..,a_K$ such that the mean square error is minimized: 
+\begin{equation}
+\label{prob:inf_regresion}
+\inf_{a_1,...,a_K}\sum_{j=1}^J\left(\sum_{k=1}^{K} a_k \phi_k(x^j)-y^j\right)^2
+\end{equation}
+Taking derivatives with respect to $a_k$, we obtain
+\[
+\sum_{j=1}^J\phi_{k}(x^j)\sum_{\ell=1}^{K} a_{\ell} \phi_{\ell}(x^j)-y^j=0
+\]
+or
+\begin{equation}
+    \label{eqn:linear_regression}
+\sum_{\ell=1}^{K} \phi_{k\ell}a_{\ell}=b_{k},~~\text{ for all }~~k=1,...,K
+\end{equation}
+where
+\[
+\phi_{k\ell}:=\sum_{j=1}^J\phi_{k}(x^j)\phi_{\ell}(x^j)~\text{ and }~b_k:=\sum_{j=1}^J\phi_{k}(x^j)y^j
+\]
+Solving the linear system of equation \eqref{eqn:linear_regression} is often time-consuming. If the functions $\phi_k$ are not chosen properly, the solution may not be unique. However, if we choose an \emph{orthogonal} system of functions, then the solution to \eqref{eqn:linear_regression} is simple. Let 
+\[
+\int_a^b \phi_k(x)\phi_{\ell}(x)dx=
+\begin{cases}
+    0&k\neq\ell\\
+    \neq0&k=\ell
+\end{cases}
+\]
+and $x^j$s are i.i.d. samples, then
+\[
+\frac{1}{J}\phi_{k\ell}=\frac{1}{J}\sum_{j=1}^J\phi_{k}(x^j)\phi_{\ell}(x^j)\approx \int_a^b \phi_k(x)\phi_{\ell}(x)dx\begin{cases}
+    =0&k\neq\ell\\
+    \int_a^b \phi^2_k(x)dx&k=\ell
+\end{cases}
+\]
+and \eqref{eqn:linear_regression} is approximated by
+\[
+a_k = \frac{\int_a^b \phi_k(x)f(x)dx}{\int_a^b \phi^2_k(x)(x)dx} \approx \frac{\sum_{j=1}^{J}y^j\phi_{k}(x^{j})}{\sum_{j=1}^{J}\phi^2_{k}(x^{j})}
+\]
+If we work with real data, we may not have the luxury to assume $x^j$s are i.i.d. In the context of optimal control problems, there is no prior real data and we do not have this issue. On a different point, the regression can be applied to approximate functions with values in $\mathbb{R}^d$. However, the complexity of orthogonal functions in higher dimensions can increase significantly. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Neural networks}
+A \emph{feed-forward neural network} is a function that is constructed as follows. There are $L$ layers.
+In the first layer, the input $x\in\mathbb{R}^d$ is multiplied by  a $d_1\times d$ matrix and the result is added to a $d_1$ vector. 
+\[
+\tilde{x}_1=\Lambda_1x:=W_{d_1\times d}x+b_1
+\]
+Then, before the output of the first layer is fed into the next layer, a nonlinear function $\sigma_1$ is applied on $x_1$,
+\[
+x_1:=\Sigma_1(\tilde{x}_1)
+\]
+Similarly, at layer $\ell$, the output $x_{\ell-1}$ of the previous layer is transformed by an affine function and inserted into the nonlinear function $\sigma_\ell$:
+\[
+x_\ell=\Sigma_{\ell}(\Lambda_{d_\ell}x_{\ell-1}), ~\text{ with }~\Lambda_{d_\ell}:=W_{d_{\ell}\times_{\ell-1}}x_{\ell-1}+b_\ell
+\]
+In the final layer of a feedforward neural network, the dimension of the output is determined by the dimension of the output of the function that needs to be approximated.
+If we like to approximate a function $f:[a,b]^d\to\mathbb{R}^m$, $d_L=m$. Then matrices $W_{d_{\ell-1}\times{d_{\ell}}}$  are called the weights and vectors $b_\ell$ are called the bias of the neural network, or simply we can call them parameters of the neural network. We denote the neural network by
+\[
+NN(x,\theta):=\Sigma_{\ell}\circ\Lambda_{d_\ell}\circ\cdots\circ\Sigma_1\circ L_{1}(x)
+\]
+where the parameters of the neural network are denoted by
+\[
+\theta=(W_{d_1\times d},b_1,...,W_{d_{\ell-1}\times d_\ell},b_{d_{\ell}})
+\]
+What makes neural network approximation efficient is the simplicity of the functions involved. The affine functions are indeed simple. The nonlinear functions $\Sigma_i$ are called activation functions. Some example of activation functions include
+\begin{align}
+    \Sigma(x)=(x)^+&~~~\text{ReLU}\\
+    \Sigma(x)=\frac{1}{1+e^{-x}}&~~~\text{Sigmoid}\\
+    \Sigma(x)=\tanh(x)&~~~\text{Tangent hyperbolic}
+\end{align}
+The activation functions on multi-dimensional data act elementwise. $\Sigma(x_1,...,x_d)=(\Sigma(x_1),...,\Sigma(x_d))$.
+For the goal of approximating a function with a neural network, on needs to minimize 
+\begin{equation}\label{prob:inf_nn}
+    \inf_{\theta}\mathcal{J}(\theta),,~~~~~\mathcal{J}(\theta):=\sum_{j=1}^J\left(NN(x^j,\theta)-y^j\right)^2
+\end{equation}
+To evaluate the infimum above, we need to appeal to gradient descent algorithm. The most important step in the gradient descent is to evaluate the derivative of the loss function in \eqref{prob:inf_nn}. This is were simplicity of the activation functions in the neural network helps. One can evaluate $\mathcal{J}(\theta)$ once and use it via symbolic calculations to evaluate the gradient at each time the parameter is changed during gradient descent. 
+\begin{algorithm}
+        % Algorithm content goes here
+        \caption{Gradient descent}
+        \label{alg:gd_nn}
+        \KwData{$\theta_0$ is randomly chosen.}
+        \KwData{The gradient of $\mathcal{J}(\theta)$ is evaluated in a symbolic manner.}
+        \Parameter{Learning rate $\{\alpha_n\}_n$, number of iterations $N$, and tolerance $\epsilon>0$.}
+        \While{$|\nabla \mathcal{J}(\theta_n)|>\epsilon$ \& $n\le N$}{
+        $\theta_{n}\leftarrow \theta_{n} - \alpha_n \nabla \mathcal{J}(\theta_{n})$\;
+        $n \leftarrow n + 1$
+        }
+        \Return{$\theta_n$}
+        \caption{Gradient descent algorithm for neural networks}
+\end{algorithm}
+Any deep learning package has implemented automatic differentiation to evaluate the loss function and to build a tree using chain rule. This tree is saved in the memory and is used at any step of the algorithm to evaluate the gradient. This process is also referred to as \emph{forward propagation}. After the tree is build and the loss function is evaluated, the algorithm goes backward in the tree to evaluates the gradient and to adjust the parameters using the chain rule. This step of the process is called \emph{back propagation}.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Comparison between polynomial approximation and neural network}
+While polynomial approximation has been a state-of-art for many decades, neural networks claim a place in the approximation theory due to the capability so handle nonlinear problems. Especially, orthogonal polynomials are efficient if we are using regression method. However, they lack efficiency in more complicated loss functions. The most important gain of the neural networks over polynomial approximation is where the problem is high-dimensional. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Loss function and functional optimization}
+The goal of  approximation of $f:[a,b]^d\to\mathbb{R}^m$ is achieved by minimizing a loss function similar to \eqref{prob:inf_regresion}. 
+In the context of optimal control, the loss function is more complicated than \eqref{prob:inf_regresion}.  Here, we like to find a function $\phi(t,x)$ to minimize
+\begin{equation}\label{func:loss_generic}
+{\mathcal{J}}(\phi):=\mathbb{E}\left[\int_0^T C(t,X_t,\phi(t,X_t)){{\dt}}+g(X_T)\right].
+\end{equation}
+where 
+\[
+{\dX}_t =b(t,X_t,\phi(t,X_t)){{\dt}}+\sigma(t,X_t,\phi(t,X_t)){\dd}B_t
+\]
+In the above, $J(\phi)$ if the target of the minimization. The choice of the Markovian control $u_t=\phi(t,X_t)$ is allowed because of \citet{el1987compactification,haussmann1986existence}. An important consideration in the choice of $\phi$ is to obtain consistency with the space of admissible control. 
+A control problem is simply an optimization over a set of functions.
+\begin{figure}
+    \centering
+    \includegraphics[width=0.7\linewidth]{Control_lecture_notes/Figs/OneUnit.pdf}
+    \caption{A design of a unit for solving control problems with deep learning. $\Sigma$ is an activation function.}
+    \label{fig:nn_control}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Parametrization of functions}
+In the loss function \eqref{func:loss_generic}, we replace $\phi$ with a parametrized function, such as  a neural network.
+\begin{equation}\label{func:loss_parametrized}
+{\mathcal{J}}(\phi(\cdot,\theta)):=\mathbb{E}\left[\int_0^T C(t,X_t,\phi(t,X_t;\theta)){{\dt}}+g(X_T)\right].
+\end{equation}
+where 
+\[
+{\dX}_t =b(t,X_t,\phi(t,X_t;\theta)){{\dt}}+\sigma(t,X_t,\phi(t,X_t;\theta)){\dd}B_t
+\]
+Doing so, we restricted the set of all controls with the ones that can be represented by $\phi(t,x;\theta)$ for some value of $\theta$. After this restriction, if the optimal control fits into such parametrized function, we don't lose anything. Additionally, we gain a great deal in simplifying the problem from optimization of functions to optimization of parameter $\theta$.
+\[
+\inf_{\theta}\mathcal{J}(\theta)
+\]
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Discretization}
+For implementation, we cannot work with a continuous time. We surely require to discretize the SDE for state variable and the integral for the running cost. The simplest of such discretizations is Euler-Maruyama discretization given by $\Delta t = \frac{T}{N}$ and
+\begin{equation}\label{func:loss_discrete}
+\hat{\mathcal{J}}(\phi(\cdot,\theta)):=\mathbb{E}\left[\sum_{i=0}^{N-1} C(t_{i},\hat{X}_{t_i},\phi(t_{i},\hat{X}_{t_{i}};\theta))\Delta t+g(\hat{X}_T)\right].
+\end{equation}
+where 
+\[
+\hat{X}_{t_{n+1}} = \hat{X}_{t_{n}} + b(t_{n},\hat{X}_{t_{n}},\phi(t_{n},\hat{X}_{t_{n}};\theta)) \Delta t+\sigma(t_{n},\hat{X}_{t_{n}},\phi(t_{n},\hat{X}_{t_{n}};\theta))\Delta B_{t_{n+1}}
+\]
+Here, $\Delta B_{t_{n+1}}= B_{t_{n+1}}- B_{t_{n+1}}\sim\mathcal{N}(0,\Delta t)$.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Monte Carlo sampling and empirical loss function}
+In practice, we cannot evaluate the expected value analytically. Therefore, we appeal to sampling from $\hat{X}$ and empirical approximation of the expected value. To achieve this goal, we require to create sample path of $\hat{X}$. We start from sampling $J$ i.i.d. samples of $\hat{X}_0$ via some arbitrary distribution $\mathcal{L}_0$, $\hat{X}_0^j$. Then, we generate i.i.d. samples of the increments of the Wiener process. 
+\[
+\Delta B_{t_{n+1}}^j\sim\mathcal{N}(0,\Delta t),~~\text{for }~~j=1,...,J,~n=0,...N-1
+\]
+\[
+\hat{X}^j_{t_{n+1}} = \hat{X}^j_{t_{n}} + b(t_{n},\hat{X}^j_{t_{n}},\phi(t_{n},\hat{X}^j_{t_{n}};\theta)) \Delta t+\sigma(t_{n},\hat{X}^j_{t_{n}},\phi(t_{n},\hat{X}^j_{t_{n}};\theta))\Delta B_{t_{n+1}}^j
+\]
+Then, the empirical loss is given by
+\begin{equation}\label{func:loss_empirical}
+\bar{\mathcal{J}}(\phi(\cdot,\theta)):=\frac{1}{J}\sum_{j=1}^{J}\left[\sum_{i=0}^{N-1} C(t_{i},\hat{X}^j_{t_i},\phi(t_{i},\hat{X}^j_{t_{i}};\theta))\Delta t+g(\hat{X}^j_T)\right].
+\end{equation}
+\begin{algorithm}
+        % Algorithm content goes here
+        \caption{Policy gradient method for control problems}
+        \label{alg:gd_nn}
+        \KwData{$\theta_0$ is randomly chosen.}
+        \KwData{$\hat{X}_0^j$ are sampled from $\mathcal{L}_0$ and $\Delta B_{t_{n+1}}^j\sim\mathcal{N}(0,\Delta t)$ are sampled all independently.}
+        \KwData{Sample paths $\hat{X}^j$ are created.}
+        \KwData{The gradient of $\bar{\mathcal{J}}(\theta)$ is evaluated in a symbolic manner.}
+        \Parameter{Learning rate $\{\alpha_n\}_n$, number of iterations $N$, and tolerance $\epsilon>0$.}
+        \While{$|\nabla \mathcal{J}(\theta_n)|>\epsilon$ \& $n\le N$}{
+        Sample paths $\hat{X}^j$ are adjusted and $\bar{\mathcal{J}}(\theta)$ is reevaluated.\;
+        $\theta_{n}\gets \theta_{n} - \alpha_n \nabla \mathcal{J}(\theta_{n})$\;
+        $n \gets n + 1$
+        }
+        \Return{$\theta_n$}
+        \caption{Gradient descent algorithm for neural networks}
+\end{algorithm}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1436,120 +1621,120 @@ We explain the components of a stochastic control problem.
 
 
 %%%%%%%%%%%%%%%
-\section{Discrete-time dynamic programming principle (DPP)}
-Recall from Corollary~\ref{coro:Markov_value_function} that the value function satisfies
-\begin{equation}\label{eqn:value_function}
-    V(t,x) =\inf_{u\in\mathcal{A}_{t,T}}\mathbb{E}\left[\int_{t}^{T}C(s,X_s^u,u_s){{\ds}}+g(X_T^u)\Big|X^u_t=x\right]
-\end{equation}
-Dynamic programming principle can be better understood in discrete-time setting. So, here we spend some time to explain a stochastic control problem in discrete time. It is natural to expect that, under suitable conditions, any continuous-time problem can be approximated by a discrete-time problem. For instance, \eqref{problem:generic} can be approximated by 
-\begin{equation}
-    \inf_{u} \mathbb{E}\bigg[\sum_{t=0}^{T-1}C(t,\hat{X}^u_t,u_t)\Delta t+g(\hat{X}^u_T)\bigg]
-\end{equation}
-where 
-\begin{equation}
-    \hat{X}^u_{t+1} =\hat{X}^u_t+\mu(t,\hat{X}^u_t,u_t)\Delta t+\sigma(t,\hat{X}^u_t,u_t)\Delta B_{t+1}
-\end{equation}
-where $\Delta t=T/N$ and $\Delta B_{t+1}=B_{t+\Delta t}-B_{t}$.
+% \section{Discrete-time dynamic programming principle (DPP)}
+% Recall from Corollary~\ref{coro:Markov_value_function} that the value function satisfies
+% \begin{equation}\label{eqn:value_function}
+%     V(t,x) =\inf_{u\in\mathcal{A}_{t,T}}\mathbb{E}\left[\int_{t}^{T}C(s,X_s^u,u_s){{\ds}}+g(X_T^u)\Big|X^u_t=x\right]
+% \end{equation}
+% Dynamic programming principle can be better understood in discrete-time setting. So, here we spend some time to explain a stochastic control problem in discrete time. It is natural to expect that, under suitable conditions, any continuous-time problem can be approximated by a discrete-time problem. For instance, \eqref{problem:generic} can be approximated by 
+% \begin{equation}
+%     \inf_{u} \mathbb{E}\bigg[\sum_{t=0}^{T-1}C(t,\hat{X}^u_t,u_t)\Delta t+g(\hat{X}^u_T)\bigg]
+% \end{equation}
+% where 
+% \begin{equation}
+%     \hat{X}^u_{t+1} =\hat{X}^u_t+\mu(t,\hat{X}^u_t,u_t)\Delta t+\sigma(t,\hat{X}^u_t,u_t)\Delta B_{t+1}
+% \end{equation}
+% where $\Delta t=T/N$ and $\Delta B_{t+1}=B_{t+\Delta t}-B_{t}$.
 
-Without loss of generality, we can drop $\Delta t$ and replace $\Delta B_{t+1}$ by a standard i.i.d random variable.
-\begin{equation}\label{prob:discrete_optimal_control}
-    \inf_{u} \mathbb{E}\bigg[\sum_{t=0}^{T-1}C(t,X^u_t,u_t)+g(X^u_T)\bigg]
-\end{equation}
-where the infimum is over all stochastic process $u:[0,T]\times\Omega\to\mathbb{R}^m$ and 
-\begin{equation}
-    \label{eqn:discrete_state}
-    X^u_{t+1} =X^u_t+\mu(t,X^u_t,u_t)+\sigma(t,X^u_t,u_t)\xi_{t+1}
-\end{equation}
-and $\{\xi_t\}_{t=1}^T$ is a sequence of i.i.d. random variables with mean $0$ and variance $1$.
+% Without loss of generality, we can drop $\Delta t$ and replace $\Delta B_{t+1}$ by a standard i.i.d random variable.
+% \begin{equation}\label{prob:discrete_optimal_control}
+%     \inf_{u} \mathbb{E}\bigg[\sum_{t=0}^{T-1}C(t,X^u_t,u_t)+g(X^u_T)\bigg]
+% \end{equation}
+% where the infimum is over all stochastic process $u:[0,T]\times\Omega\to\mathbb{R}^m$ and 
+% \begin{equation}
+%     \label{eqn:discrete_state}
+%     X^u_{t+1} =X^u_t+\mu(t,X^u_t,u_t)+\sigma(t,X^u_t,u_t)\xi_{t+1}
+% \end{equation}
+% and $\{\xi_t\}_{t=1}^T$ is a sequence of i.i.d. random variables with mean $0$ and variance $1$.
 
-Note that we can think about the process as a sequence of random variables $u_0,...,u_{T-1}$, which can be chosen based on the discretion of the controller up to the adaptedness condition. This allows us to write the control problem as
-\begin{equation}
-    \inf_{u_0}\cdots\inf_{u_{T-1}} \mathbb{E}\bigg[\sum_{t=0}^{T-1}C(t,X^u_t,u_t)+g(X^u_T)\bigg]
-\end{equation}
-The value function for this problem is written as 
-\begin{equation}
-    V(t,x)= \inf_{u_t}\cdots\inf_{u_{T-1}} \mathbb{E}\bigg[\sum_{s=t}^{T-1}C(s,X^u_s,u_s)+g(X^u_T)\Big| X^u_t=x\bigg]
-\end{equation}
-Since $X^u_t=x$, $u_t$ is chosen over all real numbers and, therefore, $C(t,X^u_t,u_t)$ is deterministic. One can write
-\begin{equation}
-    V(t,x)= \inf_{u_t}
-    C(t,x,u_t) +\inf_{u_{t+1}}\cdots\inf_{u_{T-1}} \mathbb{E}\bigg[\sum_{s=t+1}^{T-1}C(s,X^u_s,u_s)+g(X^u_T)\Big| X^u_t=x\bigg]
-\end{equation}
-Tower property of conditional expectation implies that 
-\begin{equation}
-    \mathbb{E} \bigg[\sum_{s=t+1}^{T-1}C(s,X^u_s,u_s)+g(X^u_T)\Big| X^u_t=x\bigg]= \mathbb{E}\bigg[\mathbb{E}\Big[\sum_{s=t+1}^{T-1}C(s,X^u_s,u_s)+g(X^u_T)\Big|X^u_{t+1}\Big]\Big| X^u_t=x\bigg]
-\end{equation}
-\begin{ex}
-    Show that one can take the infimum inside the first expectation, i.e.,
-    \begin{equation}
-    \begin{split}
-    \inf_{u_{t+1},...,u_{T-1}} &\mathbb{E} \bigg[\mathbb{E}\Big[\sum_{s=t+1}^{T-1}C(s,X^u_s,u_s)+g(X^u_T)\Big|X^u_{t+1}\Big]\Big| X^u_t=x\bigg]\\
-    &= \mathbb{E} \bigg[\inf_{u_{t+1},...,u_{T-1}} \mathbb{E}\Big[\sum_{s=t+1}^{T-1} C(s,X^u_s,u_s)+g(X^u_T)\Big|X^u_{t+1}\Big]\Big| X^u_t=x\bigg]
-    \end{split}
-\end{equation}
-\end{ex}
-By definition of value function, 
-\begin{equation}
-    \inf_{u_{t+1},...,u_{T-1}} \mathbb{E}\Big[\sum_{s=t+1}^{T-1} C(s,X^u_s,u_s)+g(X^u_T)\Big|X^u_{t+1}\Big]=V(t+1,X^u_{t+1})
-\end{equation}
-Therefore,
-\begin{equation}\label{one-step_DPP}
-    V(t,x)= \inf_{u_t}
-    C(t,x,u_t) + \mathbb{E}[V(t+1,X^u_{t+1})|X_t=x]
-\end{equation}
-This provides us with a recursive formula to solve a discrete-time control problem.
-\begin{equation}\label{eqn:dpp_discrete}
-    \begin{cases}
-        V(t,x)= \inf_{u_t}
-    C(t,x,u_t) + \mathbb{E}[V(t+1,X^u_{t+1})|X_t=x]\\
-    V(T,x)=g(x)
-    \end{cases}
-\end{equation}
+% Note that we can think about the process as a sequence of random variables $u_0,...,u_{T-1}$, which can be chosen based on the discretion of the controller up to the adaptedness condition. This allows us to write the control problem as
+% \begin{equation}
+%     \inf_{u_0}\cdots\inf_{u_{T-1}} \mathbb{E}\bigg[\sum_{t=0}^{T-1}C(t,X^u_t,u_t)+g(X^u_T)\bigg]
+% \end{equation}
+% The value function for this problem is written as 
+% \begin{equation}
+%     V(t,x)= \inf_{u_t}\cdots\inf_{u_{T-1}} \mathbb{E}\bigg[\sum_{s=t}^{T-1}C(s,X^u_s,u_s)+g(X^u_T)\Big| X^u_t=x\bigg]
+% \end{equation}
+% Since $X^u_t=x$, $u_t$ is chosen over all real numbers and, therefore, $C(t,X^u_t,u_t)$ is deterministic. One can write
+% \begin{equation}
+%     V(t,x)= \inf_{u_t}
+%     C(t,x,u_t) +\inf_{u_{t+1}}\cdots\inf_{u_{T-1}} \mathbb{E}\bigg[\sum_{s=t+1}^{T-1}C(s,X^u_s,u_s)+g(X^u_T)\Big| X^u_t=x\bigg]
+% \end{equation}
+% Tower property of conditional expectation implies that 
+% \begin{equation}
+%     \mathbb{E} \bigg[\sum_{s=t+1}^{T-1}C(s,X^u_s,u_s)+g(X^u_T)\Big| X^u_t=x\bigg]= \mathbb{E}\bigg[\mathbb{E}\Big[\sum_{s=t+1}^{T-1}C(s,X^u_s,u_s)+g(X^u_T)\Big|X^u_{t+1}\Big]\Big| X^u_t=x\bigg]
+% \end{equation}
+% \begin{ex}
+%     Show that one can take the infimum inside the first expectation, i.e.,
+%     \begin{equation}
+%     \begin{split}
+%     \inf_{u_{t+1},...,u_{T-1}} &\mathbb{E} \bigg[\mathbb{E}\Big[\sum_{s=t+1}^{T-1}C(s,X^u_s,u_s)+g(X^u_T)\Big|X^u_{t+1}\Big]\Big| X^u_t=x\bigg]\\
+%     &= \mathbb{E} \bigg[\inf_{u_{t+1},...,u_{T-1}} \mathbb{E}\Big[\sum_{s=t+1}^{T-1} C(s,X^u_s,u_s)+g(X^u_T)\Big|X^u_{t+1}\Big]\Big| X^u_t=x\bigg]
+%     \end{split}
+% \end{equation}
+% \end{ex}
+% By definition of value function, 
+% \begin{equation}
+%     \inf_{u_{t+1},...,u_{T-1}} \mathbb{E}\Big[\sum_{s=t+1}^{T-1} C(s,X^u_s,u_s)+g(X^u_T)\Big|X^u_{t+1}\Big]=V(t+1,X^u_{t+1})
+% \end{equation}
+% Therefore,
+% \begin{equation}\label{one-step_DPP}
+%     V(t,x)= \inf_{u_t}
+%     C(t,x,u_t) + \mathbb{E}[V(t+1,X^u_{t+1})|X_t=x]
+% \end{equation}
+% This provides us with a recursive formula to solve a discrete-time control problem.
+% \begin{equation}\label{eqn:dpp_discrete}
+%     \begin{cases}
+%         V(t,x)= \inf_{u_t}
+%     C(t,x,u_t) + \mathbb{E}[V(t+1,X^u_{t+1})|X_t=x]\\
+%     V(T,x)=g(x)
+%     \end{cases}
+% \end{equation}
 
 
 
 
 %%%%%%%%%%%%%%%
-\section{Hamilton-Jacobi-Bellman equation}
-In Theorem~\ref{thm:stoch_dpp_no_stopping}, for fixed $h,\epsilon>0$ take $\tau=\tau^h=\inf\{s>0, |X_s^u-x|\ge \epsilon\}\wedge (t+h)$. Assume that the value function is $C^{1,2}$, once continuously differentiable on $t$ and twice continuously differentiable on $x$.By applying It\^o's formula on $V({\tau^h},X_{\tau^h}^u)$, we obtain
-\begin{equation}
-\begin{split}
-    V({\tau^h},X_{\tau^h}^u)=&V(t,x)\\
-    &+\int_t^{\tau^h} \Big(\partial_t V(s,X_s^u)+\frac12 D^2V(s,X_s^u) \cdot a(s,X_s^u,u_s) + \nabla V(s,X_s^u)\cdot \mu(s,X_s^u,u_s)\Big){{\ds}}\\
-    &+\int_t^{\tau^h} \sigma(s,X_s^u,u_s){\dd}B_s
-\end{split}
-\end{equation}
-where $a=\sigma^\intercal\sigma$. Recall  for two matrices $A\cdot B=\textrm{Tr}[A^\intercal B]$.  Assuming $\mathbb{E}_{t,x}\left[\int_0^{\tau^h} \sigma(s,X_s^u,u_s){\dd}B_s\right]=0$\footnote{One can always choose $\epsilon$ in the definition of ${\tau^h}$ such that the stochastic integral has zero expected value.}, \eqref{eqn:dpp} can be written as
-\begin{equation}
-    \begin{split}
-        0 =&\inf_{u}\mathbb{E}_{t,x}\Big[\int_t^{\tau^h} \Big( C(s,X^u_s,u_s){{\ds}} \\
-        & \partial_t V(s,X_s^u)+\frac12 D^2V(s,X_s^u) \cdot a(s,X_s^u,u_s) + \nabla V(s,X_s^u)\cdot \mu(s,X_s^u,u_s)\Big){{\ds}}\Big]
-    \end{split}
-\end{equation}
-Note that ${\tau^h}=O(h)$. Therefore, we divide by $h$ and send $h\to0$:
-\begin{equation}
-    \begin{split}
-        0 =&\lim_{h\to0}\inf_{u}\mathbb{E}_{t,x}\Big[\frac1h\int_t^{\tau^h} \Big( C(s,X^u_s,u_s){{\ds}} \\
-        & \partial_t V(s,X_s^u)+\frac12 D^2V(s,X_s^u) \cdot a(s,X_s^u,u_s) + \nabla V(s,X_s^u)\cdot \mu(s,X_s^u,u_s)\Big){{\ds}}\Big]\\
-        =&\inf_{u}\lim_{h\to0} \mathbb{E}_{t,x}\Big[\frac1h\int_t^{\tau^h} \Big( C(s,X^u_s,u_s){{\ds}} \\
-        & \partial_t V(s,X_s^u)+\frac12 D^2V(s,X_s^u) \cdot a(s,X_s^u,u_s) + \nabla V(s,X_s^u)\cdot \mu(s,X_s^u,u_s)\Big){{\ds}}\Big]\\
-        =&\inf_{u} \mathbb{E}_{t,x}\Big[\lim_{h\to0}\frac1h\int_t^{\tau^h} \Big( C(s,X^u_s,u_s){{\ds}} \\
-        & \partial_t V(s,X_s^u)+\frac12 D^2V(s,X_s^u) \cdot a(s,X_s^u,u_s) + \nabla V(s,X_s^u)\cdot \mu(s,X_s^u,u_s)\Big){{\ds}}\Big]\\
-        =&\partial_t V(t,x)+\inf_{u}\Big\{C(t,x,u) +
-         \frac12 D^2V(t,x) \cdot a(t,x,u) + \nabla V(t,x)\cdot \mu(t,x,u)\Big\}
-    \end{split}
-\end{equation}
-The HJB is given by the following PDE:
-\begin{equation}
-    \begin{cases}
-        0=\partial_t V(t,x)+\inf_{u}\Big\{C(t,x,u) +
-         \frac12 D^2V(t,x) \cdot a(t,x,u) + \nabla V(t,x)\cdot \mu(t,x,u)\Big\}\\
-         V(T,x)=g(x)
-    \end{cases}
-\end{equation}
-\begin{rem}
-    Rigorously, the proof is more complected. First, we need to justify $\lim_{h\to0}\inf_{u}=\inf_{u}\lim_{h\to0}$. To show this, we have to show that the expected value as a function of $h$ is continuous uniformly on $u$. This can be obtained by continuity of $C$, $V$, and first and second derivatives of $V$. Second, justification of $\lim_{h\to0}\mathbb{E}=\mathbb{E}\lim_{h\to0}$ requires dominated convergence theorem, which allows to change the order of expected value and limit. This also requires use of mean value theorem. For more information, see \cite{Touzi12}.
-\end{rem}
+% \section{Hamilton-Jacobi-Bellman equation}
+% In Theorem~\ref{thm:stoch_dpp_no_stopping}, for fixed $h,\epsilon>0$ take $\tau=\tau^h=\inf\{s>0, |X_s^u-x|\ge \epsilon\}\wedge (t+h)$. Assume that the value function is $C^{1,2}$, once continuously differentiable on $t$ and twice continuously differentiable on $x$.By applying It\^o's formula on $V({\tau^h},X_{\tau^h}^u)$, we obtain
+% \begin{equation}
+% \begin{split}
+%     V({\tau^h},X_{\tau^h}^u)=&V(t,x)\\
+%     &+\int_t^{\tau^h} \Big(\partial_t V(s,X_s^u)+\frac12 D^2V(s,X_s^u) \cdot a(s,X_s^u,u_s) + \nabla V(s,X_s^u)\cdot \mu(s,X_s^u,u_s)\Big){{\ds}}\\
+%     &+\int_t^{\tau^h} \sigma(s,X_s^u,u_s){\dd}B_s
+% \end{split}
+% \end{equation}
+% where $a=\sigma^\intercal\sigma$. Recall  for two matrices $A\cdot B=\textrm{Tr}[A^\intercal B]$.  Assuming $\mathbb{E}_{t,x}\left[\int_0^{\tau^h} \sigma(s,X_s^u,u_s){\dd}B_s\right]=0$\footnote{One can always choose $\epsilon$ in the definition of ${\tau^h}$ such that the stochastic integral has zero expected value.}, \eqref{eqn:dpp} can be written as
+% \begin{equation}
+%     \begin{split}
+%         0 =&\inf_{u}\mathbb{E}_{t,x}\Big[\int_t^{\tau^h} \Big( C(s,X^u_s,u_s){{\ds}} \\
+%         & \partial_t V(s,X_s^u)+\frac12 D^2V(s,X_s^u) \cdot a(s,X_s^u,u_s) + \nabla V(s,X_s^u)\cdot \mu(s,X_s^u,u_s)\Big){{\ds}}\Big]
+%     \end{split}
+% \end{equation}
+% Note that ${\tau^h}=O(h)$. Therefore, we divide by $h$ and send $h\to0$:
+% \begin{equation}
+%     \begin{split}
+%         0 =&\lim_{h\to0}\inf_{u}\mathbb{E}_{t,x}\Big[\frac1h\int_t^{\tau^h} \Big( C(s,X^u_s,u_s){{\ds}} \\
+%         & \partial_t V(s,X_s^u)+\frac12 D^2V(s,X_s^u) \cdot a(s,X_s^u,u_s) + \nabla V(s,X_s^u)\cdot \mu(s,X_s^u,u_s)\Big){{\ds}}\Big]\\
+%         =&\inf_{u}\lim_{h\to0} \mathbb{E}_{t,x}\Big[\frac1h\int_t^{\tau^h} \Big( C(s,X^u_s,u_s){{\ds}} \\
+%         & \partial_t V(s,X_s^u)+\frac12 D^2V(s,X_s^u) \cdot a(s,X_s^u,u_s) + \nabla V(s,X_s^u)\cdot \mu(s,X_s^u,u_s)\Big){{\ds}}\Big]\\
+%         =&\inf_{u} \mathbb{E}_{t,x}\Big[\lim_{h\to0}\frac1h\int_t^{\tau^h} \Big( C(s,X^u_s,u_s){{\ds}} \\
+%         & \partial_t V(s,X_s^u)+\frac12 D^2V(s,X_s^u) \cdot a(s,X_s^u,u_s) + \nabla V(s,X_s^u)\cdot \mu(s,X_s^u,u_s)\Big){{\ds}}\Big]\\
+%         =&\partial_t V(t,x)+\inf_{u}\Big\{C(t,x,u) +
+%          \frac12 D^2V(t,x) \cdot a(t,x,u) + \nabla V(t,x)\cdot \mu(t,x,u)\Big\}
+%     \end{split}
+% \end{equation}
+% The HJB is given by the following PDE:
+% \begin{equation}
+%     \begin{cases}
+%         0=\partial_t V(t,x)+\inf_{u}\Big\{C(t,x,u) +
+%          \frac12 D^2V(t,x) \cdot a(t,x,u) + \nabla V(t,x)\cdot \mu(t,x,u)\Big\}\\
+%          V(T,x)=g(x)
+%     \end{cases}
+% \end{equation}
+% \begin{rem}
+%     Rigorously, the proof is more complected. First, we need to justify $\lim_{h\to0}\inf_{u}=\inf_{u}\lim_{h\to0}$. To show this, we have to show that the expected value as a function of $h$ is continuous uniformly on $u$. This can be obtained by continuity of $C$, $V$, and first and second derivatives of $V$. Second, justification of $\lim_{h\to0}\mathbb{E}=\mathbb{E}\lim_{h\to0}$ requires dominated convergence theorem, which allows to change the order of expected value and limit. This also requires use of mean value theorem. For more information, see \cite{Touzi12}.
+% \end{rem}
 \begin{eg}\label{eg:LQ_drift}
     Consider the stochastic linear quadratic problem below:
     \begin{equation}
