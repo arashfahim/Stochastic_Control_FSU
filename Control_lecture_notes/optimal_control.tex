@@ -1512,7 +1512,7 @@ To evaluate the infimum above, we need to appeal to gradient descent algorithm. 
         \KwData{The gradient of $\mathcal{J}(\theta)$ is evaluated in a symbolic manner.}
         \Parameter{Learning rate $\{\alpha_n\}_n$, number of iterations $N$, and tolerance $\epsilon>0$.}
         \While{$|\nabla \mathcal{J}(\theta_n)|>\epsilon$ \& $n\le N$}{
-        $\theta_{n}\leftarrow \theta_{n} - \alpha_n \nabla \mathcal{J}(\theta_{n})$\;
+        $\theta_{n+1}\leftarrow \theta_{n} - \alpha_n \nabla \mathcal{J}(\theta_{n})$\;
         $n \leftarrow n + 1$
         }
         \Return{$\theta_n$}
@@ -1525,9 +1525,13 @@ Any deep learning package has implemented automatic differentiation to evaluate 
 While polynomial approximation has been a state-of-art for many decades, neural networks claim a place in the approximation theory due to the capability so handle nonlinear problems. Especially, orthogonal polynomials are efficient if we are using regression method. However, they lack efficiency in more complicated loss functions. The most important gain of the neural networks over polynomial approximation is where the problem is high-dimensional. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Loss function and functional optimization}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Policy gradient method for optimal control}
+\emph{Policy gradient methods} (PGM) are one of the numerical methods to tackle complicated control problems. They are first introduced in the context of reinforcement learning (RL) and later were generalized to control problems, \citet{Powell19}. Some literature, \citet{NR21}, refer to PGM as \emph{iterative diffusion optimization}. In this section, we review the method and discuss the implementation details. 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Loss function for control problems and functional optimization}
 The goal of  approximation of $f:[a,b]^d\to\mathbb{R}^m$ is achieved by minimizing a loss function similar to \eqref{prob:inf_regresion}. 
-In the context of optimal control, the loss function is more complicated than \eqref{prob:inf_regresion}.  Here, we like to find a function $\phi(t,x)$ to minimize
+In the context of optimal control, we like to find a function $\phi(t,x)$ to minimize
 \begin{equation}\label{func:loss_generic}
 {\mathcal{J}}(\phi):=\mathbb{E}\left[\int_0^T C(t,X_t,\phi(t,X_t)){{\dt}}+g(X_T)\right].
 \end{equation}
@@ -1537,12 +1541,6 @@ where
 \]
 In the above, $J(\phi)$ if the target of the minimization. The choice of the Markovian control $u_t=\phi(t,X_t)$ is allowed because of \citet{el1987compactification,haussmann1986existence}. An important consideration in the choice of $\phi$ is to obtain consistency with the space of admissible control. 
 A control problem is simply an optimization over a set of functions.
-\begin{figure}
-    \centering
-    \includegraphics[width=0.7\linewidth]{Control_lecture_notes/Figs/OneUnit.pdf}
-    \caption{A design of a unit for solving control problems with deep learning. $\Sigma$ is an activation function.}
-    \label{fig:nn_control}
-\end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Parametrization of functions}
 In the loss function \eqref{func:loss_generic}, we replace $\phi$ with a parametrized function, such as  a neural network.
@@ -1568,15 +1566,21 @@ where
 \hat{X}_{t_{n+1}} = \hat{X}_{t_{n}} + b(t_{n},\hat{X}_{t_{n}},\phi(t_{n},\hat{X}_{t_{n}};\theta)) \Delta t+\sigma(t_{n},\hat{X}_{t_{n}},\phi(t_{n},\hat{X}_{t_{n}};\theta))\Delta B_{t_{n+1}}
 \]
 Here, $\Delta B_{t_{n+1}}= B_{t_{n+1}}- B_{t_{n+1}}\sim\mathcal{N}(0,\Delta t)$.
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.8\linewidth]{Control_lecture_notes/Figs/OneUnit.pdf}
+    \caption{A design of a unit for solving control problems with deep learning. The neural network approximating control in evaluated in the inner rectangle with affine transformations $Wx+b$ and activation function  $\Sigma$. The output of the neural network yields the control $\phi(t,x)$. This unit has two other functions, one is updating the state variable $x$ after the control is evaluated and the other evaluates the contribution of the  control and state variable in the loss function.}
+    \label{fig:pgm_unit}
+\end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Monte Carlo sampling and empirical loss function}
 In practice, we cannot evaluate the expected value analytically. Therefore, we appeal to sampling from $\hat{X}$ and empirical approximation of the expected value. To achieve this goal, we require to create sample path of $\hat{X}$. We start from sampling $J$ i.i.d. samples of $\hat{X}_0$ via some arbitrary distribution $\mathcal{L}_0$, $\hat{X}_0^j$. Then, we generate i.i.d. samples of the increments of the Wiener process. 
 \[
 \Delta B_{t_{n+1}}^j\sim\mathcal{N}(0,\Delta t),~~\text{for }~~j=1,...,J,~n=0,...N-1
 \]
-\[
-\hat{X}^j_{t_{n+1}} = \hat{X}^j_{t_{n}} + b(t_{n},\hat{X}^j_{t_{n}},\phi(t_{n},\hat{X}^j_{t_{n}};\theta)) \Delta t+\sigma(t_{n},\hat{X}^j_{t_{n}},\phi(t_{n},\hat{X}^j_{t_{n}};\theta))\Delta B_{t_{n+1}}^j
-\]
+\begin{equation}\label{eqn:discrete_euler}
+\hat{X}^j_{t_{n+1}} = \hat{X}^j_{t_{n}} + b(t_{n},\hat{X}^j_{t_{n}},\phi(t_{n},\hat{X}^j_{t_{n}};\theta)) \Delta t+\sigma(t_{n},\hat{X}^j_{t_{n}},\phi(t_{n},\hat{X}^j_{t_{n}};\theta))\Delta B_{t_{n+1}}^j    
+\end{equation}
 Then, the empirical loss is given by
 \begin{equation}\label{func:loss_empirical}
 \bar{\mathcal{J}}(\phi(\cdot,\theta)):=\frac{1}{J}\sum_{j=1}^{J}\left[\sum_{i=0}^{N-1} C(t_{i},\hat{X}^j_{t_i},\phi(t_{i},\hat{X}^j_{t_{i}};\theta))\Delta t+g(\hat{X}^j_T)\right].
@@ -1584,20 +1588,30 @@ Then, the empirical loss is given by
 \begin{algorithm}
         % Algorithm content goes here
         \caption{Policy gradient method for control problems}
-        \label{alg:gd_nn}
+        \label{alg:pgm}
         \KwData{$\theta_0$ is randomly chosen.}
-        \KwData{$\hat{X}_0^j$ are sampled from $\mathcal{L}_0$ and $\Delta B_{t_{n+1}}^j\sim\mathcal{N}(0,\Delta t)$ are sampled all independently.}
+            \KwData{$\Delta t=\frac{T}{N}$, $\hat{X}_0^j$ are sampled from $\mathcal{L}_0$ and $\Delta B_{t_{n+1}}^j\sim\mathcal{N}(0,\Delta t)$ are sampled all independently.}
         \KwData{Sample paths $\hat{X}^j$ are created.}
         \KwData{The gradient of $\bar{\mathcal{J}}(\theta)$ is evaluated in a symbolic manner.}
         \Parameter{Learning rate $\{\alpha_n\}_n$, number of iterations $N$, and tolerance $\epsilon>0$.}
         \While{$|\nabla \mathcal{J}(\theta_n)|>\epsilon$ \& $n\le N$}{
         Sample paths $\hat{X}^j$ are adjusted and $\bar{\mathcal{J}}(\theta)$ is reevaluated.\;
-        $\theta_{n}\gets \theta_{n} - \alpha_n \nabla \mathcal{J}(\theta_{n})$\;
+        $\theta_{n+1}\gets \theta_{n} - \alpha_n \nabla \mathcal{J}(\theta_{n})$\;
         $n \gets n + 1$
         }
         \Return{$\theta_n$}
         \caption{Gradient descent algorithm for neural networks}
 \end{algorithm}
+\subsection{Design of PGM}
+The key part of the policy gradient method is the evaluation in line 2 of Algorithm~\ref{alg:pgm}.In this step, we have an updated parameter $\theta_n$, which yields control $\phi(t,x;\theta_n)$. First, we shall evaluate the sample paths in \eqref{eqn:discrete_euler} based on $\theta_n$. More specifically, at each time $t_i$, we evaluate
+\[
+\hat{X}^j_{t_{n+1}} = \hat{X}^j_{t_{n}} + b(t_{n},\hat{X}^j_{t_{n}},\phi(t_{n},\hat{X}^j_{t_{n}};\theta_n)) \Delta t+\sigma(t_{n},\hat{X}^j_{t_{n}},\phi(t_{n},\hat{X}^j_{t_{n}};\theta_n))\Delta B_{t_{n+1}}^j   
+\]
+We call this step \emph{Update$(\phi,x)$}, as shown in Figure~\ref{fig:pgm_unit}. This update corresponds to $\hat{X}^j_{t_{i+1}}$ is then used in the next time step, unless $t_i=T$. In the same step of the algorithm, we evaluate the contribution of the control $\phi(t,x;\theta_n)$ in the loss function by evaluating
+\[
+C(t_{i},\hat{X}^j_{t_i},\phi(t_{i},\hat{X}^j_{t_{i}};\theta))\Delta t
+\]
+We call this step \emph{Loss$(\phi,x)$}, as shown in Figure~\ref{fig:pgm_unit}. In the last step of the algorithm, when $t_i=T$, the contribution is $g(\hat{X}^j_T)$. This loss is then added to the accumulated loss. 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
