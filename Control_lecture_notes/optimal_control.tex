@@ -1288,7 +1288,7 @@ Using the notation of Hamiltonian, we write
     0= V_t(t,x) + H(t,x,V_x,V_{xx})\\
     V(T,x)=g(x)
 \end{cases}\label{eqn:HJB}\\
-&\hspace{4cm}H(t,x,p,\Gamma):=\inf_{u\in U}\left\{ C(t,x,u)  + p\cdot b(t,x,u)+\frac12 \Gamma \sigma^2(t,x,u)\right\}\label{eqn:Hamilton_1d}
+&\hspace{0cm}H(t,x,p,\Gamma):=\inf_{u\in U}\left\{ C(t,x,u)  + p\cdot b(t,x,u)+\frac12 \Gamma \sigma^2(t,x,u)\right\}\label{eqn:Hamilton_1d}
 \end{align}
 where we added terminal cost as a boundary condition.
 \begin{ex}\label{ex:merton}
@@ -1340,7 +1340,41 @@ Write the HJB equation for the stochastic control problem
 \inf_{\beta_t,\gamma_t}\mathbb{E}\left[\int_0^T (b-\beta_t)^2+\gamma_t^2 )\dt + I_T^2\right]
 \]
 \end{ex}
-
+\begin{eg}\label{eg:LQ_drift}
+    Consider the stochastic linear quadratic problem below:
+    \begin{equation}
+        \inf_u\mathbb{E}\Big[\int_0^T \Big(aX_t^2+bX_t +Au_t^2 + Bu_t\Big){\dt}+\alpha X_T^2+\beta X_T\Big]
+    \end{equation}
+    with
+    \begin{equation}
+        {\dX}_t=(\gamma X_t+\kappa u_t){{\dt}}+\sigma \dW_t
+    \end{equation}
+where $a,A, \alpha>0$ and $b,B,\beta,\gamma$ and $\kappa$ are constants. The HJB is given by 
+\begin{equation}
+    \begin{cases}
+        0=\partial_t V(t,x) +\frac{\sigma^2}{2}\partial^2_x V(t,x)+ \gamma x\partial_x V(t,x) + a x^2 + bx +\inf_{u}\Big\{Au^2 +\big(B+\kappa\partial_x V(t,x)\big)u \Big\}\\
+        V(T,x)=\alpha x^2 + \beta x
+    \end{cases}
+\end{equation}
+We can evaluate
+$\inf_u\{Au^2 +\big(B+\kappa\partial_x V(t,x)\big)u\} = -\frac{(B+\kappa\partial_x V(t,x))^2}{4A}$ with infimum attained at $u =-\frac{B+\kappa\partial_x V(t,x)}{2A}$.
+\begin{equation}
+    \begin{cases}
+        0=\partial_t V(t,x) +\frac{\sigma^2}{2}\partial^2_x V(t,x)+ \gamma x\partial_x V(t,x) + a x^2 + bx -\frac{(B+\kappa\partial_x V(t,x))^2}{4A}\\
+        V(T,x)=\alpha x^2 + \beta x
+    \end{cases}
+\end{equation}
+We anticipate that $V(t,x)=f(t)x^2+h(t)x+\ell(t)$, which is a separation of variable technique. If we plug in $V(t,x)$  into the HJB, we obtain
+\begin{equation}
+    \begin{cases}
+       f^\prime(t) = -2\gamma f(t) + \frac{\kappa^2}{A^2}f^{2}(t) -a& f(T)=\alpha\\
+       h^{\prime}(t)= (\frac{\kappa}{A}f(t)-\gamma)h(t)+\frac{B\kappa}{A}f(t)-b& h(T)=\beta\\
+       \ell^{\prime}(t)=\frac{B^2}{4A}+\frac{b\kappa}{2A}h(t)+\frac{\kappa^2}{4A}h^2(t)-\sigma^2f(t)&\ell(T)=0
+    \end{cases}
+\end{equation}
+Note that the above system of ODEs is fully solvable. The first ODE is Riccati equation.
+We shall show in Section~\ref{sec:verification} that the solution of the PDE is indeed the value function of the linear quadratic optimal control problem.
+\end{eg}
 \subsection{DPP with stopping time}
 The DPP in Theorem~\ref{thm:stoch_dpp_no_stopping} is a special case of the general DPP for stochastic control problems. To explain the general DPP, we need the notion of \emph{stopping time} in a probabilistic setting. When we deal with stochastic processes, the occurrence time of an event is random. For example, let $\tau$ be the first time a 2-$d$ Wiener process exits a given circle.  For two different sample paths, the exit time is different.
 A stopping time is a random time that can be determined whether it has happen or not based on the observed events. See Figure~\ref{fig:exit_time}.
@@ -1583,35 +1617,55 @@ In practice, we cannot evaluate the expected value analytically. Therefore, we a
 \end{equation}
 Then, the empirical loss is given by
 \begin{equation}\label{func:loss_empirical}
-\bar{\mathcal{J}}(\phi(\cdot,\theta)):=\frac{1}{J}\sum_{j=1}^{J}\left[\sum_{i=0}^{N-1} C(t_{i},\hat{X}^j_{t_i},\phi(t_{i},\hat{X}^j_{t_{i}};\theta))\Delta t+g(\hat{X}^j_T)\right].
+\overline{\mathcal{J}}(\phi(\cdot,\theta)):=\frac{1}{J}\sum_{j=1}^{J}\left[\sum_{n=0}^{N-1} C(t_{n},\hat{X}^j_{t_n},\phi(t_{n},\hat{X}^j_{t_{n}};\theta))\Delta t+g(\hat{X}^j_T)\right].
 \end{equation}
+The gradient of $\bar{\mathcal{J}}$ with respect to $\theta$ can be evaluated by using chain rule.
 \begin{algorithm}
         % Algorithm content goes here
         \caption{Policy gradient method for control problems}
         \label{alg:pgm}
-        \KwData{$\theta_0$ is randomly chosen.}
-            \KwData{$\Delta t=\frac{T}{N}$, $\hat{X}_0^j$ are sampled from $\mathcal{L}_0$ and $\Delta B_{t_{n+1}}^j\sim\mathcal{N}(0,\Delta t)$ are sampled all independently.}
-        \KwData{Sample paths $\hat{X}^j$ are created.}
-        \KwData{The gradient of $\bar{\mathcal{J}}(\theta)$ is evaluated in a symbolic manner.}
-        \Parameter{Learning rate $\{\alpha_n\}_n$, number of iterations $N$, and tolerance $\epsilon>0$.}
-        \While{$|\nabla \mathcal{J}(\theta_n)|>\epsilon$ \& $n\le N$}{
-        Sample paths $\hat{X}^j$ are adjusted and $\bar{\mathcal{J}}(\theta)$ is reevaluated.\;
-        $\theta_{n+1}\gets \theta_{n} - \alpha_n \nabla \mathcal{J}(\theta_{n})$\;
-        $n \gets n + 1$
+        \KwData{$i=0$, $\phi(t,x;\theta)$ is constructed and $\theta=\theta_i$ is randomly chosen.}
+            \KwData{$\Delta t=\frac{T}{N}$, $\hat{X}_0^j$ are sampled from $\mathcal{L}_0$ and $\Delta B_{t_{n+1}}^j\sim\mathcal{N}(0,\Delta t)$ are sampled all independently, $n=0,...,N-1$ \& $j=1,...,J$.}
+        \Parameter{Learning rate $\{\alpha_i\}_i$ and number of iterations $I$}
+        \While{$i\le I$}{
+        $\overline{\mathcal{J}}(\phi(\cdot;\theta_i)= 0$\;
+        \For{$n=0,...,N-1$ \& $j=1,...,J$}{
+        \eqref{eqn:discrete_euler} is used to create $J$ sample paths of $\hat{X}$.\;
+        $\overline{\mathcal{J}}(\phi(\cdot;\theta_i)\gets\overline{\mathcal{J}}(\phi(\cdot;\theta_i)+\frac{1}{J}\sum_{j=1}^{J}C(t_{n},\hat{X}^j_{t_n},\phi(t_{n},\hat{X}^j_{t_{n}};\theta_i))\Delta t$\;
+        $\overline{\mathcal{J}}(\phi(\cdot;\theta_i) \gets \overline{\mathcal{J}}(\phi(\cdot;\theta_i) + \frac{1}{J}\sum_{j=1}^{J}g(\hat{X}^j_T)$
         }
-        \Return{$\theta_n$}
+        The gradient of empirical loss, $\nabla_{\theta}\bar{\mathcal{J}}(\theta_i)$, is evaluated.\;
+        $\theta_{i+1}\gets \theta_{i} - \alpha_i \nabla_\theta \overline{\mathcal{J}}(\theta_{i})$\;
+        $i \gets i + 1$
+        }
+        \Return{$\theta_i$}
         \caption{Gradient descent algorithm for neural networks}
 \end{algorithm}
 \subsection{Design of PGM}
-The key part of the policy gradient method is the evaluation in line 2 of Algorithm~\ref{alg:pgm}.In this step, we have an updated parameter $\theta_n$, which yields control $\phi(t,x;\theta_n)$. First, we shall evaluate the sample paths in \eqref{eqn:discrete_euler} based on $\theta_n$. More specifically, at each time $t_i$, we evaluate
-\[
-\hat{X}^j_{t_{n+1}} = \hat{X}^j_{t_{n}} + b(t_{n},\hat{X}^j_{t_{n}},\phi(t_{n},\hat{X}^j_{t_{n}};\theta_n)) \Delta t+\sigma(t_{n},\hat{X}^j_{t_{n}},\phi(t_{n},\hat{X}^j_{t_{n}};\theta_n))\Delta B_{t_{n+1}}^j   
-\]
-We call this step \emph{Update$(\phi,x)$}, as shown in Figure~\ref{fig:pgm_unit}. This update corresponds to $\hat{X}^j_{t_{i+1}}$ is then used in the next time step, unless $t_i=T$. In the same step of the algorithm, we evaluate the contribution of the control $\phi(t,x;\theta_n)$ in the loss function by evaluating
+A key part of the policy gradient method is the evaluation in lines 4, 5, and 6 in Algorithm~\ref{alg:pgm}. After $\theta_i$ and consequently $\phi(t,x;\theta_i)$ are updated, in line 4, we  re-evaluate the sample paths in \eqref{eqn:discrete_euler} based on $\theta_i$. 
+We call this step \emph{Update$(\phi,x)$} in Figure~\ref{fig:pgm_unit}. In line 5, we evaluate the contribution of the control $\phi(t,x;\theta_i)$ to the running cost in the loss function by evaluating
 \[
 C(t_{i},\hat{X}^j_{t_i},\phi(t_{i},\hat{X}^j_{t_{i}};\theta))\Delta t
 \]
-We call this step \emph{Loss$(\phi,x)$}, as shown in Figure~\ref{fig:pgm_unit}. In the last step of the algorithm, when $t_i=T$, the contribution is $g(\hat{X}^j_T)$. This loss is then added to the accumulated loss. 
+We call this step \emph{Loss$(\phi,x)$}, as shown in Figure~\ref{fig:pgm_unit}. In line 6, when $t_i=T$, we add the contribution is $g(\hat{X}^j_T)$ to the total loss. Next steps of the algorithm are computing $\nabla_\theta \overline{\mathcal{J}}(\theta_{i})$ and adjusting the value of $theta_i$ accordingly. 
+
+It is important to note that deep learning packages such as \verb|torch| or \verb|tensorflow|, construct $\nabla_\theta \overline{\mathcal{J}}(\theta_{i})$ using chain rule only once and update it at each iteration of the algorithm. 
+
+\begin{ex}
+    Solve the following linear quadratic problem via PGM and compare the PGM to the closed-form solution.
+    \[
+    \inf_u\mathbb{E}\left[\int_0^1\left(X_t^2+X_t+u_t^2\right)\dt + X_T^2 -X_T\right]
+    \]
+    with
+    \[
+    dX_t=(X_t-u_t)\dt+\dW_t
+    \]
+Recall that the closed-form solution is obtained by writing the HJB equation, similar to Example~\ref{eg:LQ_drift}, and verifying that the value function takes the form 
+\[
+V(t,x)=f(t)x^2+h(t)x+\ell(t)
+\]
+In this process we find ODEs for the coefficients $f$, $h$, and $\ell$ which we need to solve.
+\end{ex}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1749,43 +1803,7 @@ We explain the components of a stochastic control problem.
 % \begin{rem}
 %     Rigorously, the proof is more complected. First, we need to justify $\lim_{h\to0}\inf_{u}=\inf_{u}\lim_{h\to0}$. To show this, we have to show that the expected value as a function of $h$ is continuous uniformly on $u$. This can be obtained by continuity of $C$, $V$, and first and second derivatives of $V$. Second, justification of $\lim_{h\to0}\mathbb{E}=\mathbb{E}\lim_{h\to0}$ requires dominated convergence theorem, which allows to change the order of expected value and limit. This also requires use of mean value theorem. For more information, see \cite{Touzi12}.
 % \end{rem}
-\begin{eg}\label{eg:LQ_drift}
-    Consider the stochastic linear quadratic problem below:
-    \begin{equation}
-        \inf_u\mathbb{E}\Big[\int_0^T \Big(aX_t^2+bX_t +Au_t^2 + Bu_t\Big){\dt}+\alpha X_T^2+\beta X_T\Big]
-    \end{equation}
-    with 
-    \begin{equation}
-        {\dX}_t=(cX_t+du_t){{\dt}}+\sigma {\dd}B_t
-    \end{equation}
-where where $a,A, \alpha>0$ and $b,B,c,$ and $d$ are constants.   The HJB is given by 
-\begin{equation}
-    \begin{cases}
-        0=\partial_t V(t,x) +\frac{\sigma^2}{2}\partial^2_x V(t,x)+ cx\partial_x V(t,x) + a x^2 + bx +\inf_{u}\Big\{Au^2 +\big(B+d\partial_x V(t,x)\big)u \Big\}\\
-        V(T,x)=\alpha x^2 + \beta x
-    \end{cases}
-\end{equation}
-$u =-\frac{B+d\partial_x V(t,x)}{2A}$
 
-$\inf_u\{Au^2 +\big(B+d\partial_x V(t,x)\big)u\} = -\frac{(B+d\partial_x V(t,x))^2}{4A^2}$
-
-\begin{equation}
-    \begin{cases}
-        0=\partial_t V(t,x) +\frac{\sigma^2}{2}\partial^2_x V(t,x)+ cx\partial_x V(t,x) + a x^2 + bx -\frac{(B+d\partial_x V(t,x))^2}{4A^2}\\
-        V(T,x)=\alpha x^2 + \beta x
-    \end{cases}
-\end{equation}
-We anticipate that $V(t,x)=f(t)x^2+h(t)x+k(t)$, which is a separation of variable technique. If we plug in $V(t,x)$  into the HJB, we obtain
-\begin{equation}
-    \begin{cases}
-       f^\prime = -2cf(t) + \frac{f^{2}(t)}{A^2} -a& f(T)=\alpha\\
-       h^{\prime}(t)= (\frac{f(t)}{A^2}-c)h(t)+\frac{Bd}{A^2}f(t)-b& h(T)=\beta\\
-       k^{\prime}(t)=\frac{PB^2}{4A}+\frac{bd}{2A^2}h(t)+\frac{1}{4A^2}h^2(t)+f(t)&k(T)=0
-    \end{cases}
-\end{equation}
-Note that the above system of ODEs is fully solvable. The first ODE is Riccati equation.
-We shall show in Section~\ref{sec:verification} that the solution of the PDE is indeed the value function of the linear quadratic optimal control problem.
-\end{eg}
 \begin{ex}\label{ex:LQ_diffusion}
 Solve modified version of Exercise~\ref{eg:LQ_drift} with modification 
 \begin{equation}
