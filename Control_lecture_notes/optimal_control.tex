@@ -1102,13 +1102,17 @@ In the Itô's formula, $f_x(r,X_r)\cdot b(r,X_r,u_r)$ is the dot product of grad
 A\cdot B = \text{\normalfont Tr}[AB^\top]
 \]
 Frobenius product is simply dot product if you write matrices as $d^2$ vectors. If $A=[A_{ij}]_{i,j=1,...,d}$ and $B=[B_{ij}]_{i,j=1,...,d}$, then 
-$A\cdot B = \sum_{i=1}^d\sum_{j=1}^d A_{i,j}B_{i,j}$, the sum of product of elements with the same indeces.
+$A\cdot B = \sum_{i=1}^d\sum_{j=1}^d A_{i,j}B_{i,j}$, the sum of product of elements with the same indices.
 %%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Stochastic control}
+In this section, we consider the basic definitions of  stochastic control.
 \subsection{Controlled SDE}
 The state process is a controlled SDE given by
 \begin{equation}\label{eqn:state_process}
 	\begin{cases}
-	    {\dX}_t =b(t,X_t,u_t){{\dt}}+\sigma(t,X_t,u_t){\dd}B_t\\
+	    {\dX}_t =b(t,X_t,u_t){{\dt}}+\sigma(t,X_t,u_t)\dW_t\\
      X_0=x\in\mathbb{R}^d
 	\end{cases}
 \end{equation}
@@ -1143,7 +1147,7 @@ In this example, we show that if the collection of admissible controls are not d
 The doubling strategy suggests to double the bet for the next round if you lose this round. As a result, if the player's bet in the first round is $x$ and the first win happens at round $n$, he has lost $x(1+\cdots+2^{n-1})=x(2^{n}-1)$. In the $n$th round, he wins $x2^n$, which makes his total wealth $x$ more. This is an obvious arbitrage strategy. However, it requires the play to tolerate large amount of debt, i.e., $x(2^{n}-1)$. Note that even if the coin is largely biased against the player, the doubling strategy works. 
 
 % 	Consider the wealth process as described by \eqref{eg:wealth} and assume that asset price $S$ is a martingale by setting $\mu=0$.
-%  In this case, $X_t=X_0+\sigma\int_0^tu_s{\dd}B_s$. Further, assume $X_0=0$.
+%  In this case, $X_t=X_0+\sigma\int_0^tu_s\dW_s$. Further, assume $X_0=0$.
 %  Let's try to maximize expected value of wealth by applying an investment strategy $u$:
 %  \begin{equation}\label{st.petersburg}
 %      V = \sup_{u}\mathbb{E}[X_T],~~~\dX_t =  u_t\dW_t
@@ -1179,6 +1183,9 @@ The doubling strategy suggests to double the bet for the next round if you lose 
 % \end{enumerate}
 \end{ex}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Dynamic programming principle and Hamilton-Jacobi-Bellman equations}
 \subsection{Value function}
 Fo a stochastic control problem
 \begin{equation}\label{problem:_stoch_generic}
@@ -1186,7 +1193,7 @@ Fo a stochastic control problem
 \end{equation}
 where 
 \[
-{\dX}_t =b(t,X_t,u_t){{\dt}}+\sigma(t,X_t,u_t){\dd}B_t
+{\dX}_t =b(t,X_t,u_t){{\dt}}+\sigma(t,X_t,u_t)\dW_t
 \]
 We define the value function as below
 
@@ -1367,9 +1374,9 @@ $\inf_u\{Au^2 +\big(B+\kappa\partial_x V(t,x)\big)u\} = -\frac{(B+\kappa\partial
 We anticipate that $V(t,x)=f(t)x^2+h(t)x+\ell(t)$, which is a separation of variable technique. If we plug in $V(t,x)$  into the HJB, we obtain
 \begin{equation}
     \begin{cases}
-       f^\prime(t) = -2\gamma f(t) + \frac{\kappa^2}{A^2}f^{2}(t) -a& f(T)=\alpha\\
-       h^{\prime}(t)= (\frac{\kappa}{A}f(t)-\gamma)h(t)+\frac{B\kappa}{A}f(t)-b& h(T)=\beta\\
-       \ell^{\prime}(t)=\frac{B^2}{4A}+\frac{b\kappa}{2A}h(t)+\frac{\kappa^2}{4A}h^2(t)-\sigma^2f(t)&\ell(T)=0
+       f^\prime(t) = -2\gamma f(t) + \frac{\kappa^2}{A}f^{2}(t) -a& f(T)=\alpha\\
+       h^{\prime}(t)= (\frac{\kappa^2}{A}f(t)-\gamma)h(t)+\frac{B\kappa}{A}f(t)-b& h(T)=\beta\\
+       \ell^{\prime}(t)=\frac{B^2}{4A}+\frac{B\kappa}{2A}h(t)+\frac{\kappa^2}{4A}h^2(t)-\sigma^2f(t)&\ell(T)=0
     \end{cases}
 \end{equation}
 Note that the above system of ODEs is fully solvable. The first ODE is Riccati equation.
@@ -1447,8 +1454,109 @@ and the stochastic integral vanishes.
     \tau=\min\Big\{s,\inf\{r>t: |X_r|\ge M \}\Big\}
     \]
 \end{rem}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Backward stochastic differential equations}
+In this section, we introduce a tool related to stochastic optimal control, i.e., backward stochastic differential equations, BSDE henceforth. 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Itô representation theorem}
+To understand what a BSDE is, we require a result from stochastic calculus. 
+\begin{thm}{Itô's martingale representation theorem}
+    Let $Y$ be a random variable dependent on the paths of a Wiener process $\{W_t\}$ and $M_t:=\mathbb{E}[Y|\mathcal{F}_t]$ be the conditional expectation of $X$ given the path of $W$ until time $t$. Then, there exist a stochastic process $Z_t$ such that
+    \[
+    M_s=M_t+\int_t^sZ_r\dW_r
+    \]
+    In particular,
+    \[
+    M_t=Y_0+\int_0^tZ_r\dW_r=\mathbb{E}[Y]+\int_0^tZ_r\dW_r
+    \]
+\end{thm}
+To see how the above theorem works for stochastic control, we first apply it to a case without control. Let 
+\[
+{\dX}_t =b(t,X_t){{\dt}}+\sigma(t,X_t)\dW_t
+\]
+and define
+\begin{equation}
+Y:=\int_0^T C(s,X_s){{\ds}}+g(X_T)
+\end{equation}
+Applying Itô's martingale representation theorem on $Y$ yields
+\[
+\mathbb{E}\left[\int_0^T C(r,X_r){{\dr}}+g(X_T)\Big|\mathcal{F}_s\right] = \mathbb{E}\left[\int_0^T C(r,X_r){{\dr}}+g(X_T)\Big|\mathcal{F}_t\right] + \int_t^sZ_r\dW_r
+\]
+If we set $s=T$, we have  
+\[
+\int_0^T C(r,X_r){{\dr}}+g(X_T) = \int_0^t C(r,X_r){{\dr}} + \mathbb{E}\left[\int_t^T C(r,X_r){{\ds}}+g(X_T)\Big|\mathcal{F}_t\right] + \int_t^T Z_r\dW_r
+\]
+or
+\[
+g(X_T) = \int_t^T C(r,X_r){{\dr}} + \mathbb{E}\left[\int_t^T C(r,X_r){{\dr}}+g(X_T)\Big|\mathcal{F}_t\right] + \int_t^T Z_r\dW_r
+\]
+We set
+\[
+Y_t:=\mathbb{E}\left[\int_t^T C(r,X_r){{\dr}}+g(X_T)\Big|\mathcal{F}_t\right]
+\]
+Therefore,
+\[
+Y_t = g(X_T) - \int_t^T C(r,X_r){{\dr}}  - \int_t^T Z_r\dW_r
+\]
+Or in differential form, we write
+\[
+\begin{cases}
+    dY_t = C(t,X_t){{\dt}} + Z_t \dW_t\\
+    Y_T=g(X_T)
+\end{cases}
+\]
+    By the Markovian property of $X$, $Y_t$ can be written as a function of $(t,X_t)$
+\begin{equation}
+\label{eqn:F-K}
+    V(t,X_t)=\mathbb{E}\left[\int_t^T C(r,X_r){{\dr}}+g(X_T)\Big|\mathcal{F}_t\right]
+\end{equation}
+and $V(t,x)$ satisfies the linear PDE below
+\begin{equation}
+\label{eqn:linear}
+    \begin{cases}
+    V_t(t,x)+\frac12(\sigma^{\intercal}\sigma)(t,x)\cdot D^2 V(t,x) + b(t,x)\cdot \nabla V(t,x) + C(t,x) = 0\\
+    V(t,x) = g(X_T)
+\end{cases}
+\end{equation}
+If $X_t=W_t$ is a Wiener process, $b\equiv0$ and $\sigma\equiv \text{I}_d$ (the identity matrix) and we have the heat equation with a source term
+\[
+\begin{cases}
+    V_t(t,x)+\frac12\Delta V(t,x) + C(t,x) = 0\\
+    V(t,x) = g(X_T)
+\end{cases}
+\]
+One can use the expected value in \eqref{eqn:F-K} to approximate the solution to \eqref{eqn:linear}. We generate the samples of $X$ by the \emph{Euler-Maruyama} discretization. Set $\Delta t = T/N$ and $t_n=n\Delta t$ and generate $J$ samples of increments of Wiener process $\Delta W_{t_{n+1}}^j=W_{t_{n+1}}^j-W_{t_{n}}^j\sim N(0,\Delta t)$
+\begin{equation}
+\label{eqn:Euler-Maruyama}
+    \hat{X}^j_{t_{n+1}} = \hat{X}^j_{t_{n}} + b(t_n,\hat{X}_{t_n}^j)\Delta t+\sigma(t_n,\hat{X}_{t_n}^j)\Delta W_{t_{n+1}}^j
+\end{equation}
+Then, we can approximate $V(0,x)$ by
+\[
+\mathbb{E}\left[\int_0^T C(r,X_r){{\dr}}+g(X_T)\right]\approx\frac{1}{J}\Big(\sum_{n=0}^{N-1} C(t_n,\hat{X}_{t_n}^j)\Delta t+g(\hat{X}_T^j)\Big)
+\]
+\begin{algorithm}
+        % Algorithm content goes here
+        \KwData{$T$, $N$, $X_0^j\sim\mathcal{L}_0$, $W_{t_{n+1}}^j\sim N(0,\Delta t)$, $\phi(\cdot,\theta)$}
+        $\Delta t \gets T/N$\;
+        \For{$n=0,...,N-1$, $j=0,...,J$}{
+        Evaluate $\hat{X}^j_{t_{n+1}}$ using \eqref{eqn:Euler-Maruyama}\;
+        }
+        $\hat{Y}^j:=\sum_{n=0}^{N-1}C(t_n,\hat{X}_{t_n}^j)\Delta t+g(\hat{X}_T^j)$\;
+        Mean-square minimization: $\theta^*=\text{argmin}\frac{1}{J} \Big(\phi(X_0^j;\theta)-\hat{Y}^j\Big)^2$\;
+        \Return{$\phi(x;\theta^*)$}
+        \caption{Feynmann-Kac approximation for linear parabolic equations}
+        \label{alg:F-K}
+\end{algorithm}
+The initial value of $X_0^j$ can be taken as a given point $x$ or be generated according to an arbitrary distribution, $\mathcal{L}_0$. 
+If $X_0^j$ is generated by a distribution, in Algorithm~\ref{alg:F-K}, we need approximate $V(0,x)$ by a parametrized function $\phi(\cdot;\theta)$ by minimizing a mean-square error. This minimization is performed in Step 5 in  Algorithm~\ref{alg:F-K}.
 
-
+Algorithm~\ref{alg:F-K} only approximates the value function. If we write the BSDE corresponding to \eqref{eqn:linear}, we can approximate both the value function and its gradient simultaneously.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Numerical optimal control}
 In this chapter, we present some of the most recent numerical methods to solve optimal control problems. The first numerical methods presented here are based on solving HJ or HJB equations. Since HJ or HJB equations are nonlinear PDEs, are nonlinear PDE solvers can be potential solutions. However, some of the classical methods  of solving nonlinear PDE, such as finite difference, finite elements, finite volume, and the likes, are only practical in low dimensions ($d\le3$). Moreover, learning such methods heavily relies on numerical analysis techniques, which is outside the interest of these notes. Therefore, we only present most recent methods that can be applied in higher dimensions.
@@ -1571,7 +1679,7 @@ In the context of optimal control, we like to find a function $\phi(t,x)$ to min
 \end{equation}
 where 
 \[
-{\dX}_t =b(t,X_t,\phi(t,X_t)){{\dt}}+\sigma(t,X_t,\phi(t,X_t)){\dd}B_t
+{\dX}_t =b(t,X_t,\phi(t,X_t)){{\dt}}+\sigma(t,X_t,\phi(t,X_t))\dW_t
 \]
 In the above, $J(\phi)$ if the target of the minimization. The choice of the Markovian control $u_t=\phi(t,X_t)$ is allowed because of \citet{el1987compactification,haussmann1986existence}. An important consideration in the choice of $\phi$ is to obtain consistency with the space of admissible control. 
 A control problem is simply an optimization over a set of functions.
@@ -1583,7 +1691,7 @@ In the loss function \eqref{func:loss_generic}, we replace $\phi$ with a paramet
 \end{equation}
 where 
 \[
-{\dX}_t =b(t,X_t,\phi(t,X_t;\theta)){{\dt}}+\sigma(t,X_t,\phi(t,X_t;\theta)){\dd}B_t
+{\dX}_t =b(t,X_t,\phi(t,X_t;\theta)){{\dt}}+\sigma(t,X_t,\phi(t,X_t;\theta))\dW_t
 \]
 Doing so, we restricted the set of all controls with the ones that can be represented by $\phi(t,x;\theta)$ for some value of $\theta$. After this restriction, if the optimal control fits into such parametrized function, we don't lose anything. Additionally, we gain a great deal in simplifying the problem from optimization of functions to optimization of parameter $\theta$.
 \[
@@ -1654,7 +1762,7 @@ It is important to note that deep learning packages such as \verb|torch| or \ver
 \begin{ex}
     Solve the following linear quadratic problem via PGM and compare the PGM to the closed-form solution.
     \[
-    \inf_u\mathbb{E}\left[\int_0^1\left(X_t^2+X_t+u_t^2\right)\dt + X_T^2 -X_T\right]
+    \inf_u\mathbb{E}\left[\int_0^1\left(X_t^2+X_t+u_t^2\right)\dt + X_1^2 -X_1\right]
     \]
     with
     \[
@@ -1769,10 +1877,10 @@ We explain the components of a stochastic control problem.
 % \begin{split}
 %     V({\tau^h},X_{\tau^h}^u)=&V(t,x)\\
 %     &+\int_t^{\tau^h} \Big(\partial_t V(s,X_s^u)+\frac12 D^2V(s,X_s^u) \cdot a(s,X_s^u,u_s) + \nabla V(s,X_s^u)\cdot \mu(s,X_s^u,u_s)\Big){{\ds}}\\
-%     &+\int_t^{\tau^h} \sigma(s,X_s^u,u_s){\dd}B_s
+%     &+\int_t^{\tau^h} \sigma(s,X_s^u,u_s)\dW_s
 % \end{split}
 % \end{equation}
-% where $a=\sigma^\intercal\sigma$. Recall  for two matrices $A\cdot B=\textrm{Tr}[A^\intercal B]$.  Assuming $\mathbb{E}_{t,x}\left[\int_0^{\tau^h} \sigma(s,X_s^u,u_s){\dd}B_s\right]=0$\footnote{One can always choose $\epsilon$ in the definition of ${\tau^h}$ such that the stochastic integral has zero expected value.}, \eqref{eqn:dpp} can be written as
+% where $a=\sigma^\intercal\sigma$. Recall  for two matrices $A\cdot B=\textrm{Tr}[A^\intercal B]$.  Assuming $\mathbb{E}_{t,x}\left[\int_0^{\tau^h} \sigma(s,X_s^u,u_s)\dW_s\right]=0$\footnote{One can always choose $\epsilon$ in the definition of ${\tau^h}$ such that the stochastic integral has zero expected value.}, \eqref{eqn:dpp} can be written as
 % \begin{equation}
 %     \begin{split}
 %         0 =&\inf_{u}\mathbb{E}_{t,x}\Big[\int_t^{\tau^h} \Big( C(s,X^u_s,u_s){{\ds}} \\
@@ -1807,7 +1915,7 @@ We explain the components of a stochastic control problem.
 \begin{ex}\label{ex:LQ_diffusion}
 Solve modified version of Exercise~\ref{eg:LQ_drift} with modification 
 \begin{equation}
-        {\dX}_t=(cX_t+du_t){{\dt}}+(eX_t+fu_t) {\dd}B_t
+        {\dX}_t=(cX_t+du_t){{\dt}}+(eX_t+fu_t) \dW_t
     \end{equation}
 \end{ex}
 \begin{ex}
@@ -1817,10 +1925,10 @@ Solve modified version of Exercise~\ref{eg:LQ_drift} with modification
     [Merton optimal investment problem]{}
     Remember a self-financing portfolio with a 
     Black-Scholes risky asset, 
-    ${{\dd}}S_t=S_t(\mu {{\dt}}+\sigma {\dd}B_t)$, 
+    ${{\dd}}S_t=S_t(\mu {{\dt}}+\sigma \dW_t)$, 
     under zero interest rate  satisfies
     \begin{equation}
-        {\dX}_t=\theta_t(\mu {{\dt}}+ \sigma {\dd}B_t)
+        {\dX}_t=\theta_t(\mu {{\dt}}+ \sigma \dW_t)
     \end{equation}
     where $\theta$ is the amount of money invested in the risky asset.
     Merton problem is to maximize the expected utility of wealth at a time horizon $T$:
@@ -1853,7 +1961,7 @@ Solve modified version of Exercise~\ref{eg:LQ_drift} with modification
     [Merton optimal consumption problem]{}
     It is similar to the Merton optimal investment problem except, the investor is consuming from the account and what matters is the utility of consumption.
     \begin{equation}
-        {\dX}_t=\theta_t(\mu {{\dt}}+ \sigma {\dd}B_t)-c_t{{\dt}}
+        {\dX}_t=\theta_t(\mu {{\dt}}+ \sigma \dW_t)-c_t{{\dt}}
     \end{equation}
     where $\theta$ is the amount of money invested in the risky asset and the consumption $c$ satisfies $c_t\ge0$.
     Merton problem is 
@@ -1900,7 +2008,7 @@ Consider the exit time problem with noise:
     \begin{equation}
         \inf_{|u_t|\le 1}\mathbb{E}\Big[\int_0^\infty 1_{\{X^u_t\in O\}} dt\Big]
     \end{equation}
-with    ${\dX}_t^u=u_t{\dt}+\epsilon{\dd}B_t$.
+with    ${\dX}_t^u=u_t{\dt}+\epsilon\dW_t$.
 The HJB is given by 
 $0=\frac{\epsilon^2}{2}V^{\prime\prime}(x)+\inf_{|u|\le 1}\{u\cdot \nabla V(x)\}+1_{\{x\in O\}}$\footnote{My best guess is that the term viscosity comes a fluid mechanics term for the second derivative $\frac{\epsilon^2}{2}V^{\prime\prime}$.}, which is equivalent to the following boundary value problem
    \begin{equation}
@@ -1987,11 +2095,11 @@ The subsolution (resp. super) is named in accordance with submartingale (resp. s
 \end{equation}
 then $Y_t:=U(t,X_t)$ is a submartingale (resp. super) martingale, where
 \begin{equation}
-{\dX}_t=\mu(t,X_t){{\dt}}+\sigma(t,X_t){\dd}B_t.
+{\dX}_t=\mu(t,X_t){{\dt}}+\sigma(t,X_t)\dW_t.
 \end{equation}
 \end{rem}
 
-For the first order HJB equation, finding the direction of the inequality for the subsolution or super solutions is not particularly obvious. It can be determined while we add a singular perturbation term $\eps B_t$ to the deterministic state process and send $\eps\to0$. For instance, in Exercise~\ref{ex:eikonal}, if we set the state process ${\dX}_t^u=u_t{{\dt}}+\eps {\dd}B_t$, we obtain the HJB 
+For the first order HJB equation, finding the direction of the inequality for the subsolution or super solutions is not particularly obvious. It can be determined while we add a singular perturbation term $\eps B_t$ to the deterministic state process and send $\eps\to0$. For instance, in Exercise~\ref{ex:eikonal}, if we set the state process ${\dX}_t^u=u_t{{\dt}}+\eps \dW_t$, we obtain the HJB 
 \begin{equation}\label{eqn:Eikonal_perturbed}
 \begin{cases}
 		0=1-|V^{\prime}(x)|+\frac{\eps^2}{2}V^{\prime\prime}(x)\\
@@ -2045,12 +2153,12 @@ Since $v(t,x)\in\mathrm{C}^{1,2}$, it follows from the It\^o formula that for an
 \begin{split}
 v&(T,X_T^{t,x,u})=v(t,x)\\
 &+\int_0^T\Big(\partial_{t}v(s,X_s^{t,x,u})+\mu(s,X_s^{t,x,u},u_s)\cdot\nabla v(s,X_s^{t,x,u})+\frac12{a(s,X_s^{t,x,u},u_s)}\cdot D^2v(s,X_s^{t,x,u})\Big){{\ds}}\\
-&+\int_t^T\sigma(s,X_s^{t,x,u},u_s){\dd}B_s
+&+\int_t^T\sigma(s,X_s^{t,x,u},u_s)\dW_s
 \end{split}
 \end{equation}
 By \eqref{eqn:subsol_thm_verif} and terminal condition $v(T,x)=g(x)$, we obtain
 \begin{equation}\label{eqn:911}
-g(X_T^u)\ge{v}(t,x)-\int_0^TC(s,X_s^{t,x,u},u_s){{\ds}}+\int_t^T\sigma(s,X_s^{t,x,u},u_s){\dd}B_s
+g(X_T^u)\ge{v}(t,x)-\int_0^TC(s,X_s^{t,x,u},u_s){{\ds}}+\int_t^T\sigma(s,X_s^{t,x,u},u_s)\dW_s
 \end{equation}
 If we take conditional expectation, the martingale property of the stochastic integral implies that
 \begin{equation}
@@ -2063,9 +2171,9 @@ V(t,x)=\sup_{u\in\mathcal{A}_{t,T}}\mathbb{E}_{t,x}\bigg[g(X_T^u)+\int_0^TC(s,X_
 Now, assume that  for some $u^*(t,X^*_t)\in\mathcal{A}$, $Y^{u^*}_t=v(t,X_t^{u^*})+\int_0^t C(s,X_s^{u^*},u^*_s) {{\ds}}$ is a martingale. By applying the It\^o formula, we have
 \begin{equation}
 \begin{split}
-Y^{u^*}_t=&v(t,x)+\int_t^T\sigma(s,X_s^{t,x,u^*},u_s){\dd}B_s+\int_0^T\Big(\partial_{t}v(s,X_s^{t,x,u^*})+\mu(s,X_s^{t,x,u^*},u^*_s)\cdot \nabla v(s,X_s^{t,x,u^*})\\
+Y^{u^*}_t=&v(t,x)+\int_t^T\sigma(s,X_s^{t,x,u^*},u_s)\dW_s+\int_0^T\Big(\partial_{t}v(s,X_s^{t,x,u^*})+\mu(s,X_s^{t,x,u^*},u^*_s)\cdot \nabla v(s,X_s^{t,x,u^*})\\
 &\hspace*{4cm}+\frac12{a(s,X_s^{t,x,u^*},u^*_s)}\cdot D^2v(s,X_s^{t,x,u^*})+C(s,X_s^{u^*},u^*_s)\Big){{\ds}}\\
-=&v(t,x)+\int_t^T\sigma(s,X_s^{t,x,u^*},u_s){\dd}B_s
+=&v(t,x)+\int_t^T\sigma(s,X_s^{t,x,u^*},u_s)\dW_s
 \end{split}
 \end{equation}
 Therefore, the martingale property of $Y^{u^*}$, implies that
@@ -2082,10 +2190,10 @@ We apply Theorem~\eqref{thm:verification} to the following examples.
     [Merton optimal investment problem]{}
     Remember a self-financing portfolio with a 
     Black-Scholes risky asset, 
-    ${{\dd}}S_t=S_t(\mu {{\dt}}+\sigma {\dd}B_t)$, 
+    ${{\dd}}S_t=S_t(\mu {{\dt}}+\sigma \dW_t)$, 
     under zero interest rate  satisfies
     \begin{equation}
-        {\dX}_t=\theta_t(\mu {{\dt}}+ \sigma {\dd}B_t)
+        {\dX}_t=\theta_t(\mu {{\dt}}+ \sigma \dW_t)
     \end{equation}
     where $\theta$ is the amount of money invested in the risky asset.
     Merton problem is 
@@ -2119,7 +2227,7 @@ We apply Theorem~\eqref{thm:verification} to the following examples.
     [Merton optimal consumption problem]{}
     It is similar to the Merton optimal investment problem except, the investor is consuming from the account and what matters is the utility of consumption.
     \begin{equation}
-        {\dX}_t=\theta_t(\mu {{\dt}}+ \sigma {\dd}B_t)-c_t{{\dt}}
+        {\dX}_t=\theta_t(\mu {{\dt}}+ \sigma \dW_t)-c_t{{\dt}}
     \end{equation}
     where $\theta$ is the amount of money invested in the risky asset and $c$ is the consumption with $c_t\ge0$.
     Merton problem is 
@@ -2169,7 +2277,7 @@ If for some $u^*$, $Y^{u^*}$ is a martingale, then in all the above, the inequal
 %\begin{equation}
 %\begin{split}
 %Y^u_t=&\int_0^t\Big(C(s,X_s^u,u_s)+\partial_{t}V(s,X_s^u)+\mu(s,X_s^u,u_s)\partial_{x}V(s,X_s^u)+\frac{\sigma^2}{2}(s,X_s^u,u_s)\partial_{xx}V(s,X_s^u) \Big){{\ds}}\\
-%&+\int_{t}^{\tau}\sigma(s,X_s^u,u_s)\partial_{x}V(s,X_s^u){\dd}B_t
+%&+\int_{t}^{\tau}\sigma(s,X_s^u,u_s)\partial_{x}V(s,X_s^u)\dW_t
 %\end{split}
 %\end{equation}
 \end{proof}
@@ -2184,7 +2292,7 @@ In Example~\ref{eg:admissibility_paradox}, let $U(c)=\frac{c^{1-\alpha}}{1-\alph
 	\begin{split}
 				dY_t^u=&\Big(\partial_t V+ \big(\theta_t(\mu-r)+rX^u_t-c_t\big)\partial_x V+ 
 \frac12\sigma^2\theta_t^2\partial_{xx} V+e^{-\gamma t}U(c_t)\Big){{\dt}}\\
-		&+\sigma\theta_t\partial_x V {\dd}B_t. 
+		&+\sigma\theta_t\partial_x V \dW_t. 
 	\end{split}
 	\end{equation}
 	By direct calculation, one can see that 
@@ -2199,7 +2307,7 @@ In Example~\ref{eg:admissibility_paradox}, let $U(c)=\frac{c^{1-\alpha}}{1-\alph
 	\end{equation}
 It remains to show that $c^*$ and $\theta^*$ are admissible Markov controls, i.e., to show that 
 	\begin{equation}
-		dX^*_t=\Big(\theta_t(X^*_t)\big((\mu-r) {{\dt}}+\sigma {\dd}B_t\big)-rX^*_t{{\dt}}\Big)-c^*_t(X^*_t){{\dt}},
+		dX^*_t=\Big(\theta_t(X^*_t)\big((\mu-r) {{\dt}}+\sigma \dW_t\big)-rX^*_t{{\dt}}\Big)-c^*_t(X^*_t){{\dt}},
 	\end{equation}
 	has a strong solution. We leave the details as an exercise. 
 \end{eg}
@@ -2225,7 +2333,7 @@ Consider the stochastic control problem below:
     \end{equation}
     with $u_t\ge0$ (takes nonnegative values) and 
     \begin{equation}
-        {\dX}_t=(X_t+u_t){{\dt}}+\sigma {\dd}B_t
+        {\dX}_t=(X_t+u_t){{\dt}}+\sigma \dW_t
     \end{equation}
     The HJB  is formally written as 
     \begin{equation}
@@ -2272,7 +2380,7 @@ Solving \eqref{eqn:for v in sigular example}, we obtain that $v(t,x)=\frac{5e^{2
     \end{equation}
     where $\tau=\inf\{s\ge0: X_t=0\}$ with
     \begin{equation}
-        {\dX}_t=(\gamma X_t-u_t){{\dt}}+\sigma {\dd}B_t, ~~ X_0=x\ge0
+        {\dX}_t=(\gamma X_t-u_t){{\dt}}+\sigma \dW_t, ~~ X_0=x\ge0
     \end{equation}
     Write the HJB and obtain the nonlinear term by evaluating the infimum. 
 \end{ex}
@@ -2283,7 +2391,7 @@ Singular control problems are easy to detect; the running cost and drift of the 
 where $u_t$ takes values in a closed convex cone $\mathcal{C}$ and 
 \begin{equation}
 	\begin{cases}
-	    {\dX}^u_t =(\mu(t,X_t^u)+Au_t){{\dt}}+\sigma(t,X_t^u){\dd}B_t\\
+	    {\dX}^u_t =(\mu(t,X_t^u)+Au_t){{\dt}}+\sigma(t,X_t^u)\dW_t\\
      X^u_0=x\in\mathbb{R}^d
 	\end{cases}
 \end{equation}
@@ -2321,12 +2429,12 @@ The interpretation of the HJB requires some \textit{variational inequalities}:\f
 \end{enumerate}
 
 
-The description of the optimal control in singular control problems need the notion of local time of SDEs. For instance, in Exercise~\ref{ex:DS}, the optimal control is the local time of the process, ${\dX}_t=\gamma X_t{{\dt}}+\sigma {\dd}B_t$ at the point $\hat{x}$, existence of which is obtained through solving the HJB and going through verification step. 
+The description of the optimal control in singular control problems need the notion of local time of SDEs. For instance, in Exercise~\ref{ex:DS}, the optimal control is the local time of the process, ${\dX}_t=\gamma X_t{{\dt}}+\sigma \dW_t$ at the point $\hat{x}$, existence of which is obtained through solving the HJB and going through verification step. 
 %%%%%%%%%%%%%%%%%%
 \subsection{Optimal stopping problem}
 Let $X$ be given by the SDE
 \begin{equation}
-    {\dX}_t = \mu(t,X_t){\dt}+\sigma(t,X_t){\dd}B_t
+    {\dX}_t = \mu(t,X_t){\dt}+\sigma(t,X_t)\dW_t
 \end{equation}
 in a filtered probability space
 and consider the following problem
@@ -2356,12 +2464,12 @@ The backward stochastic differential equations (BSDE) is an alternative way to t
 In a probability space which hosts a Brownian motion $B$, let $\mathbb{F}^B:=\{\mathcal{F}^B_t\}_t$ be the right-continuous augmented filtration generated by a Brownian motion $B$. 
 Let $X$ be a $\mathcal{F}^B_T$-measurable random variable with finite expectation. Then, there exists a $\mathbb{F}^B$-progressively measurable process $Z_t(\omega)$ such that 
 \begin{equation}
-X=\mathbb{E}[X]+\int_0^TZ_t{\dd}B_t
+X=\mathbb{E}[X]+\int_0^TZ_t\dW_t
 \end{equation}
 
 In addition, if $M$ is a continuous martingale with respect to $\mathbb{F}$, then, there exists a $\mathbb{F}^B$-progressively measurable process $\phi_(\omega)$ such that 
 \begin{equation}
-M_t=M_0+\int_0^tZ_s{\dd}B_s,~~~\textrm{for }~~~ t\ge0.
+M_t=M_0+\int_0^tZ_s\dW_s,~~~\textrm{for }~~~ t\ge0.
 \end{equation}
 \end{thm}
 In the above theorem, $Z$ can interpreted as the sensitivity of the martingale $M$ with respect to the Browanian noise $B$.
@@ -2376,12 +2484,12 @@ M_t:=\mathbb{E}\left[\int_0^T  L_s(\omega){{\ds}}+\xi\Big|\mathcal{F}^B_t\right]
 \end{equation}
 and by the It\^o martingale representation theorem, we have
 \begin{equation}
-M_T=\int_0^T   L_s(\omega){{\ds}}+\xi=M_t+\int_t^TZ_s{\dd}B_s,
+M_T=\int_0^T   L_s(\omega){{\ds}}+\xi=M_t+\int_t^TZ_s\dW_s,
 \end{equation}
 for some $\mathbb{F}^B$-progressively measurable process $Z_t(\omega)$.
 Since $Y_T=\xi$, we have 
 \begin{equation}
-M_T=\int_0^T   L_s(\omega){{\ds}}+Y_T=M_t+\int_t^TZ_s{\dd}B_s,
+M_T=\int_0^T   L_s(\omega){{\ds}}+Y_T=M_t+\int_t^TZ_s\dW_s,
 \end{equation}
 On the other hand,
 since $\int_0^t   L_s(\omega){{\ds}}$ is $\mathcal{F}^B_t$-measurable, we can write
@@ -2390,21 +2498,21 @@ M_t=\int_0^t   L_s(\omega){{\ds}}+\mathbb{E}\left[\int_t^T   L_s(\omega){{\ds}}+
 \end{equation}
 Therefore,
 \begin{equation}
-\int_0^T   L_s(\omega){{\ds}}+Y_T=\int_0^t   L_s(\omega){{\ds}}+Y_t+\int_t^TZ_s{\dd}B_s,
+\int_0^T   L_s(\omega){{\ds}}+Y_T=\int_0^t   L_s(\omega){{\ds}}+Y_t+\int_t^TZ_s\dW_s,
 \end{equation}
 or,
 \begin{equation}\label{eqn:bsde_mg}
-Y_t=Y_T+\int_t^T   L_s(\omega){{\ds}}-\int_t^TZ_s{\dd}B_s.
+Y_t=Y_T+\int_t^T   L_s(\omega){{\ds}}-\int_t^TZ_s\dW_s.
 \end{equation}
 The BSDE \eqref{eqn:bsde_mg} can be written formally by 
 \begin{equation}
 \begin{cases}
-dY_t=- L(t,\omega){{\dt}}+Z_t{\dd}B_t\\
+dY_t=- L(t,\omega){{\dt}}+Z_t\dW_t\\
 Y_T=g(X_T)
 \end{cases}
 \end{equation}
 Note that we could have written the above forwardly, i.e.,
-$Y_t=Y_0+\int_0^t   L_s(\omega){{\ds}}-\int_0^tZ_s{\dd}B_s$. However, this is not very useful, because $Y_0$ is not known. See example below.
+$Y_t=Y_0+\int_0^t   L_s(\omega){{\ds}}-\int_0^tZ_s\dW_s$. However, this is not very useful, because $Y_0$ is not known. See example below.
 \begin{eg}
 Recall that
 the solution to the linear equation 
@@ -2420,15 +2528,15 @@ V(t,x)=\mathbb{E}\left[\int_t^T C(s,X_s){{\ds}}+g(X_T)\Big| X_t=x\right],
 \end{equation}
 where
 \begin{equation}
-{\dX}_t=\mu(t,X_t){{\dt}}+\sigma(t,X_t){\dd}B_t.
+{\dX}_t=\mu(t,X_t){{\dt}}+\sigma(t,X_t)\dW_t.
 \end{equation}
 If we define $Y_t=V(t,X_t)$, then \eqref{eqn:bsde_mg} is given by 
 \begin{equation}
-Y_t=g(X_T)+\int_t^T C(s,X_s){{\ds}}-\int_t^TZ_s{\dd}B_s.
+Y_t=g(X_T)+\int_t^T C(s,X_s){{\ds}}-\int_t^TZ_s\dW_s.
 \end{equation}
 In the above, $g$ and $L$ are known. Given that we can find $Z$, $Y_t$ is known. However, if we write the equation forward
 \begin{equation}
-Y_t=Y_0+\int_0^t C(s,X_s){{\ds}}-\int_0^tZ_s{\dd}B_s.
+Y_t=Y_0+\int_0^t C(s,X_s){{\ds}}-\int_0^tZ_s\dW_s.
 \end{equation}
 Here, $Y_0=V(0,X_0)$ is not known. 
 \end{eg}
@@ -2446,22 +2554,22 @@ V(T,x)=g(x).
 Then, $Y_t=V(t,X_t)$ and  $Z_t=\sigma(t,X_t)\nabla V(t,X_t)$ satisfy the BSDE
 \begin{equation}\label{eqn:Markov_BSDE}
 \begin{cases}
-dY_t=- C(t,X_t,Y_t,\sigma^{-1}(t,X_t)Z_t){{\dt}}+Z_t{\dd}B_t\\
+dY_t=- C(t,X_t,Y_t,\sigma^{-1}(t,X_t)Z_t){{\dt}}+Z_t\dW_t\\
 Y_T=g(X_T)
 \end{cases}
 \end{equation}
 where 
 \begin{equation}
-{\dX}_t=\mu(t,X_t){{\dt}}+\sigma(t,X_t){\dd}B_t.
+{\dX}_t=\mu(t,X_t){{\dt}}+\sigma(t,X_t)\dW_t.
 \end{equation}
 \end{thm}
 \begin{proof}
 By applying It\^o lemma on $Y_t=V(t,X_t)$, we obtain
 \begin{equation}
 \begin{split}
-dY_t=&\big(\partial_{t}V(t,X_t)+\mu(t,X_t)\nabla V(t,X_t)+\frac12{\sigma^2(t,X_t)}\partial_{xx}V(t,X_t)\big){{\dt}}+\sigma(t,X_t)\nabla V(t,X_t){\dd}B_t\\
-&=-C(t,X_t,V(t,X_t),\nabla V(t,X_t)){{\dt}}+\sigma(t,X_t)\nabla V(t,X_t){\dd}B_t\\
-&=- C(t,X_t,Y_t,\sigma^{-1}(t,X_t)Z_t){{\dt}}+Z_t{\dd}B_t
+dY_t=&\big(\partial_{t}V(t,X_t)+\mu(t,X_t)\nabla V(t,X_t)+\frac12{\sigma^2(t,X_t)}\partial_{xx}V(t,X_t)\big){{\dt}}+\sigma(t,X_t)\nabla V(t,X_t)\dW_t\\
+&=-C(t,X_t,V(t,X_t),\nabla V(t,X_t)){{\dt}}+\sigma(t,X_t)\nabla V(t,X_t)\dW_t\\
+&=- C(t,X_t,Y_t,\sigma^{-1}(t,X_t)Z_t){{\dt}}+Z_t\dW_t
 \end{split}
 \end{equation}
 \end{proof}
@@ -2472,13 +2580,13 @@ In general, the use of BSDEs over the HJB is  preferable when the regularity of 
 Motivated by Theorem~\ref{thm:Markov_BSDE}, we can define a general BSDE as 
 \begin{equation}\label{eqn:BSDE}
 	\begin{cases}
-		dY_t=-C(t,Y_t,Z_t,\omega){{\dt}}+Z_s{\dd}B_s\\
+		dY_t=-C(t,Y_t,Z_t,\omega){{\dt}}+Z_s\dW_s\\
 		Y_T=\xi
 	\end{cases},
 \end{equation}
 The argument $\omega$ inside $L$ represents a general dependence on the randomness. In particular, it can represent solution $X_t$ of a possible path-dependent SDE
 \begin{equation}
-	{\dX}_t=\mu(t,X_\cdot){{\dt}}+\sigma(t,X_\cdot){\dd}B_t,
+	{\dX}_t=\mu(t,X_\cdot){{\dt}}+\sigma(t,X_\cdot)\dW_t,
 \end{equation}   
 a possible control process $u_t$, or both $X_t$ and $u_t$. We discuss such dependencies in further details in Section~\ref{sec:max_principle}.
 \begin{rem}
@@ -2493,7 +2601,7 @@ Assume that
 \end{enumerate} 
 Then, for any $\mathcal{F}_T$-measurable square-integrable random variable $\xi$, there exists a couple $(Y_t,Z_t)$ such that \eqref{eqn:BSDE} holds, i.e.,
 \begin{equation}
-Y_t=\xi+\int_t^TL(s,X_s,Y_s,Z_s,\omega){{\ds}}-Z_s{\dd}B_s,
+Y_t=\xi+\int_t^TL(s,X_s,Y_s,Z_s,\omega){{\ds}}-Z_s\dW_s,
 \end{equation}
 and there exists a constant $C$ that only depends on the Lipschitz constant of $\mu$, $\sigma$, and  $L$ and the constant $\lambda$ that
 \begin{equation}
@@ -2505,17 +2613,17 @@ and there exists a constant $C$ that only depends on the Lipschitz constant of $
 \subsection{Linear BSDEs}
 Linear BSDEs take the form
 \begin{equation}\label{eqn:linear_BSDE}
-dY_t=-(\alpha_tY_t+\beta_tZ_t+L_t){{\dt}}+Z_t{\dd}B_t,
+dY_t=-(\alpha_tY_t+\beta_tZ_t+L_t){{\dt}}+Z_t\dW_t,
 \end{equation}
 where $\alpha$, $\beta$, and $L$ are arbitrary progressively measurable processes.
 One can write a closed-form solution for a linear BSDE. To do so, note that
 \begin{equation}
 	dY_t=-(\alpha_tY_t+L_t){{\dt}}+Z_tdB^{\beta}_t,
 \end{equation}
-where by the Girsanov theorem, $dB^{\beta}_t:=\beta_t{{\dt}}+{\dd}B_t$ is a Brownian motion under the probability $\mathbb{P}^{\beta}$ given in
+where by the Girsanov theorem, $dB^{\beta}_t:=\beta_t{{\dt}}+\dW_t$ is a Brownian motion under the probability $\mathbb{P}^{\beta}$ given in
 \begin{equation}
 	\frac{d\mathbb{P}^{\beta}}{d\mathbb{P}~}\Big|_{\mathcal{F}_t}:=\exp\left(
-	\int_0^t\beta_s {\dd}B_s-\frac12\int_0^t\beta^2_s{{\ds}}
+	\int_0^t\beta_s \dW_s-\frac12\int_0^t\beta^2_s{{\ds}}
 	\right)
 \end{equation}
 If we define $\tilde{Y}_t:=e^{\int_0^t \alpha_s{{\ds}}}Y_t$, then
@@ -2538,7 +2646,7 @@ After taking conditional expectation with respect to $\mathbb{P}^{\beta}$, we ob
 If we define 
 \begin{equation}
 	\Gamma_t=e^{\int_t^T \alpha_s {{\ds}}}\frac{d\mathbb{P}^{\beta}}{d\mathbb{P}~}\Big|_{\mathcal{F}_t}=\exp\left(
-	\int_0^t\beta_s {\dd}B_s+\int_0^t(\alpha_s-\frac12\beta^2_s){{\ds}}
+	\int_0^t\beta_s \dW_s+\int_0^t(\alpha_s-\frac12\beta^2_s){{\ds}}
 	\right),
 \end{equation}
 by changing the measure back to $\mathbb{P}$
@@ -2552,7 +2660,7 @@ by changing the measure back to $\mathbb{P}$
 Consider 
 \begin{equation}\label{eqn:comp_principle}
 	\begin{cases}
-		dY^{(i)}_t=-L^{(i)}(t,Y^{(i)}_t,Z^{(i)}_t,\omega){{\dt}}+Z^{(i)}_s{\dd}B_s\\
+		dY^{(i)}_t=-L^{(i)}(t,Y^{(i)}_t,Z^{(i)}_t,\omega){{\dt}}+Z^{(i)}_s\dW_s\\
 		Y^{(i)}_T=\xi^{(i)}
 	\end{cases},
 \end{equation}
@@ -2572,10 +2680,10 @@ For the purpose of control theory, we assume that $L$ takes the form $L(t,x,\var
 In this case, we denote the solution to the BSDE by $(Y^u,Z^u)$, where  
 \begin{equation}
 \begin{cases}
-Y^u_t=\xi+\int_t^TF(s,X_s,Y^u_s,Z^u_s,u_s){{\ds}}-\int_t^TZ^u_s{\dd}B_s\\
-%dY^u_t=-F(t,X_t, Y^u_t, Z^u_t, U_t){{\dt}}+Z^u_t {\dd}B_t\\
+Y^u_t=\xi+\int_t^TF(s,X_s,Y^u_s,Z^u_s,u_s){{\ds}}-\int_t^TZ^u_s\dW_s\\
+%dY^u_t=-F(t,X_t, Y^u_t, Z^u_t, U_t){{\dt}}+Z^u_t \dW_t\\
 Y_T=\xi\in\mathcal{F}^{X}_t\\
-{\dX}_t=\mu(t,X_t){{\dt}}+\sigma(t,X_t){\dd}B_t
+{\dX}_t=\mu(t,X_t){{\dt}}+\sigma(t,X_t)\dW_t
 \end{cases}
 \end{equation}
 and $F(s,X^u_s,Y^u_s,Z^u_s,u_s)=L(s,X_s,Y_s,\sigma^{-1}(s,X^u_s,u_s)Z_s,u_s)$.
@@ -2601,9 +2709,9 @@ there exists a $Z$ such that $(Y,Z)$
 satisfies the BSDE
 \begin{equation}
 \begin{cases}
-Y_t=\xi+\int_t^TF^*(s,X_s,Y_s,Z_s){{\ds}}-\int_t^TZ_s{\dd}B_s\\
+Y_t=\xi+\int_t^TF^*(s,X_s,Y_s,Z_s){{\ds}}-\int_t^TZ_s\dW_s\\
 Y_T=\xi\in\mathcal{F}^{X}_T\\
-{\dX}_t=\mu(t,X_t){{\dt}}+\sigma(t,X_t){\dd}B_t
+{\dX}_t=\mu(t,X_t){{\dt}}+\sigma(t,X_t)\dW_t
 \end{cases}
 \end{equation}
 where
@@ -2771,7 +2879,7 @@ V(T,x)=g(x).
 is related to the BSDE
 \begin{equation}
 \begin{cases}
-dY_t=- C(t,X_t,Y_t,\sigma^{-1}(t,X_t)Z_t){{\dt}}+Z_t{\dd}B_t\\
+dY_t=- C(t,X_t,Y_t,\sigma^{-1}(t,X_t)Z_t){{\dt}}+Z_t\dW_t\\
 Y_T=g(X_T)
 \end{cases}
 \end{equation}
@@ -2781,11 +2889,11 @@ by
 \end{equation}
 where 
 \begin{equation}\label{eqn:sde_YZ}
-{\dX}_t=\mu(t,X_t){{\dt}}+\sigma(t,X_t){\dd}B_t.
+{\dX}_t=\mu(t,X_t){{\dt}}+\sigma(t,X_t)\dW_t.
 \end{equation}
 One way to interpret the solution to the PDE is to find  functions $\mathbf{Y}(t,x)$ and $\mathbf{Z}(t,x)$ such that 
 \begin{equation}\label{eqn:BSDE_YZ}
-\mathbf{Y}(t,X_t)=g(X_T) -\int_t^T \Big(C(s,X_s,\mathbf{Y}(s,X_s),\mathbf{Z}(s,X_s)){{\ds}}+\mathbf{Z}(s,X_s){\dd}B_s\Big)
+\mathbf{Y}(t,X_t)=g(X_T) -\int_t^T \Big(C(s,X_s,\mathbf{Y}(s,X_s),\mathbf{Z}(s,X_s)){{\ds}}+\mathbf{Z}(s,X_s)\dW_s\Big)
 \end{equation}
 Functions $\mathbf{Y}$ and $\mathbf{Z}$ can be approximated by neural networks $\hat{\mathbf{Y}}(t,x,\alpha)$ and $\hat{\mathbf{Z}}(t,x;\beta)$ and the equations \eqref{eqn:sde_YZ} and \eqref{eqn:BSDE_YZ} can be approximated discretely by 
 \begin{equation}
@@ -3059,14 +3167,14 @@ The two definitions of value function are equivalent. $V(t,x)$ in the former def
 \section{Hamilton-Jacobi-Bellman (HJB) equation}
 In this section, we assume that the value function $V(t,x)$ defined in \eqref{eqn:value_function} is $\textrm{\normalfont C}^{1,2}$. Thus, we can apply the It\^o formula on $V(\tau,X^{t,x,\hat{u}}_{\tau})$ to write
 \begin{equation}
-	V(\tau,X^{t,x,\hat{u}}_{\tau})=V(t,x)+\int_{t}^{\tau}\left(\partial_{t}V+\mu\partial_{x}V+\frac{\sigma^2}{2}\partial_{xx}V \right){{\ds}}+\int_{t}^{\tau}\sigma\partial_{x}V{\dd}B_s.
+	V(\tau,X^{t,x,\hat{u}}_{\tau})=V(t,x)+\int_{t}^{\tau}\left(\partial_{t}V+\mu\partial_{x}V+\frac{\sigma^2}{2}\partial_{xx}V \right){{\ds}}+\int_{t}^{\tau}\sigma\partial_{x}V\dW_s.
 \end{equation}
 In the above the partial derivatives of $V$ depend on $(s,X_s^{t,x,u})$ and $\mu$ and $\sigma$ depend on $(s,X_s^{t,x,u},u_s)$.
 By plugging in $V(\tau,X^{t,x,\hat{u}}_{\tau})$ from the above in DPP \eqref{eqn:DPP_cnt}, we obtain 
 \begin{equation}
-	0=\sup_{{u}\in\mathcal{A}_{t,\tau}}\mathbb{E}\left[\int_{t}^{\tau}\left(L+\partial_{t}V+\mu\partial_{x}V+\frac{\sigma^2}{2}\partial_{xx}V \right){{\ds}}+\int_{t}^{\tau}\sigma\partial_{x}V{\dd}B_s\right]
+	0=\sup_{{u}\in\mathcal{A}_{t,\tau}}\mathbb{E}\left[\int_{t}^{\tau}\left(L+\partial_{t}V+\mu\partial_{x}V+\frac{\sigma^2}{2}\partial_{xx}V \right){{\ds}}+\int_{t}^{\tau}\sigma\partial_{x}V\dW_s\right]
 \end{equation}
-The stochastic integral $\int_{t}^{\tau}\sigma\partial_{x}V{\dd}B_s$ should vanish under expectation, if $\tau$ satisfies the assumptions of the optional sampling theorem. Generally, one can choose $\tau$  such that $\sigma\partial_{x}V$ remains bounded on $[t,\tau]$ and make the stochastic integral vanish inside expectation. 
+The stochastic integral $\int_{t}^{\tau}\sigma\partial_{x}V\dW_s$ should vanish under expectation, if $\tau$ satisfies the assumptions of the optional sampling theorem. Generally, one can choose $\tau$  such that $\sigma\partial_{x}V$ remains bounded on $[t,\tau]$ and make the stochastic integral vanish inside expectation. 
 \begin{equation}
 	0=\sup_{{u}\in\mathcal{A}_{t,\tau}}\mathbb{E}\left[\int_{t}^{\tau}\left(L+\partial_{t}V+\mu\partial_{x}V+\frac{\sigma^2}{2}\partial_{xx}V \right){{\ds}}\right]
 \end{equation}
@@ -3097,7 +3205,7 @@ By  applying It\^o formula on $e^{-\gamma (\tau-t)}V(\tau,X^{t,x,{u}}_{\tau})$, 
 	e^{-\gamma (\tau-t)}V(\tau,X^{t,x,\hat{u}}_{\tau})=&V(t,x)\\
 	&+\int_{t}^{\tau}e^{-\gamma (s-t)}\Big(\partial_{t}V-\gamma V+(\theta_s(\mu-r)+rX_s-c_s)\partial_{x}V
 	+\frac{\sigma^2}{2}\theta^2_s\partial_{xx}V \Big){{\ds}}\\
-	&+\sigma\int_{t}^{\tau}e^{-\gamma (s-t)}\theta_s\partial_{x}V{\dd}B_t
+	&+\sigma\int_{t}^{\tau}e^{-\gamma (s-t)}\theta_s\partial_{x}V\dW_t
 	\end{split}
 \end{equation}
 By plugging the above into DPP programing and using $\tau\wedge h$ for the stopping time as explained in this section, we obtain the following HJB
