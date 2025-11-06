@@ -1458,100 +1458,230 @@ and the stochastic integral vanishes.
 \section{Backward stochastic differential equations}
 In this section, we introduce a tool related to stochastic optimal control, i.e., backward stochastic differential equations, BSDE henceforth. 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Itô representation theorem}
-To understand what a BSDE is, we require a result from stochastic calculus. 
-\begin{thm}{Itô's martingale representation theorem}
-    Let $Y$ be a random variable dependent on the paths of a Wiener process $\{W_t\}$ and $M_t:=\mathbb{E}[Y|\mathcal{F}_t]$ be the conditional expectation of $X$ given the path of $W$ until time $t$. Then, there exist a stochastic process $Z_t$ such that
+\subsection{Itô representation theorem and BSDE for linear PDEs}
+To understand where a BSDE comes from, we present a result  from stochastic calculus. 
+\begin{thm}[Itô's martingale representation theorem]\label{thm:mg_rep}
+    Let $Y$ be a random variable dependent on the paths of a Wiener process $\{W_t\}$ and $M_t:=\mathbb{E}[Y|\mathcal{F}_t]$ be the conditional expectation of $Y$ given the path of $W$ until time $t$. Then, there exist a stochastic process $Z_t$ such that
     \[
     M_s=M_t+\int_t^sZ_r\dW_r
     \]
     In particular,
     \[
-    M_t=Y_0+\int_0^tZ_r\dW_r=\mathbb{E}[Y]+\int_0^tZ_r\dW_r
+    M_t=M_0+\int_0^tZ_r\dW_r=\mathbb{E}[Y]+\int_0^tZ_r\dW_r
     \]
 \end{thm}
-To see how the above theorem works for stochastic control, we first apply it to a case without control. Let 
-\[
-{\dX}_t =b(t,X_t){{\dt}}+\sigma(t,X_t)\dW_t
-\]
-and define
+For the moment, we forget about stochastic control and focus on the random variable given by
 \begin{equation}
 Y:=\int_0^T C(s,X_s){{\ds}}+g(X_T)
 \end{equation}
-Applying Itô's martingale representation theorem on $Y$ yields
+where
 \[
-\mathbb{E}\left[\int_0^T C(r,X_r){{\dr}}+g(X_T)\Big|\mathcal{F}_s\right] = \mathbb{E}\left[\int_0^T C(r,X_r){{\dr}}+g(X_T)\Big|\mathcal{F}_t\right] + \int_t^sZ_r\dW_r
+{\dX}_t =b(t,X_t){{\dt}}+\sigma(t,X_t)\dW_t
 \]
-If we set $s=T$, we have  
+Note that the control is absent in the running cost function $C(t,x)$, drift $b(t,x)$, and diffusion $\sigma(t,x)$.
+By Itô representation theorem for $Y$, we obtain
 \[
-\int_0^T C(r,X_r){{\dr}}+g(X_T) = \int_0^t C(r,X_r){{\dr}} + \mathbb{E}\left[\int_t^T C(r,X_r){{\ds}}+g(X_T)\Big|\mathcal{F}_t\right] + \int_t^T Z_r\dW_r
+Y=\mathbb{E}[Y|\mathcal{F}_t]+\int_t^T Z_r\dW_r
+\]
+In other words,
+\[
+\int_0^T C(r,X_r){{\dr}}+g(X_T) =  \mathbb{E}\left[\int_0^T C(r,X_r){{\dr}}+g(X_T)\Big|\mathcal{F}_t\right] + \int_t^TZ_r\dW_r
+\]
+We can use the properties of conditional expectation to write 
+\[
+\mathbb{E}\left[\int_0^T C(r,X_r){{\dr}}+g(X_T)\Big|\mathcal{F}_t\right] = \int_0^t C(r,X_r){{\dr}}+\mathbb{E}\left[\int_t^T C(r,X_r){{\dr}}+g(X_T)\Big|\mathcal{F}_t\right]
+\]
+This implies 
+\[
+\int_0^T C(r,X_r){{\dr}}+g(X_T) = \int_0^t C(r,X_r){{\dr}} + \mathbb{E}\left[\int_t^T C(r,X_r){{\dr}})\Big|\mathcal{F}_t\right] + \int_t^TZ_r\dW_r
 \]
 or
 \[
-g(X_T) = \int_t^T C(r,X_r){{\dr}} + \mathbb{E}\left[\int_t^T C(r,X_r){{\dr}}+g(X_T)\Big|\mathcal{F}_t\right] + \int_t^T Z_r\dW_r
+\int_t^T C(r,X_r){{\dr}}+g(X_T) =  \mathbb{E}\left[\int_t^T C(r,X_r){{\dr}})\Big|\mathcal{F}_t\right] + \int_t^TZ_r\dW_r
 \]
 We set
 \[
 Y_t:=\mathbb{E}\left[\int_t^T C(r,X_r){{\dr}}+g(X_T)\Big|\mathcal{F}_t\right]
 \]
-Therefore,
+Therefore, we derive the simple \emph{BSDE}
 \[
-Y_t = g(X_T) - \int_t^T C(r,X_r){{\dr}}  - \int_t^T Z_r\dW_r
+Y_t = g(X_T) + \int_t^T C(r,X_r){{\dr}}  - \int_t^T Z_r\dW_r
 \]
 Or in differential form, we write
-\[
-\begin{cases}
-    dY_t = C(t,X_t){{\dt}} + Z_t \dW_t\\
+\begin{equation}
+\label{eqn:BSDE_F-K}
+    \begin{cases}
+    \dd Y_t =  - C(t,X_t){{\dt}} + Z_t\cdot\dW_t\\
     Y_T=g(X_T)
 \end{cases}
-\]
+\end{equation}
+
+
+
+% \subsubsection{Feynman-Kac formula for linear parabolic PDEs}
+In order to see what $Z$ and $Y$ represent, we review the Feynman-Kac formula for  linear parabolic PDEs. 
     By the Markovian property of $X$, $Y_t$ can be written as a function of $(t,X_t)$
 \begin{equation}
 \label{eqn:F-K}
-    V(t,X_t)=\mathbb{E}\left[\int_t^T C(r,X_r){{\dr}}+g(X_T)\Big|\mathcal{F}_t\right]
+    Y_t=V(t,X_t)=\mathbb{E}\left[\int_t^T C(r,X_r){{\dr}}+g(X_T)\Big|\mathcal{F}_t\right]
 \end{equation}
-and $V(t,x)$ satisfies the linear PDE below
+We assume that $V(t,x)$ is first order continuously  differentiable with respect to $t$ and second order continuously  differentiable with respect to $x$. Then, we can apply Itô's formula to write
+\[
+\begin{split}
+    \dd Y_t = \dd V(t,X_t)  = &\Big(V_t(t,X_t)+\frac12(\sigma^{\intercal}\sigma)(t,X_t)\cdot D^2 V(t,X_t) + b(t,X_t)\cdot \nabla V(t,X_t)\Big)\dt \\
+    &\hspace{2cm} +  \nabla V(t,X_t)\cdot \sigma(t,X_t)\dW_t
+\end{split}
+\]
+We compare the above with \eqref{eqn:BSDE_F-K} to conclude that $Z_t^\top = \nabla V(t,X_t)^\top \sigma(t,X_t)$ and
 \begin{equation}
-\label{eqn:linear}
+\label{eqn:PDE_linear}
     \begin{cases}
     V_t(t,x)+\frac12(\sigma^{\intercal}\sigma)(t,x)\cdot D^2 V(t,x) + b(t,x)\cdot \nabla V(t,x) + C(t,x) = 0\\
-    V(t,x) = g(X_T)
+    V(T,x) = g(X_T)
 \end{cases}
 \end{equation}
+
+\textbf{Convention.} For aesthetic reasons, we switch $Z$ to $\sigma^{-1\top}Z$ to write the BSDE as
+\begin{equation}
+\label{eqn:BSDE_F-K_newZ}
+    \begin{cases}
+    \dd Y_t =  - C(t,X_t){{\dt}} + Z_t\cdot \sigma(t,x) \dW_t\\
+    Y_T=g(X_T)
+\end{cases}
+\end{equation}
+or equivalently
+\begin{equation}
+\label{eqn:BSDE_F-K_dX}
+    \begin{cases}
+    \dd Y_t =  - \big(C(t,X_t)+Z_t\cdot b(t,X_t)\big){{\dt}} + Z_t\cdot \dX_t\\
+    Y_T=g(X_T)
+\end{cases}
+\end{equation}
+
+
+Formula \eqref{eqn:F-K} provides a stochastic representation for the solution of \eqref{eqn:PDE_linear} known as \emph{Feynman-Kac} formula, which is used to approximate the solution of parabolic equations of the form \eqref{eqn:PDE_linear}. This approximation method is discussed in Section~\ref{sec:F-K_approx}.
 If $X_t=W_t$ is a Wiener process, $b\equiv0$ and $\sigma\equiv \text{I}_d$ (the identity matrix) and we have the heat equation with a source term
 \[
 \begin{cases}
     V_t(t,x)+\frac12\Delta V(t,x) + C(t,x) = 0\\
-    V(t,x) = g(X_T)
+    V(T,x) = g(X_T)
 \end{cases}
 \]
-One can use the expected value in \eqref{eqn:F-K} to approximate the solution to \eqref{eqn:linear}. We generate the samples of $X$ by the \emph{Euler-Maruyama} discretization. Set $\Delta t = T/N$ and $t_n=n\Delta t$ and generate $J$ samples of increments of Wiener process $\Delta W_{t_{n+1}}^j=W_{t_{n+1}}^j-W_{t_{n}}^j\sim N(0,\Delta t)$
-\begin{equation}
-\label{eqn:Euler-Maruyama}
-    \hat{X}^j_{t_{n+1}} = \hat{X}^j_{t_{n}} + b(t_n,\hat{X}_{t_n}^j)\Delta t+\sigma(t_n,\hat{X}_{t_n}^j)\Delta W_{t_{n+1}}^j
-\end{equation}
-Then, we can approximate $V(0,x)$ by
+and 
 \[
-\mathbb{E}\left[\int_0^T C(r,X_r){{\dr}}+g(X_T)\right]\approx\frac{1}{J}\Big(\sum_{n=0}^{N-1} C(t_n,\hat{X}_{t_n}^j)\Delta t+g(\hat{X}_T^j)\Big)
+V(t,X_t)=\mathbb{E}\left[\int_t^T C(r,W_r){{\dr}}+g(W_T)\Big|\mathcal{F}_t\right]
 \]
-\begin{algorithm}
-        % Algorithm content goes here
-        \KwData{$T$, $N$, $X_0^j\sim\mathcal{L}_0$, $W_{t_{n+1}}^j\sim N(0,\Delta t)$, $\phi(\cdot,\theta)$}
-        $\Delta t \gets T/N$\;
-        \For{$n=0,...,N-1$, $j=0,...,J$}{
-        Evaluate $\hat{X}^j_{t_{n+1}}$ using \eqref{eqn:Euler-Maruyama}\;
-        }
-        $\hat{Y}^j:=\sum_{n=0}^{N-1}C(t_n,\hat{X}_{t_n}^j)\Delta t+g(\hat{X}_T^j)$\;
-        Mean-square minimization: $\theta^*=\text{argmin}\frac{1}{J} \Big(\phi(X_0^j;\theta)-\hat{Y}^j\Big)^2$\;
-        \Return{$\phi(x;\theta^*)$}
-        \caption{Feynmann-Kac approximation for linear parabolic equations}
-        \label{alg:F-K}
-\end{algorithm}
-The initial value of $X_0^j$ can be taken as a given point $x$ or be generated according to an arbitrary distribution, $\mathcal{L}_0$. 
-If $X_0^j$ is generated by a distribution, in Algorithm~\ref{alg:F-K}, we need approximate $V(0,x)$ by a parametrized function $\phi(\cdot;\theta)$ by minimizing a mean-square error. This minimization is performed in Step 5 in  Algorithm~\ref{alg:F-K}.
 
-Algorithm~\ref{alg:F-K} only approximates the value function. If we write the BSDE corresponding to \eqref{eqn:linear}, we can approximate both the value function and its gradient simultaneously.
+However, the BSDE \eqref{eqn:BSDE_F-K_newZ} provide more than an approximation for $Y_t$ or $V(t,x)$. The solution to the BSDE consists of the pair $(Y_t,Z_t)$ which yields simultaneously, 
+$Y_t = V(t,X_t)$ and $Z_t= \nabla V(t,X_t)$. The BSDE approximation methods for control problems can also be applied for linear parabolic PDEs to obtain solution and first derivative at the same time.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{BSDE representation for optimal control problems}
+\label{sec:BSDE_approx}
+In this section, we derive the BSDE for control problems in two ways. First, we use the HJB equation. Then, we derive it without using the HJB equation. 
+In both cases, we only consider the case where the control variable is present in the drift of $X$, 
+\[
+{\dX}_t =b(t,X_t,{\color{orange}u_t}){{\dt}}+\sigma(t,X_t)\dW_t
+\]
+When $\sigma$ depends on the control, the BSDE is more involved and is refereed to as second order BSDE, 2BSDE. To know more about 2BSDEs, see \citet{CSTV07,STZ12}.
+\subsection{BSDE via HJB}
+Recall that the value function of the control problem
+\[
+V(t,x):=\sup_{u\in\mathcal{U}_{t,T}}\mathbb{E}\left[\int_t^T C(r,X_r,u_r){{\dr}}+g(X_T)\Big|X_t=x\right]
+\]
+satisfies the HJB equation
+\begin{equation}\label{eqn:HJB_bsde}
+    \begin{cases}
+        V_t(t,x)+\frac12(\sigma^{\intercal}\sigma)(t,x)\cdot D^2 V(t,x) + H(t,x,\nabla V(t,x)) = 0\\
+    V(T,x) = g(X_T)
+    \end{cases}
+\end{equation}
+with 
+\[
+H(t,x,p)=\sup_{u\in U}\left\{ b(t,x,u)\cdot p + C(t,x,u)\right\}
+\]
+Define 
+\[
+\dd\tilde{X}_t = \sigma(t,\tilde{X}_t)\dW_t
+\]
+$\tilde{X}$ is an SDE derived from $X$ by dropping the drift $b(t,x,u)$ and it does not depend on the control anymore. 
+We apply Ito's formula on $V(t,\tilde{X}_t)$ to write
+\[
+\begin{split}
+    \dd V(t,\tilde{X}_t)  = &\Big(V_t(t,\tilde{X}_t)+\frac12(\sigma^{\intercal}\sigma)(t,\tilde{X}_t)\cdot D^2 V(t,\tilde{X}_t)\Big){{\dt}} +  \nabla V(t,\tilde{X}_t)\cdot \sigma(t,\tilde{X}_t)\dW_t
+\end{split}
+\]
+By \eqref{eqn:HJB_bsde}, we have 
+\[
+\begin{split}
+    \dd V(t,\tilde{X}_t)  = & -H(t,\tilde{X}_t,\nabla V(t,X_t)){{\dt}} +  \nabla V(t,\tilde{X}_t)\cdot \sigma(t,\tilde{X}_t)\dW_t\\
+    = & -H(t,\tilde{X}_t,\nabla V(t,X_t)){{\dt}} +  \nabla V(t,\tilde{X}_t)\cdot \dt\tilde{X}_t
+\end{split}
+\]
+We set $Y_t:=V(t,\tilde{X}_t)$ and $Z_t=\nabla V(t,\tilde{X}_t)$ to write
+\begin{equation}
+\label{eqn:BSDE_nonlinear}
+    \begin{cases}
+        \dd Y_t = -H\big(t,\tilde{X}_t,Z_t\big)\dt + Z_t\cdot\dd\tilde{X}_t\\
+        Y_T=g(\tilde{X}_T)
+    \end{cases}
+\end{equation}
+
+The above discussion leads to the following theorem.
+\begin{thm}
+\label{thm:BSDE}
+    Let $V(t,x)$ be the classical solution (once continuously differentiable in $t$ and twice continuously differentiable in $x$) to \eqref{eqn:HJB_bsde} and $(Y_t,Z_t)$ satisfies \eqref{eqn:BSDE_nonlinear}. Then,  $V(t,\tilde{X}_t) = Y_t$ and $\nabla V(t,\tilde{X}_t) = Z_t$.
+\end{thm}
+\subsection{BSDE via maximum principle}
+We present a formal process for writing the BSDE for a generic control problem.  We fix a control ${\color{orange}u_t}$ and denote
+\[
+Y^{\color{orange}u_t}_t:=\mathbb{E}\left[\int_t^T C(r,X_r,{\color{orange}u_r})\dr+g(X_T)\right]
+\]
+where 
+\[
+{\dX}_t =b(t,X_t,{\color{orange}u_t}){{\dt}}+\sigma(t,X_t)\dW_t
+\]
+Inspired by the martingale representation theorem, Theorem~\ref{thm:mg_rep} and \eqref{eqn:BSDE_F-K_dX},  
+\[
+\dd Y^u_t = - \big(C(t,X_t,{\color{orange}u_t}) + Z_t^{\color{orange}u_t}\cdot b(t,X_t,{\color{orange}u_t})\big) \dt + Z_t^{\color{orange}u_t}\cdot \dX_t
+\]
+We define
+\[
+H(t,x,z):=\sup_{u\in U}\left\{C(t,x,u) + z\cdot  b(t,x,u)\right\}
+\]
+and consider the \emph{nonlinear} BSDE 
+\begin{equation}
+\label{eqn:BSDE_pre_formal}
+    \dd Y_t =  - H(t,X_t,Z_t) \dt + Z_t\cdot \dd X_t
+\end{equation}
+Now, we appeal to the following maximum principle for BSDEs
+\begin{thm}
+    For $i=1,2$, let $(Y^i,Z^i)$ be the solution to the nonlinear BSDEs
+    \[
+    \dd Y^i_t =  - H_i(t,X_t,Z^i_t) \dt + Z^i_t\cdot \dd X_t,~~~Y^i_T=g(X_T)
+    \]
+    If $H_1(t,x,z)\le H_2(t,x,z)$, then $Y^1_t\le Y^2_t$ for all $t$.
+\end{thm}
+To use the above theorem, if we take $H_1(t,x,z)=C(t,x,u) + z\cdot  b(t,x,{\color{orange}u})$ and $H_2(t,x,z)$ $=H(t,x,z)$, then we argue that 
+\[
+Y^{\color{orange}u}\le Y_t
+\]
+Furthermore, the equality is attained at
+\[
+u^*(t,x,z):=\text{\normalfont argmax}_{u\in U}\left\{z\cdot b(t,x,u) + C(t,x,u)\right\}
+\]
+\begin{ex}
+    Consider the stochastic linear quadratic problem below:
+    \begin{equation}
+        \inf_u\mathbb{E}\Big[\int_0^T \Big(aX_t^2+bX_t +Au_t^2 + Bu_t\Big){\dt}+\alpha X_T^2+\beta X_T\Big]
+    \end{equation}
+    with
+    \begin{equation}
+        {\dX}_t=(\gamma X_t+\kappa u_t){{\dt}}+\sigma \dW_t
+    \end{equation}
+where $a,A, \alpha>0$ and $b,B,\beta,\gamma$ and $\kappa$ are constants.
+Use both methods discussed in this section to write the BSDE for this control problem.
+\end{ex}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1582,14 +1712,14 @@ Taking derivatives with respect to $a_k$, we obtain
 \]
 or
 \begin{equation}
-    \label{eqn:linear_regression}
+    \label{eqn:PDE_linear_regression}
 \sum_{\ell=1}^{K} \phi_{k\ell}a_{\ell}=b_{k},~~\text{ for all }~~k=1,...,K
 \end{equation}
 where
 \[
 \phi_{k\ell}:=\sum_{j=1}^J\phi_{k}(x^j)\phi_{\ell}(x^j)~\text{ and }~b_k:=\sum_{j=1}^J\phi_{k}(x^j)y^j
 \]
-Solving the linear system of equation \eqref{eqn:linear_regression} is often time-consuming. If the functions $\phi_k$ are not chosen properly, the solution may not be unique. However, if we choose an \emph{orthogonal} system of functions, then the solution to \eqref{eqn:linear_regression} is simple. Let 
+Solving the linear system of equation \eqref{eqn:PDE_linear_regression} is often time-consuming. If the functions $\phi_k$ are not chosen properly, the solution may not be unique. However, if we choose an \emph{orthogonal} system of functions, then the solution to \eqref{eqn:PDE_linear_regression} is simple. Let 
 \[
 \int_a^b \phi_k(x)\phi_{\ell}(x)dx=
 \begin{cases}
@@ -1604,7 +1734,7 @@ and $x^j$s are i.i.d. samples, then
     \int_a^b \phi^2_k(x)dx&k=\ell
 \end{cases}
 \]
-and \eqref{eqn:linear_regression} is approximated by
+and \eqref{eqn:PDE_linear_regression} is approximated by
 \[
 a_k = \frac{\int_a^b \phi_k(x)f(x)dx}{\int_a^b \phi^2_k(x)(x)dx} \approx \frac{\sum_{j=1}^{J}y^j\phi_{k}(x^{j})}{\sum_{j=1}^{J}\phi^2_{k}(x^{j})}
 \]
@@ -1775,6 +1905,111 @@ V(t,x)=f(t)x^2+h(t)x+\ell(t)
 In this process we find ODEs for the coefficients $f$, $h$, and $\ell$ which we need to solve.
 \end{ex}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Feynman-Kac approximation of linear equations}
+\label{sec:F-K_approx}
+While not related to control, it is important to draw an analogy between the BSDE approximation of value function in a control problem and the Feynman-Kac representation of the value of linear parabolic equations. Since the value function of a control problem satisfies an HJB equation, the nonlinear version of a parabolic equation, BSDE serves as a generalization of Feynman-Kac formula to nonlinear problems.
+
+One can use the expected value in \eqref{eqn:F-K} to approximate the solution to \eqref{eqn:PDE_linear}. We generate the samples of $X$ by the \emph{Euler-Maruyama} discretization. Set $\Delta t = T/N$ and $t_n=n\Delta t$ and generate $J$ samples of increments of Wiener process $\Delta W_{t_{n+1}}^j=W_{t_{n+1}}^j-W_{t_{n}}^j\sim N(0,\Delta t)$
+\begin{equation}
+\label{eqn:Euler-Maruyama}
+    \hat{X}^j_{t_{n+1}} = \hat{X}^j_{t_{n}} + b(t_n,\hat{X}_{t_n}^j)\Delta t+\sigma(t_n,\hat{X}_{t_n}^j)\Delta W_{t_{n+1}}^j
+\end{equation}
+Then, we can approximate $V(0,x)$ by
+\[
+\mathbb{E}\left[\int_0^T C(r,X_r){{\dr}}+g(X_T)\right]\approx\frac{1}{J}\Big(\sum_{n=0}^{N-1} C(t_n,\hat{X}_{t_n}^j)\Delta t+g(\hat{X}_T^j)\Big)
+\]
+\begin{algorithm}
+        % Algorithm content goes here
+        \KwData{$T$, $N$, $X_0^j\sim\mathcal{L}_0$, $W_{t_{n+1}}^j\sim N(0,\Delta t)$, $\phi(\cdot,\theta)$}
+        $\Delta t \gets T/N$\;
+        \For{$n=0,...,N-1$, $j=0,...,J$}{
+        Evaluate $\hat{X}^j_{t_{n+1}}$ using \eqref{eqn:Euler-Maruyama}\;
+        }
+        $\hat{Y}^j:=\sum_{n=0}^{N-1}C(t_n,\hat{X}_{t_n}^j)\Delta t+g(\hat{X}_T^j)$\;
+        Mean-square minimization: $\theta^*=\text{argmin}\frac{1}{J} \Big(\phi(X_0^j;\theta)-\hat{Y}^j\Big)^2$\;
+        \Return{$\phi(x;\theta^*)$}
+        \caption{Feynman-Kac approximation for linear parabolic equations}
+        \label{alg:F-K}
+\end{algorithm}
+The initial value of $X_0^j$ can be taken as a given point $x$ or be generated according to an arbitrary distribution, $\mathcal{L}_0$. 
+If $X_0^j$ is generated by a distribution, in Algorithm~\ref{alg:F-K}, we need approximate $V(0,x)$ by a parametrized function $\phi(\cdot;\theta)$ by minimizing a mean-square error. This minimization is performed in Step 5 in  Algorithm~\ref{alg:F-K}.
+
+
+Algorithm~\ref{alg:F-K} only approximates the value function. If we write the BSDE corresponding to \eqref{eqn:PDE_linear}, we can approximate both the value function and its gradient simultaneously. 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \section{Numerical methods based on BSDE}
+\label{eqn:BSDE_numerical}
+Consider the HJB
+\begin{equation}
+    \begin{cases}
+    V_t(t,x)+\frac12(\sigma^{\intercal}\sigma)(t,x)\cdot D^2 V(t,x) + H(t,x,\nabla V(t,x)) = 0\\
+    V(T,x) = g(X_T)
+    \end{cases}
+\end{equation}
+and the corresponding BSDE
+\begin{equation}
+    \begin{cases}
+        \dd Y_t = -F(t,{X}_t,Z_t)\dt + Z_t\cdot\dW_t\\
+        Y_T=g({X}_T)
+    \end{cases}
+\end{equation}
+By Theorem~\eqref{thm:BSDE}, we know that $V(t,X_t) = Y_t$ and $\nabla V(t,X_t) = Z_t\sigma^{-1}(t,X_t)$, where $\dd X_t=\sigma(t,X_t)\dW_t$. 
+Consider the discretization of $X$ given by the Euler-Maruyama scheme:
+\[
+\hat{X}_{t_{n+1}}=\hat{X}_{t_{n}} + \sigma(t_n,\hat{X}_{t_{n}})\Delta W_{t_{n+1}}
+\]
+where $\Delta W_{t_{n+1}}= W_{t_{n+1}}- W_{t_{n}}$.
+We also discretize the BSDE:
+\begin{equation}
+\label{eqn:BSDE_discrete}
+    \begin{cases}
+        \hat{Y}_{t_n} = \hat{Y}_{t_{n+1}} +F(t_n,\hat{X}_{t_n},\hat{Z}_{t_n})\Delta t - \hat{Z}_{t_n}\cdot\Delta W_{t_{n+1}}\\
+        \hat{Y}_T=g(\hat{X}_T)
+    \end{cases}
+\end{equation}
+In \eqref{eqn:BSDE_discrete}, if we take conditional expectation given $\hat{X}_{t_n}$, we obtain $\mathbb{E}[\hat{Z}_{t_n}\cdot\Delta W_{t_{n+1}}|\hat{X}_{t_n}]=0$ and 
+\begin{equation}
+    \hat{Y}_{t_n} = \mathbb{E}[\hat{Y}_{t_{n+1}}|\hat{X}_{t_n}] +F(t_n,\hat{X}_{t_n},\hat{Z}_{t_n})\Delta t
+\end{equation}
+Furthermore, if we multiply both sides on \eqref{eqn:BSDE_discrete} by $\Delta W_{t_{n+1}}$ and take conditional expectation given $\hat{X}_{t_n}$, we have
+\begin{equation}
+    \hat{Y}_{t_n} \mathbb{E}[\Delta W_{t_{n+1}}|\hat{X}_{t_n}]= \mathbb{E}[\hat{Y}_{t_{n+1}}\Delta W_{t_{n+1}}|\hat{X}_{t_n}] + F(t_n,\hat{X}_{t_n},\hat{Z}_{t_n})\mathbb{E}[\Delta W_{t_{n+1}}|\hat{X}_{t_n}]\Delta t - \hat{Z}_{t_n} \mathbb{E}[\Delta W_{t_{n+1}}^\intercal\Delta W_{t_{n+1}}|\hat{X}_{t_n}]
+\end{equation}
+In the above, $\Delta W_{t_{n+1}}^\intercal\Delta W_{t_{n+1}}$ is a $d\times d$ matrix obtained from multiplying a column vector to a row vector. 
+\[
+\Delta W_{t_{n+1}}^\intercal\Delta W_{t_{n+1}}
+=\left[
+\begin{matrix}
+    \Delta W_{1,t_{n+1}}^2&\Delta W_{1,t_{n+1}}\Delta W_{2,t_{n+1}}&\cdots &\Delta W_{1,t_{n+1}}\Delta W_{d,t_{n+1}}\\
+    &&\vdots&\\
+    \Delta W_{d,t_{n+1}}\Delta W_{1,t_{n+1}}&\Delta W_{d,t_{n+1}}\Delta W_{2,t_{n+1}}&\cdots &\Delta W_{d,t_{n+1}}^2
+\end{matrix}
+\right]
+\]
+Since $\mathbb{E}[\Delta W_{t_{n+1}}|\hat{X}_{t_n}]=0$, we have 
+\begin{equation}
+    0= \mathbb{E}[\hat{Y}_{t_{n+1}}\Delta W_{t_{n+1}}|\hat{X}_{t_n}] - \hat{Z}_{t_n} \mathbb{E}[\Delta W_{t_{n+1}}^\intercal\Delta W_{t_{n+1}}|\hat{X}_{t_n}]
+\end{equation}
+Note that 
+\[
+\mathbb{E}[\Delta W_{i,t_{n+1}}\Delta W_{j,t_{n+1}}|\hat{X}_{t_n}]=\begin{cases}
+    0&i\neq j\\
+    \Delta t & i=j
+\end{cases}
+\]
+Then, 
+\begin{equation}
+    \hat{Z}_{t_n}= \frac{1}{\Delta t}\mathbb{E}[\hat{Y}_{t_{n+1}}\Delta W_{t_{n+1}}|\hat{X}_{t_n}]   
+\end{equation}
+The numerical scheme for BSDE is given by 
+\begin{equation}
+\label{eqn:BSDE_discrete_Z}
+    \begin{cases}
+    \hat{Z}_{t_n}= \frac{1}{\Delta t}\mathbb{E}[\hat{Y}_{t_{n+1}}\Delta W_{t_{n+1}}|\hat{X}_{t_n}] \\
+        \hat{Y}_{t_n} = \mathbb{E}[\hat{Y}_{t_{n+1}}|\hat{X}_{t_n}] +F(t_n,\hat{X}_{t_n},\hat{Z}_{t_n})\Delta t\\
+        \hat{Y}_T=g(\hat{X}_T)
+    \end{cases}
+\end{equation}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2290,7 +2525,7 @@ In Example~\ref{eg:admissibility_paradox}, let $U(c)=\frac{c^{1-\alpha}}{1-\alph
 	By It\^o formula, we have 
 	\begin{equation}
 	\begin{split}
-				dY_t^u=&\Big(\partial_t V+ \big(\theta_t(\mu-r)+rX^u_t-c_t\big)\partial_x V+ 
+				\dd Y_t^u=&\Big(\partial_t V+ \big(\theta_t(\mu-r)+rX^u_t-c_t\big)\partial_x V+ 
 \frac12\sigma^2\theta_t^2\partial_{xx} V+e^{-\gamma t}U(c_t)\Big){{\dt}}\\
 		&+\sigma\theta_t\partial_x V \dW_t. 
 	\end{split}
@@ -2507,7 +2742,7 @@ Y_t=Y_T+\int_t^T   L_s(\omega){{\ds}}-\int_t^TZ_s\dW_s.
 The BSDE \eqref{eqn:bsde_mg} can be written formally by 
 \begin{equation}
 \begin{cases}
-dY_t=- L(t,\omega){{\dt}}+Z_t\dW_t\\
+\dd Y_t=- L(t,\omega){{\dt}}+Z_t\dW_t\\
 Y_T=g(X_T)
 \end{cases}
 \end{equation}
@@ -2522,7 +2757,7 @@ the solution to the linear equation
 v(T,x)=g(x)
 \end{cases}		
 \end{equation}
-is given by the Feynmann-Kac formula:
+is given by the Feynman-Kac formula:
 \begin{equation}
 V(t,x)=\mathbb{E}\left[\int_t^T C(s,X_s){{\ds}}+g(X_T)\Big| X_t=x\right],
 \end{equation}
@@ -2542,7 +2777,7 @@ Here, $Y_0=V(0,X_0)$ is not known.
 \end{eg}
 
 
-The following theorem shows that a BSDE can generalize the Feynmann-Kac formula to nonlinear equations.
+The following theorem shows that a BSDE can generalize the Feynman-Kac formula to nonlinear equations.
 \begin{thm}\label{thm:Markov_BSDE}
 Assume that the following \emph{semilinear}\footnote{The an equation with linear second order term and possibly nonlinear first order term is called semilinear.} PDE has a solution $V(t,x)\in\mathrm{C}^{1,2}$.
 \begin{equation}\label{eqn:semilinear_PDE}
@@ -2554,7 +2789,7 @@ V(T,x)=g(x).
 Then, $Y_t=V(t,X_t)$ and  $Z_t=\sigma(t,X_t)\nabla V(t,X_t)$ satisfy the BSDE
 \begin{equation}\label{eqn:Markov_BSDE}
 \begin{cases}
-dY_t=- C(t,X_t,Y_t,\sigma^{-1}(t,X_t)Z_t){{\dt}}+Z_t\dW_t\\
+\dd Y_t=- C(t,X_t,Y_t,\sigma^{-1}(t,X_t)Z_t){{\dt}}+Z_t\dW_t\\
 Y_T=g(X_T)
 \end{cases}
 \end{equation}
@@ -2567,7 +2802,7 @@ where
 By applying It\^o lemma on $Y_t=V(t,X_t)$, we obtain
 \begin{equation}
 \begin{split}
-dY_t=&\big(\partial_{t}V(t,X_t)+\mu(t,X_t)\nabla V(t,X_t)+\frac12{\sigma^2(t,X_t)}\partial_{xx}V(t,X_t)\big){{\dt}}+\sigma(t,X_t)\nabla V(t,X_t)\dW_t\\
+\dd Y_t=&\big(\partial_{t}V(t,X_t)+\mu(t,X_t)\nabla V(t,X_t)+\frac12{\sigma^2(t,X_t)}\partial_{xx}V(t,X_t)\big){{\dt}}+\sigma(t,X_t)\nabla V(t,X_t)\dW_t\\
 &=-C(t,X_t,V(t,X_t),\nabla V(t,X_t)){{\dt}}+\sigma(t,X_t)\nabla V(t,X_t)\dW_t\\
 &=- C(t,X_t,Y_t,\sigma^{-1}(t,X_t)Z_t){{\dt}}+Z_t\dW_t
 \end{split}
@@ -2580,7 +2815,7 @@ In general, the use of BSDEs over the HJB is  preferable when the regularity of 
 Motivated by Theorem~\ref{thm:Markov_BSDE}, we can define a general BSDE as 
 \begin{equation}\label{eqn:BSDE}
 	\begin{cases}
-		dY_t=-C(t,Y_t,Z_t,\omega){{\dt}}+Z_s\dW_s\\
+		\dd Y_t=-C(t,Y_t,Z_t,\omega){{\dt}}+Z_s\dW_s\\
 		Y_T=\xi
 	\end{cases},
 \end{equation}
@@ -2612,13 +2847,13 @@ and there exists a constant $C$ that only depends on the Lipschitz constant of $
 
 \subsection{Linear BSDEs}
 Linear BSDEs take the form
-\begin{equation}\label{eqn:linear_BSDE}
-dY_t=-(\alpha_tY_t+\beta_tZ_t+L_t){{\dt}}+Z_t\dW_t,
+\begin{equation}\label{eqn:PDE_linear_BSDE}
+\dd Y_t=-(\alpha_tY_t+\beta_tZ_t+L_t){{\dt}}+Z_t\dW_t,
 \end{equation}
 where $\alpha$, $\beta$, and $L$ are arbitrary progressively measurable processes.
 One can write a closed-form solution for a linear BSDE. To do so, note that
 \begin{equation}
-	dY_t=-(\alpha_tY_t+L_t){{\dt}}+Z_tdB^{\beta}_t,
+	\dd Y_t=-(\alpha_tY_t+L_t){{\dt}}+Z_tdB^{\beta}_t,
 \end{equation}
 where by the Girsanov theorem, $dB^{\beta}_t:=\beta_t{{\dt}}+\dW_t$ is a Brownian motion under the probability $\mathbb{P}^{\beta}$ given in
 \begin{equation}
@@ -2879,7 +3114,7 @@ V(T,x)=g(x).
 is related to the BSDE
 \begin{equation}
 \begin{cases}
-dY_t=- C(t,X_t,Y_t,\sigma^{-1}(t,X_t)Z_t){{\dt}}+Z_t\dW_t\\
+\dd Y_t=- C(t,X_t,Y_t,\sigma^{-1}(t,X_t)Z_t){{\dt}}+Z_t\dW_t\\
 Y_T=g(X_T)
 \end{cases}
 \end{equation}
