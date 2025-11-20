@@ -1488,15 +1488,27 @@ Some of the technical assumption that we skip are there to make sure the expecta
 Or equivalently,
 \[
 \begin{split}
-    v(t,X_t)  = & g(X_T) +\int_0^T\Big(\Big(v_t(s,X_s)+\frac12(\sigma^{\intercal}\sigma)(s,X_s,u_s)\cdot D^2 v(s,X_s) + b(s,X_s,u_s)\cdot \nabla v(s,X_s)\Big)\ds \\
+    v(t,X_t)  = & g(X_T) -\int_0^T\Big(\Big(v_t(s,X_s)+\frac12(\sigma^{\intercal}\sigma)(s,X_s,u_s)\cdot D^2 v(s,X_s) + b(s,X_s,u_s)\cdot \nabla v(s,X_s)\Big)\ds \\
     &\hspace{2cm} +  \nabla v(s,X_s)\cdot \sigma(s,X_s,u_s)\dW_s\Big)
 \end{split}
 \]
 By the HJB, we have 
 \[
 \begin{split}
-    v_t(s,X_s)+&\frac12(\sigma^{\intercal}\sigma)(s,X_s,u_s)\cdot D^2 v(s,X_s) + b(s,X_s,u_s)\cdot \nabla v(s,X_s) \\
-    &\ge v_t(s,X_s) + \inf_{u\in U}\left\{ C(s,X_s,u)  + b(s,X_s,u)\cdot v_x(s,X_s) +\frac12 v_{xx}(t,x) \sigma^2(t,x,u)\right\}
+    v_t(s,X_s)+&C(s,X_s,u)   +\frac12(\sigma^{\intercal}\sigma)(s,X_s,u_s)\cdot D^2 v(s,X_s) + b(s,X_s,u_s)\cdot \nabla v(s,X_s) \\
+    &\ge v_t(s,X_s) + \inf_{u\in U}\left\{ C(s,X_s,u)  + b(s,X_s,u)\cdot v_x(s,X_s) +\frac12 v_{xx}(t,x) \sigma^2(t,x,u)\right\}=0
+\end{split}
+\]
+Therefore, 
+\[\]
+\begin{split}
+    v(t,X_t) \ge  & g(X_T) +\int_0=t^T\Big(C(s,X_s,u_s)\ds  +  \nabla v(s,X_s)\cdot \sigma(s,X_s,u_s)\dW_s\Big)
+\end{split}
+\]
+Taking expectation, we have 
+\[
+\begin{split}
+    v(t,X_t) \ge  &\mathbb{E}\left[ g(X_T) +\int_t^T\Big(C(s,X_s,u_s)\ds  \right]
 \end{split}
 \]
 \end{proof}
