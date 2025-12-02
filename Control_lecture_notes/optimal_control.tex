@@ -1473,8 +1473,9 @@ Then, we have $v\ge V$, where $V$ is the value function of the control problem \
 \end{equation}
 Furthermore, if there exists a control $u^*\in\mathcal{U}$ such that
 \[
-u^*(t,x)\in\text{\normalfont argmin}_{u\in U}\left\{  C(t,x,u)  + v_x(t,x) b(t,x,u)\cdot \nabla v(t,x)+\frac12 (\sigma^\top\sigma)(t,x,u)\cdot D^2v(t,x)\right\}
+u^*(t,x)\in\text{\normalfont argmin}_{u\in U}\left\{  C(t,x,u)  + v_x(t,x) b(t,x,u)\cdot \nabla v(t,x)+\frac12 (\sigma^\top\sigma)(t,x,u)\cdot v_{xx}(t,x)\right\}
 \]
+then $v=V$.
 \end{thm}
 Some of the technical assumption that we skip are there to make sure the expectations and the stochastic integrals in the proof are defined. That is what needs to be modified for each specific problem.
 \begin{proof}
@@ -1526,17 +1527,17 @@ By repeating the above argument for $u^*(t,x)$ given in the assertion of the the
     In Exercise~\ref{ex:merton}, assume that $U(x)=\frac{x^\gamma}{\gamma}$ for $\gamma\in(0,1)$. Find a solution of the form $v(t,x):=f(t)U(x)$ for the HJB equation. We now perform a verification step on $v(t,x)$. The HJB for Exercises~\ref{ex:merton} is given by
         \begin{equation}
         \begin{cases}
-            0={V}_{t} + rx V_{x} + \sup_{\theta}\Big\{
-            \frac{\sigma^2}{2}V_{xx}\theta^2 +(\mu-r)  V_{x}\theta\Big\}\\
-            V(T,x)=U(x)
+            0={v}_{t} + rx v_{x} + \sup_{\theta}\Big\{
+            \frac{\sigma^2}{2}v_{xx}\theta^2 +(\mu-r)  v_{x}\theta\Big\}\\
+            v(T,x)=U(x)
         \end{cases}
     \end{equation}
     which is written in a simplified form by
-    $0={V}_{t} + rx V_{x}-\frac{(\mu-r)^2 V_{x}^2}{2\sigma^2V_{xx}}$. % Note that $f(t)=\exp\left(A(T-t)\right)$ where $A=r-\tfrac{(\mu-r)^2\gamma}{2\sigma^2(1-\gamma)}$.
+    $0={v}_{t} + rx v_{x}-\frac{(\mu-r)^2 v_{x}^2}{2\sigma^2v_{xx}}$. % Note that $f(t)=\exp\left(A(T-t)\right)$ where $A=r-\tfrac{(\mu-r)^2\gamma}{2\sigma^2(1-\gamma)}$.
     Note that 
     \[
     \theta^*(t,x)=\text{\normalfont argmax}\Big\{
-            \frac{\sigma^2}{2}V_{xx}\theta^2 +(\mu-r)  V_{x}\theta\Big\}=-\frac{(\mu-r)V_{x}}{\sigma^2 V_{xx}}=-\frac{(\mu-r)f(t) x^{\gamma-1}}{\sigma^2f(t)(\gamma-1)x^{\gamma-2}}=\frac{(\mu-r)}{\sigma^2(1-\gamma)}x
+            \frac{\sigma^2}{2}v_{xx}\theta^2 +(\mu-r)  v_{x}\theta\Big\}=-\frac{(\mu-r)v_{x}}{\sigma^2 v_{xx}}=-\frac{(\mu-r)f(t) x^{\gamma-1}}{\sigma^2f(t)(\gamma-1)x^{\gamma-2}}=\frac{(\mu-r)}{\sigma^2(1-\gamma)}x
     \]
     According to Theorem~\ref{thm:verification}, we need to show that $\theta^*\in\mathcal{U}$, or, $\theta^*$ is an admissible control. Recall that $\mathcal{U}=\{\theta_t:X_t\ge0~~\text{ for all }~~t~~\text{a.s.}\}$. Therefore, we need to show that $X^*_t\ge0$ for all $t\ge0$ a.s., where
     \[
@@ -1548,7 +1549,7 @@ By repeating the above argument for $u^*(t,x)$ given in the assertion of the the
     \]
     Therefore, $X^*_t$ is a geometric Brownian motion and is given by
     \[
-    X^*_t=X^*_0\exp\left(\left(A(\mu-r)   + r - \tfrac{A^2}{2}\right) t + A W_t \right)\ge0
+    X^*_t=X^*_0\exp\left(\left(A(\mu-r)   + r - \tfrac{A^2}{2}\right) t + A\sigma W_t \right)\ge0
     \]
     which provides the desired result.
 \end{eg}
@@ -1559,11 +1560,11 @@ By repeating the above argument for $u^*(t,x)$ given in the assertion of the the
 \subsection{Martingale approach}\label{sec:martingale}
 The martingale principle for optimal control (\cite{DV73}) is another verification result which does not require the differentiability of the value function.
 \begin{thm}\label{thm:martingale_verification}
-	Assume that there exists a function $v(t,x)$ such that for all $u\in\mathcal{A}$ the process $\{Y^u_t\}_{t\ge0}$
+	Assume that there exists a function $v(t,x)$ such that for all $u\in\mathcal{U}$ the process $\{Y^u_t\}_{t\ge0}$
 	\begin{equation}
 		Y^u_t:=v(t,X_t)+\int_0^tC(s,X_s,u_s){{\ds}}
 	\end{equation}
-	is a super martingale and that for some $u^*\in\mathcal{A}$, $\{Y^{u^*}_t\}_{t\ge0}$ is a martingale. Then, $u^*$ is an optimal control and the value function is equal to $v(t,x)$.
+	is a super martingale and that for some $u^*\in\mathcal{U}$, $\{Y^{u^*}_t\}_{t\ge0}$ is a martingale. Then, $u^*$ is an optimal control and the value function is equal to $v(t,x)$.
 \end{thm}
 \begin{proof}
 By the supermartingale property, we have
