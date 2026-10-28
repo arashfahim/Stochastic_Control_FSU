@@ -157,8 +157,8 @@
 %  Rewritten; see header for why the flushleft wrappers were removed.
 % -----------------------------------------------------------------------
 \newcommand{\tocandfigures}{%
-  \TagSuspend
-  \par\noindent
+  \par\TagSuspend % \par first: never suspend inside an open paragraph
+  \noindent
   \rule[0.5ex]{1\columnwidth}{1pt}\par
   \noindent Last Revision: \today\par
   \setcounter{page}{1}%
