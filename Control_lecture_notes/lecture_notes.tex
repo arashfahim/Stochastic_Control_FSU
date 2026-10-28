@@ -176,7 +176,7 @@ Note that the existence of the term ${\color{blue} u_t {\dt}}$ is necessary for 
 Solve \eqref{dynamic_x} for $x_t$ in terms of $u$. Hint: $\dd(e^{\beta t}x_t)=e^{\beta t}u_t{\dt}$.
 \end{ex}
 \begin{ex}
-Show that if there exists a function $u$ such that $\alpha_t=2\int_0^te^{\beta (s-t)}u_s {{\ds}}$, then $u$ minimizes \eqref{simple_control}.
+Show that if there exists a function $u$ such that $\alpha_t=2\big(e^{\beta t}x+\int_0^te^{\beta (s-t)}u_s {{\ds}}\big)$, then $u$ minimizes \eqref{simple_control}.
 \end{ex}
 \begin{ex}
     If we modify an \emph{optimal} control $u$ in a countable number of points described in the exercise above, does it remain an optimal control? Does the initial value $x_0=x$ play a role in the problem?
