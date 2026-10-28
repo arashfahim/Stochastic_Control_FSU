@@ -1,0 +1,20 @@
+# Example CODEOWNERS file
+# Format: <pattern> <owner> <owner> ...
+# Owners can be users: @username
+# Or teams: @org/team-name (teams only in org repos)
+# The last matching rule takes precedence.
+
+# All files in the repo — assign to you
+* @arashfahim
+
+# All files in the docs folder — docs team in org (example)
+docs/ @my-org/docs-team
+
+# All JavaScript in src/ — frontend team and lead
+src/**/*.js @my-org/frontend-team @frontend-lead
+
+# Anything under src/components (directory)
+src/components/ @my-org/frontend-team
+
+# Markdown files — docs maintainers and a user
+*.md @my-org/docs-team @doc-editor
