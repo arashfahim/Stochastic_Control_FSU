@@ -28,7 +28,10 @@
 % --- active in the preamble, so no suspend/resume is needed around the setup
 % --- below; only the algorithm environments themselves need suspending.
 \usepackage[linesnumbered,ruled,vlined]{algorithm2e}
-\AddToHook{env/algorithm/before}{\TagSuspend}
+% \par first: every algorithm here starts in the middle of a paragraph, and
+% suspending tagging while a paragraph is open leaves it unclosed (that is the
+% "automatic begin and end text-unit para hooks differ" error).
+\AddToHook{env/algorithm/before}{\par\TagSuspend}
 \AddToHook{env/algorithm/after}{\TagResume}
 % \SetKwInput/\SetKwInOut typeset a measuring box.  In the preamble that box is
 % built before any structure is open, which makes the tagging layer abort with
@@ -2378,7 +2381,7 @@ For the goal of approximating a function with a neural network, on needs to mini
 To evaluate the infimum above, we need to appeal to gradient descent algorithm. The most important step in the gradient descent is to evaluate the derivative of the loss function in \eqref{prob:inf_nn}. This is were simplicity of the activation functions in the neural network helps. One can evaluate $\mathcal{J}(\theta)$ once and use it via symbolic calculations to evaluate the gradient at each time the parameter is changed during gradient descent. 
 \begin{algorithm}
         % Algorithm content goes here
-        \caption{Gradient descent}
+        \caption{Gradient descent algorithm for neural networks}
         \label{alg:gd_nn}
         \KwData{$\theta_0$ is randomly chosen.}
         \KwData{The gradient of $\mathcal{J}(\theta)$ is evaluated in a symbolic manner.}
@@ -2388,7 +2391,6 @@ To evaluate the infimum above, we need to appeal to gradient descent algorithm. 
         $n \leftarrow n + 1$
         }
         \Return{$\theta_n$}
-        \caption{Gradient descent algorithm for neural networks}
 \end{algorithm}
 Any deep learning package has implemented automatic differentiation to evaluate the loss function and to build a tree using chain rule. This tree is saved in the memory and is used at any step of the algorithm to evaluate the gradient. This process is also referred to as \emph{forward propagation}. After the tree is build and the loss function is evaluated, the algorithm goes backward in the tree to evaluates the gradient and to adjust the parameters using the chain rule. This step of the process is called \emph{back propagation}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2516,7 +2518,6 @@ The gradient of $\bar{\mathcal{J}}$ with respect to $\theta$ can be evaluated by
         $i \gets i + 1$
         }
         \Return{$\theta_i$}
-        \caption{Gradient descent algorithm for neural networks}
 \end{algorithm}
 \subsection{Design of PGM}
 A key part of the policy gradient method is the evaluation in lines 4, 5, and 6 in Algorithm~\ref{alg:pgm}. After $\theta_i$ and consequently $\phi(t,x;\theta_i)$ are updated, in line 4, we  re-evaluate the sample paths in \eqref{eqn:discrete_euler} based on $\theta_i$. 
@@ -3637,7 +3638,6 @@ GD is based on a simple fact. At any point $x$, direction of maximum descent (as
         $n \leftarrow n + 1$
         }
         \Return{$x$}
-        \caption{Gradient descent algorithm}
 \end{algorithm}
 The most important parameter in GD is $\alpha$, \emph{learning rate}. Ideally, when we are further from a local minimum, we like to move faster, therefore, we choose a larger learning rate. When we are very close to the minimum, we like the learning rate to be smaller. A general rule of thumb suggests $\alpha_n$ should be such that $\alpha_n\to0$ and $\sum_n\alpha_n=\infty$. Decrease of $\alpha_n$ to 0, allows DG to slow down when it gets closer to the minimum. If $\alpha_n$ is constant, it can potentially jump over the minimum. The jutification for $\sum_n\alpha_n=\infty$ can be rigorously explained. The following theorem shows why this condition holds under some strong assumption. The theorem shows the continuous gradient descent to the global minimum of a convex function. In practice, GD is a discrete algorithm. 
 \begin{thm}
@@ -6438,7 +6438,7 @@ For the goal of approximating a function with a neural network, on needs to mini
 To evaluate the infimum above, we need to appeal to gradient descent algorithm. The most important step in the gradient descent is to evaluate the derivative of the loss function in \eqref{prob:inf_nn}. This is were simplicity of the activation functions in the neural network helps. One can evaluate $\mathcal{J}(\theta)$ once and use it via symbolic calculations to evaluate the gradient at each time the parameter is changed during gradient descent. 
 \begin{algorithm}
         % Algorithm content goes here
-        \caption{Gradient descent}
+        \caption{Gradient descent algorithm for neural networks}
         \label{alg:gd_nn}
         \KwData{$\theta_0$ is randomly chosen.}
         \KwData{The gradient of $\mathcal{J}(\theta)$ is evaluated in a symbolic manner.}
@@ -6448,7 +6448,6 @@ To evaluate the infimum above, we need to appeal to gradient descent algorithm. 
         $n \leftarrow n + 1$
         }
         \Return{$\theta_n$}
-        \caption{Gradient descent algorithm for neural networks}
 \end{algorithm}
 Any deep learning package has implemented automatic differentiation to evaluate the loss function and to build a tree using chain rule. This tree is saved in the memory and is used at any step of the algorithm to evaluate the gradient. This process is also referred to as \emph{forward propagation}. After the tree is build and the loss function is evaluated, the algorithm goes backward in the tree to evaluates the gradient and to adjust the parameters using the chain rule. This step of the process is called \emph{back propagation}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -6576,7 +6575,6 @@ The gradient of $\bar{\mathcal{J}}$ with respect to $\theta$ can be evaluated by
         $i \gets i + 1$
         }
         \Return{$\theta_i$}
-        \caption{Gradient descent algorithm for neural networks}
 \end{algorithm}
 \subsection{Design of PGM}
 A key part of the policy gradient method is the evaluation in lines 4, 5, and 6 in Algorithm~\ref{alg:pgm}. After $\theta_i$ and consequently $\phi(t,x;\theta_i)$ are updated, in line 4, we  re-evaluate the sample paths in \eqref{eqn:discrete_euler} based on $\theta_i$. 
@@ -7697,7 +7695,6 @@ GD is based on a simple fact. At any point $x$, direction of maximum descent (as
         $n \leftarrow n + 1$
         }
         \Return{$x$}
-        \caption{Gradient descent algorithm}
 \end{algorithm}
 The most important parameter in GD is $\alpha$, \emph{learning rate}. Ideally, when we are further from a local minimum, we like to move faster, therefore, we choose a larger learning rate. When we are very close to the minimum, we like the learning rate to be smaller. A general rule of thumb suggests $\alpha_n$ should be such that $\alpha_n\to0$ and $\sum_n\alpha_n=\infty$. Decrease of $\alpha_n$ to 0, allows DG to slow down when it gets closer to the minimum. If $\alpha_n$ is constant, it can potentially jump over the minimum. The jutification for $\sum_n\alpha_n=\infty$ can be rigorously explained. The following theorem shows why this condition holds under some strong assumption. The theorem shows the continuous gradient descent to the global minimum of a convex function. In practice, GD is a discrete algorithm. 
 \begin{thm}
