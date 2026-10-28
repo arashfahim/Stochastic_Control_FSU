@@ -1,79 +1,183 @@
-% notes.sty -- reconstructed support package for "Methods of Optimal Control"
-% The original notes.sty was not available; this file provides every command
-% and environment the document uses, chosen to be compatible with PDF tagging
-% (\DocumentMetadata / latex-lab testphase code).
-\NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{notes}[2026/06/11 reconstructed notes package, tagging-friendly]
+%  notes.sty — General settings for lecture notes
+%  Cleaned up for PDF/UA-1 accessibility (ADA compliance) via the LaTeX tagging
+%  project, and trimmed to only the packages and macros this document uses.
+%
+%  Changes from the original, and why:
+%
+%   * amsthm is NOT loaded.  It is the root cause of the "there is no open
+%     structure on the stack" errors: its theorem machinery is not tagging-aware
+%     in TeX Live 2023 and breaks the tag stack in every theorem-like
+%     environment.  LaTeX's own kernel \newtheorem handles all nine environments
+%     correctly under tagging, so the environments below are declared with that
+%     instead, and \begin{proof} is reimplemented in a few lines.
+%
+%   * ulem is NOT loaded.  The document uses none of its commands (\uline,
+%     \sout, \xout, \uuline), and it redefines \emph to underline, which
+%     collided with the tagging layer.  If you ever need it, load it as
+%     \usepackage[normalem]{ulem} so \emph stays italic.
+%
+%   * hyperref and cleveref are NOT loaded here.  hyperref belongs in the main
+%     document after \DocumentMetadata; cleveref must follow hyperref and the
+%     document uses none of its commands (\cref, \Cref), so it was dropped.
+%
+%   * \tocandfigures rewritten.  The original nested \tableofcontents and
+%     \newpage inside three flushleft environments, whose groups broke the tag
+%     stack.  They served no typographic purpose and are gone.
+%
+%   * microtype uses expansion=false.  Auto font expansion needs scalable fonts,
+%     which the default Computer Modern set does not provide; protrusion still
+%     works.
+%
+%   * Removed packages the document never uses: mathrsfs, makeidx, setspace,
+%     listings, thmtools, appendix, tikz, pgfplots, latexsym, nameref, epsfig,
+%     dsfont, times.
+%
+%   * Removed roughly 170 unused macros (calligraphic, bar/hat/tilde/check
+%     decorators, display-math operator shortcuts, article-specific shortcuts)
+%     and \def\R (the document writes \mathbb{R} explicitly).
+%
+%   * Removed duplicate \usepackage calls: graphicx x3, amsmath x3, amsthm x2,
+%     fontenc x3, caption x2, hyperref x2, tikz x2, url x2, float x2.
 
-\RequirePackage{xcolor}
-\RequirePackage{tabularx}
-\RequirePackage{fancyhdr}
-\RequirePackage{amsmath,amssymb}
+% -----------------------------------------------------------------------
+%  Fonts & encoding
+% -----------------------------------------------------------------------
+\usepackage[T1]{fontenc}
+\usepackage[expansion=false]{microtype}
 
-% ---- page style (document uses \chead, \lhead) ----
+% -----------------------------------------------------------------------
+%  Math  (amsthm deliberately omitted — see header)
+% -----------------------------------------------------------------------
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{mathtools}
+
+% -----------------------------------------------------------------------
+%  Graphics, floats, tables
+% -----------------------------------------------------------------------
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{tabularx}
+\usepackage{enumerate}
+
+% -----------------------------------------------------------------------
+%  Misc
+% -----------------------------------------------------------------------
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{url}
+% xcolor rather than color: the document uses \color{orange}, which the basic
+% color package does not define.
+\usepackage[dvipsnames]{xcolor}
+\usepackage{comment}
+
+% -----------------------------------------------------------------------
+%  Page layout
+% -----------------------------------------------------------------------
+\geometry{verbose,letterpaper,tmargin=1.0in,bmargin=1.0in,lmargin=1in,rmargin=1in}
 \pagestyle{fancy}
-\fancyhf{}
-\fancyfoot[C]{\thepage}
-\renewcommand{\headrulewidth}{0pt}
+\setlength{\headheight}{15pt}
+\renewcommand{\baselinestretch}{1}
+\setlength\parindent{5pt}
+\renewcommand{\ps@plain}{\pagestyle{fancy}}
+\captionsetup{labelfont=bf,indention=0cm}
 
-% ---- small caps helper used on the title page ----
-\newcommand{\noun}[1]{\textsc{#1}}
+% -----------------------------------------------------------------------
+%  Numbering
+% -----------------------------------------------------------------------
+\numberwithin{equation}{section}
+\numberwithin{figure}{section}
 
-% ---- front matter helper ----
+% -----------------------------------------------------------------------
+%  Tagging helpers
+%  If the tagging layer is not loaded (compiling without \DocumentMetadata),
+%  these become silent no-ops so the file still builds.
+% -----------------------------------------------------------------------
+%  LaTeX 2024-06 and later (TeX Live 2024+) provide \SuspendTagging /
+%  \ResumeTagging, the documented interface, which keeps the paragraph counters
+%  balanced.  Older releases fall back to tagpdf's \tag_stop: / \tag_start:.
+%  Without the tagging layer both become no-ops.
+\ExplSyntaxOn
+\cs_if_exist:NTF \SuspendTagging
+  {
+    \NewDocumentCommand \TagSuspend {} { \SuspendTagging{notes} }
+    \NewDocumentCommand \TagResume  {} { \ResumeTagging{notes} }
+  }
+  {
+    \cs_if_exist:NTF \tag_stop:
+      {
+        \NewDocumentCommand \TagSuspend {} { \tag_stop: }
+        \NewDocumentCommand \TagResume  {} { \tag_start: }
+      }
+      {
+        \NewDocumentCommand \TagSuspend {} { }
+        \NewDocumentCommand \TagResume  {} { }
+      }
+  }
+\ExplSyntaxOff
+
+% -----------------------------------------------------------------------
+%  Theorem-like environments
+%  Declared with LaTeX's kernel \newtheorem, which is tagging-safe.
+%  Only the environments this document uses are defined.
+% -----------------------------------------------------------------------
+\newtheorem{defn}{Definition}[section]
+\newtheorem{rem}{Remark}[section]
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{lem}{Lemma}[section]
+\newtheorem{coro}{Corollary}[section]
+\newtheorem{assp}{Assumption}
+\newtheorem{eg}{Example}
+\newtheorem{ex}{Exercise}
+
+% -----------------------------------------------------------------------
+%  proof environment
+%  Replaces amsthm's version (see header).  Built from plain paragraph
+%  material so the tagging layer stays balanced.
+% -----------------------------------------------------------------------
+\providecommand{\proofname}{Proof}
+\providecommand{\qedsymbol}{\ensuremath{\square}}
+% Guarded: newer LaTeX releases (and amsthm) already provide a `proof`
+% environment, and on TeX Live 2024+ theirs is tagging-aware.  Defer to it when
+% present; define our own only when it is missing.
+\makeatletter
+\@ifundefined{proof}{%
+  \newenvironment{proof}[1][\proofname]{%
+    \par\addvspace{\topsep}%
+    \noindent\textit{#1.}\enspace\ignorespaces
+  }{%
+    \unskip\nobreak\hfill\qedsymbol
+    \par\addvspace{\topsep}%
+  }%
+}{}%
+\makeatother
+
+% -----------------------------------------------------------------------
+%  \tocandfigures — front-matter rule, timestamp and table of contents
+%  Rewritten; see header for why the flushleft wrappers were removed.
+% -----------------------------------------------------------------------
 \newcommand{\tocandfigures}{%
+  \TagSuspend
+  \par\noindent
+  \rule[0.5ex]{1\columnwidth}{1pt}\par
+  \noindent Last Revision: \today\par
+  \setcounter{page}{1}%
+  \setcounter{secnumdepth}{0}% hide section numbers in header
   \tableofcontents
-  \listoffigures
+  \par\noindent
+  \rule[0.5ex]{1\columnwidth}{1pt}\par
+  \TagResume
   \newpage
 }
 
-% ---- sectioning alias used in the source ----
-\newcommand{\ssection}[1]{\section{#1}}
-
-% ---- math shorthands ----
-\newcommand{\R}{\mathbb{R}}
-\newcommand{\eps}{\varepsilon}
-\newcommand{\USC}{\operatorname{USC}}
-\newcommand{\LSC}{\operatorname{LSC}}
-\newcommand{\Cn}[1]{\mathrm{C}^{#1}}
+% -----------------------------------------------------------------------
+%  Macros used by this document
+% -----------------------------------------------------------------------
+\newcommand{\noun}[1]{\textsc{#1}}        % small caps, used on the title page
+\newcommand{\Cn}[1]{{\rm C}^{#1}}         % C^k function spaces
+\def\USC{{\rm USC}}                       % upper semicontinuous
+\def\LSC{{\rm LSC}}                       % lower semicontinuous
+\def\eps{\varepsilon}
+\def\x{\times}
+\def\1{{\mathbf{1}}}                      % indicator; \mathds needs dsfont, unavailable
 \DeclareMathOperator*{\argmin}{arg\,min}
-\DeclareMathOperator*{\argmax}{arg\,max}
-
-% ---- theorem-like environments ----
-% Implemented as plain paragraph-based environments (not amsthm) because the
-% amsthm trivlist machinery is incompatible with the PDF tagging code in this
-% TeX Live release. Visual style is close to amsthm's plain/definition/remark.
-\newcounter{thm}[chapter]
-\renewcommand{\thethm}{\thechapter.\arabic{thm}}
-
-\NewDocumentCommand\notes@thmhead{mm}{%
-  \par\addvspace{.5\baselineskip}%
-  \refstepcounter{thm}%
-  \noindent\textbf{#1 \thethm}\IfValueT{#2}{}% placeholder
-}
-% style: italic body (plain)
-\NewDocumentCommand\notes@newthm{mmm}{%
-  \NewDocumentEnvironment{#1}{o}{%
-    \par\addvspace{.5\baselineskip}%
-    \refstepcounter{thm}%
-    \noindent\textbf{#2~\thethm}\IfValueT{##1}{ \textbf{(##1)}}\textbf{.}~#3%
-  }{\par\addvspace{.5\baselineskip}}%
-}
-\makeatletter
-\notes@newthm{thm}{Theorem}{\itshape}
-\notes@newthm{lem}{Lemma}{\itshape}
-\notes@newthm{coro}{Corollary}{\itshape}
-\notes@newthm{prop}{Proposition}{\itshape}
-\notes@newthm{defn}{Definition}{}
-\notes@newthm{eg}{Example}{}
-\notes@newthm{ex}{Exercise}{}
-\notes@newthm{assp}{Assumption}{}
-\notes@newthm{rem}{Remark}{}
-\makeatother
-
-% proof environment (amsthm-free)
-\NewDocumentEnvironment{proof}{o}{%
-  \par\addvspace{.5\baselineskip}%
-  \noindent\textit{\IfValueTF{#1}{#1}{Proof}.}~%
-}{\nobreak\hfill\ensuremath{\square}\par\addvspace{.5\baselineskip}}
-
-\endinput
