@@ -597,6 +597,7 @@ where $\mathcal{U}_{t,s}$ is the set of admissible controls restricted to time i
     \begin{equation} \label{eqn:HJ_decay_w_Hamiltonian_homogeneous}
                 0=- k V(t,x)+H(x,V_x)            
     \end{equation}
+
     \begin{ex}
     Consider the consumption problems, Exercise~\ref{ex:consumption} and Exercise~\ref{ex:consumption_no_terminal}, in infinite horizon with decay term:
     \[
@@ -672,6 +673,7 @@ The above equation is a second order equation with two boundary conditions, whic
     v^{\epsilon}(-1)=v^{\epsilon}(1)=0
 \end{cases}
 \]
+
 \begin{ex}
     Find a closed form solution. above system of equations.
 \end{ex}
@@ -771,6 +773,7 @@ where the Hamiltonian is given by
 \begin{equation}
     H(t,x,\lambda,u):=\lambda f(t,x,u)+ C(t,x,u)
 \end{equation} 
+
 \begin{thm}\label{thm:pontryagin_deterministic}
     [Pontryagin principle]
     Assume that there exists $(x^*,u^*,\lambda^*):[0,T]\to\mathbb{R}^d\times\mathbb{R}^n\times\mathbb{R}^d$ such that
@@ -1349,6 +1352,7 @@ If we consider higher dimensions, we should write Hamiltonian as
 \begin{equation}
 H(t,x,p,\Gamma):=\inf_{u\in U}\left\{ C(t,x,u)  + p\cdot b(t,x,u)+\frac12 \Gamma\cdot(\sigma^{\top}\sigma)(t,x,u)\right\}
 \end{equation}
+
 \begin{ex}
 The dynamics of portion of susceptible individuals and infected individuals in a population follows.
 \begin{align*}
@@ -2009,6 +2013,7 @@ Furthermore, the equality is attained at
 \[
 u^*(t,x,z):=\text{\normalfont argmin}_{u\in U}\left\{z\cdot b(t,x,u) + C(t,x,u)\right\}
 \]
+
 \begin{ex}
     Consider the stochastic linear quadratic problem below:
     \begin{equation}
@@ -2409,6 +2414,7 @@ Numerical schemes for PDEs are studied extensively. Examples of such numerical s
 \end{cases}\label{eqn:HJB_multi}\\
 &\hspace{0cm}H(t,x,p,\Gamma):=\inf_{u\in U}\left\{ C(t,x,u)  + p\cdot b(t,x,u)+\frac12 \Gamma\cdot  (\sigma^\top\sigma)(t,x,u)\right\}\label{eqn:Hamilton_multi}
 \end{align}
+
 \begin{assp}
     The HJB equation \eqref{eqn:HJB_multi} has a unique viscosity solution which is equal to the value function of the control problem 
     \[
@@ -2558,6 +2564,7 @@ Then, we can approximate $V(0,x)$ by
 \[
 \mathbb{E}\left[\int_0^T C(r,X_r){{\dr}}+g(X_T)\right]\approx\frac{1}{J}\Big(\sum_{n=0}^{N-1} C(t_n,\hat{X}_{t_n}^j)\Delta t+g(\hat{X}_T^j)\Big)
 \]
+
 \begin{algorithm}
         % Algorithm content goes here
         \KwData{$T$, $N$, $X_0^j\sim\mathcal{L}_0$, $W_{t_{n+1}}^j\sim N(0,\Delta t)$, $\phi(\cdot,\theta)$}
@@ -3784,6 +3791,7 @@ The above partial differential equation is called Hamilton-Jacobi-Bellman equati
 \begin{equation}
 	u^*(t,x)\in\textrm{argmax}_{u\in\mathbf{U}}\left\{C(t,x,u)+\mu(t,x,u)\partial_{x}V(t,x)+\frac12{\sigma^2(t,x,u)}\partial_{xx}V(t,x)\right\}
 \end{equation}
+
 \begin{eg}
 Recall from \eqref{eqn:DPP_exponential} that 
 \begin{equation}
