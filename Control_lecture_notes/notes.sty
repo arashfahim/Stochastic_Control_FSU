@@ -42,14 +42,29 @@
 % -----------------------------------------------------------------------
 %  Fonts & encoding
 % -----------------------------------------------------------------------
-\usepackage[T1]{fontenc}
+\usepackage{iftex}
+% T1 is a pdfLaTeX encoding.  Under LuaLaTeX the default Unicode (TU) encoding
+% gives real Unicode text in the PDF, which is what screen readers need.
+\ifLuaTeX\else
+  \usepackage[T1]{fontenc}
+\fi
 \usepackage[expansion=false]{microtype}
 
 % -----------------------------------------------------------------------
 %  Math  (amsthm deliberately omitted — see header)
 % -----------------------------------------------------------------------
-\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{amsmath}
 \usepackage{mathtools}
+% LuaLaTeX: unicode-math (OpenType Latin Modern Math) lets the tagging layer
+% produce MathML for screen readers instead of only LaTeX-source alt text.
+% It provides every amssymb/amsfonts symbol and clashes with those packages,
+% so they are loaded only for pdfLaTeX.
+\ifLuaTeX
+  \usepackage{unicode-math}
+  \setmathfont{Latin Modern Math}
+\else
+  \usepackage{amssymb,amsfonts}
+\fi
 
 % -----------------------------------------------------------------------
 %  Graphics, floats, tables
@@ -83,6 +98,9 @@
 \setlength\parindent{5pt}
 \renewcommand{\ps@plain}{\pagestyle{fancy}}
 \captionsetup{labelfont=bf,indention=0cm}
+% Last-resort extra interword stretch for paragraphs that would otherwise run
+% into the margin (long inline math). Other paragraphs are unaffected.
+\setlength{\emergencystretch}{2em}
 
 % -----------------------------------------------------------------------
 %  Numbering
