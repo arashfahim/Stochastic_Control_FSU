@@ -791,7 +791,7 @@ Then, $u^*$ is an optimal control for \eqref{prob:deterministic_control}.
 % \begin{equation}
 %     \begin{cases}
 %         {\dd}\lambda^*_t+ \partial_x H(t,x^*_t,\lambda^*_t,u^*_t){\dt}=0\\
-%         \lambda^*_T=\triangledown g(x^*_T)\\
+%         \lambda^*_T=\nabla g(x^*_T)\\
 %         H(t,x^*_t,\lambda^*_t,u^*_t)\le H(t,x^*_t,\lambda^*_t,u)~\textrm{ for all } u
 %         \end{cases}
 % \end{equation}
@@ -3564,7 +3564,7 @@ However, \emph{Karush-Kuhn-Tucker} conditions (KKT) provide some necessary and s
 Assume the differentiability of $f$ and $g$.
     If $x^*$ solves \eqref{constraint_optimization1}  and $\lambda^*$ solves \eqref{prob:dual} such that 
     \begin{equation} \label{cond:KKT}
-    \begin{cases} \triangledown f(x^*) - \lambda^* \cdot \triangledown g(x^*) = 0\\
+    \begin{cases} \nabla f(x^*) - \lambda^* \cdot \nabla g(x^*) = 0\\
             g (x^*)=0
         \end{cases}
     \end{equation}
@@ -3605,7 +3605,7 @@ If $x_1$ is such that $h(x_1)<0$, then
 $$\sup_{\mu\ge0}L(x_1,\lambda,\mu)= f(x_1) - \lambda g(x_1) - h(x_1) \sup_{\mu\ge0} \mu =\infty$$
 Therefore, $\inf_{x}\sup_{\mu\ge0}L(x,\lambda,\mu)$ is not attained at $x_1$. Thus, any saddle point $(x^*,\lambda^*,\mu^*)$ with $\mu^*>0$ must satisfy $h(x^*)\ge0$. More general KKT conditions guarantee the strong duality in this case:
     \begin{equation} \label{cond:KKT_general}
-    \begin{cases} \triangledown f (x^*) - \lambda^* \triangledown g (x^*) -\mu^* \triangledown 
+    \begin{cases} \nabla f (x^*) - \lambda^* \nabla g (x^*) -\mu^* \nabla 
  h(x^*)= 0\\
             g(x^*)=0\\
             h(x^*)\ge0\\
