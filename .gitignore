@@ -26,3 +26,8 @@ Stochastic_Control_FSU/
 __pycache__/
 *.pyc
 .ipynb_checkpoints/
+
+# Control_lecture_notes: publish only the compiled PDFs (LaTeX sources live in Overleaf)
+Control_lecture_notes/*
+!Control_lecture_notes/lecture_notes.pdf
+!Control_lecture_notes/control_slides.pdf
