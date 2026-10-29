@@ -1,0 +1,26 @@
+% ---- TEMPORARY tagging diagnostic: remove after one compile ----
+\ExplSyntaxOn
+\cs_new_protected:Npn \__diag:n #1
+  {
+    \iow_log:e
+      {
+        DIAG ~ #1 ~ l. \the\inputlineno \c_space_tl
+        diff=
+        \cs_if_exist:NTF \g__tag_para_begin_int
+          { \int_eval:n { \g__tag_para_begin_int - \g__tag_para_end_int } } { ? }
+        \c_space_tl depth=
+        \cs_if_exist:NTF \g__tag_struct_stack_seq
+          { \seq_count:N \g__tag_struct_stack_seq } { ? }
+      }
+  }
+\clist_map_inline:nn { chapter, section, subsection }
+  { \AddToHook { cmd/#1/before } { \__diag:n { #1 } } }
+\clist_map_inline:nn
+  { algorithm, figure, ex, eg, thm, defn, rem, lem, coro, assp, proof,
+    enumerate, itemize, center, tabularx, equation, align, comment }
+  {
+    \AddToHook { env/#1/before } { \__diag:n { begin-#1 } }
+    \AddToHook { env/#1/after }  { \__diag:n { end-#1 } }
+  }
+\ExplSyntaxOff
+% ---- end diagnostic ----
