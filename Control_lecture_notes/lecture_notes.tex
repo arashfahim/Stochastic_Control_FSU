@@ -10,7 +10,7 @@
 % notes.sty defines the theorem environments, the proof environment, the
 % TagSuspend/TagResume helpers, and a tagging-safe \tocandfigures.
 \usepackage{notes}
-\input{Control_lecture_notes/diag}
+% \input{Control_lecture_notes/diag}
 \usepackage{hyperref}
 \hypersetup{
   pdftitle={Methods of Optimal Control},
@@ -1722,7 +1722,7 @@ F(t,x,\varrho,\Pi,\Gamma):=\sup_{u\in \mathbf{U}}\left\{C(t,x,u)+\mu(t,x,u)\Pi+\
 is nondecreasing in $\Gamma$.
 
 \begin{eg}
-Show that the HJB equation \eqref{eqn:HJB_consumption} is a parabolic equation.
+Show that the HJB equation \eqref{ex:merton_w_consumption} is a parabolic equation.
 \end{eg}
 
 On the other hand, even an equation as simple as the heat equation may have multiple solution if we do not restrict the solution to a proper class of functions. For instance, if $g(x)$ and $f(t,x)$ have linear growth in $x$, then the heat equation has a unique solution in the class of function with linear growth, but not in the class of functions  with super exponential growth.
@@ -2213,16 +2213,16 @@ Therefore, if $v$ is the solution to
 % In addition, we expect to see that the value function and its first derivative are the same in the both sides of $\partial \mathbf{N}$, particularly, $ V_{x}(t,R(t))=1$. 
 % Solving \eqref{eqn:for v in sigular example}, we obtain that $v(t,x)=\frac{5e^{2(T-t)}-1}{4}x^2-e^{T-t}x-\frac{\sigma^2}{4}\Big(T-t-\frac{5e^{2(T-t)}-1}{2}\Big)$ and, therefore, $R(t)=2\frac{e^{T-t}+1}{5e^{2(T-t)}-1}$. 
 \end{eg}
-% \begin{ex}\label{ex:DS}
-%     \begin{equation}
-%         \inf_{u_t\ge0}\mathbb{E}\Big[\int_0^\tau e^{-r t} \Big(\mu - u_t\Big){\dt}\Big]
-%     \end{equation}
-%     where $\tau=\inf\{s\ge0: X_t=0\}$ with
-%     \begin{equation}
-%         {\dX}_t=(\gamma X_t-u_t){\dt}+\sigma \dW_t, ~~ X_0=x\ge0
-%     \end{equation}
-%     Write the HJB and obtain the nonlinear term by evaluating the infimum. 
-% \end{ex}
+\begin{ex}\label{ex:DS}
+    \begin{equation}
+        \inf_{u_t\ge0}\mathbb{E}\Big[\int_0^\tau e^{-r t} \Big(\mu - u_t\Big){\dt}\Big]
+    \end{equation}
+    where $\tau=\inf\{s\ge0: X_t=0\}$ with
+    \begin{equation}
+        {\dX}_t=(\gamma X_t-u_t){\dt}+\sigma \dW_t, ~~ X_0=x\ge0
+    \end{equation}
+    Write the HJB and obtain the nonlinear term by evaluating the infimum. 
+\end{ex}
 Singular control problems are easy to detect; the running cost and drift of the SDE are both linear in the control. To see this, consider the control problem
 \begin{equation}\label{eqn:dpp_singular}
         \inf_{u}\mathbb{E}\Big[\int_0^T \big(C(s,X^u_s)+au_s\big){{\ds}} + g(X_T)\Big]
@@ -3030,7 +3030,7 @@ Solve modified version of Exercise~\ref{eg:LQ_drift} with modification
 %         0= \sup_{\theta}\bigg\{\frac{\theta^2\sigma^2}{2}v^{\prime\prime}+\theta\mu v^\prime\bigg\}+\sup_{c\ge0}\Big\{U(c)-cv^\prime\Big\}-\gamma v
 %     \end{equation}
 %     or 
-%     \begin{equation}\label{eqn:HJB_consumption}
+%     \begin{equation}\label{ex:merton_w_consumption}
 %         0=\frac{(\mu v^\prime)^2}{\sigma^2 v^{\prime\prime}}+\sup_{c\ge0}\Big\{U(c)-cv^\prime\Big\}-\gamma v
 %     \end{equation}
 % For $U(c)=\frac{x^{1-\lambda}}{1-\lambda}$, with $\lambda\in(0,1)$, we have
@@ -3818,7 +3818,7 @@ By plugging the above into DPP programing and using $\tau\wedge h$ for the stopp
 	\end{cases}
 \end{equation}
 The HJB can be further simplified.
-\begin{equation}\label{eqn:HJB_consumption}
+\begin{equation}\label{ex:merton_w_consumption}
 \begin{cases}
 	0=\partial_{t}V-\gamma V+rx\partial_{x}V+\sup_{c\ge0}
 	\left\{ U(c)-c\partial_{x}V\right\}
@@ -3830,7 +3830,7 @@ The HJB can be further simplified.
 \end{equation}
 In the above, we separated the supremum over two controls into two separate supremum, because $c$ and $\theta$ can be controlled sufficiently independent in a short time interval. They do have some dependency when they both show up in the definition of admissible control; specifically,  $X_t^{u}\ge-C$. However, the HJB is the limit of DPP in the short time interval near time $t$.
 
-Solving \eqref{eqn:HJB_consumption} is not easy. In practice, we can only rely on the numerical implementation of HJB equations. However, for some simple choices of the utility function $U$, a closed-form solution exists. For example, if we choose $U(c)=\frac{c^{1-\alpha}}{1-\alpha}$ and we look for a solution of the form $V(t,x)=f(t)\frac{x^{1-\alpha}}{1-\alpha}$, we obtain
+Solving \eqref{ex:merton_w_consumption} is not easy. In practice, we can only rely on the numerical implementation of HJB equations. However, for some simple choices of the utility function $U$, a closed-form solution exists. For example, if we choose $U(c)=\frac{c^{1-\alpha}}{1-\alpha}$ and we look for a solution of the form $V(t,x)=f(t)\frac{x^{1-\alpha}}{1-\alpha}$, we obtain
 \begin{equation}
 	V(t,x)=(T-t+e^{A/\alpha t})^{\alpha}e^{-AT}U(x)
 \end{equation} 
@@ -3839,7 +3839,7 @@ Solving \eqref{eqn:HJB_consumption} is not easy. In practice, we can only rely o
 
 
 \begin{ex}
-Show that the value function $V(t,x)=(T-t+e^{A/\alpha t})^{\alpha}e^{-AT}U(x)$ with $U(x)=\frac{c^{1-\alpha}}{1-\alpha}$ meets the verification theorem criteria for the value function of the HJB \eqref{eqn:HJB_consumption}.
+Show that the value function $V(t,x)=(T-t+e^{A/\alpha t})^{\alpha}e^{-AT}U(x)$ with $U(x)=\frac{c^{1-\alpha}}{1-\alpha}$ meets the verification theorem criteria for the value function of the HJB \eqref{ex:merton_w_consumption}.
 \begin{equation}
 \begin{cases}
 	0=\partial_{t}V-\gamma V+rx\partial_{x}V+\sup_{c\ge0}
@@ -5783,7 +5783,7 @@ F(t,x,\varrho,\Pi,\Gamma):=\sup_{u\in \mathbf{U}}\left\{C(t,x,u)+\mu(t,x,u)\Pi+\
 is nondecreasing in $\Gamma$.
 
 \begin{eg}
-Show that the HJB equation \eqref{eqn:HJB_consumption} is a parabolic equation.
+Show that the HJB equation \eqref{ex:merton_w_consumption} is a parabolic equation.
 \end{eg}
 
 On the other hand, even an equation as simple as the heat equation may have multiple solution if we do not restrict the solution to a proper class of functions. For instance, if $g(x)$ and $f(t,x)$ have linear growth in $x$, then the heat equation has a unique solution in the class of function with linear growth, but not in the class of functions  with super exponential growth.
@@ -7088,7 +7088,7 @@ Solve modified version of Exercise~\ref{eg:LQ_drift} with modification
 %         0= \sup_{\theta}\bigg\{\frac{\theta^2\sigma^2}{2}v^{\prime\prime}+\theta\mu v^\prime\bigg\}+\sup_{c\ge0}\Big\{U(c)-cv^\prime\Big\}-\gamma v
 %     \end{equation}
 %     or 
-%     \begin{equation}\label{eqn:HJB_consumption}
+%     \begin{equation}\label{ex:merton_w_consumption}
 %         0=\frac{(\mu v^\prime)^2}{\sigma^2 v^{\prime\prime}}+\sup_{c\ge0}\Big\{U(c)-cv^\prime\Big\}-\gamma v
 %     \end{equation}
 % For $U(c)=\frac{x^{1-\lambda}}{1-\lambda}$, with $\lambda\in(0,1)$, we have
@@ -7875,7 +7875,7 @@ By plugging the above into DPP programing and using $\tau\wedge h$ for the stopp
 	\end{cases}
 \end{equation}
 The HJB can be further simplified.
-\begin{equation}\label{eqn:HJB_consumption}
+\begin{equation}\label{ex:merton_w_consumption}
 \begin{cases}
 	0=\partial_{t}V-\gamma V+rx\partial_{x}V+\sup_{c\ge0}
 	\left\{ U(c)-c\partial_{x}V\right\}
@@ -7887,7 +7887,7 @@ The HJB can be further simplified.
 \end{equation}
 In the above, we separated the supremum over two controls into two separate supremum, because $c$ and $\theta$ can be controlled sufficiently independent in a short time interval. They do have some dependency when they both show up in the definition of admissible control; specifically,  $X_t^{u}\ge-C$. However, the HJB is the limit of DPP in the short time interval near time $t$.
 
-Solving \eqref{eqn:HJB_consumption} is not easy. In practice, we can only rely on the numerical implementation of HJB equations. However, for some simple choices of the utility function $U$, a closed-form solution exists. For example, if we choose $U(c)=\frac{c^{1-\alpha}}{1-\alpha}$ and we look for a solution of the form $V(t,x)=f(t)\frac{x^{1-\alpha}}{1-\alpha}$, we obtain
+Solving \eqref{ex:merton_w_consumption} is not easy. In practice, we can only rely on the numerical implementation of HJB equations. However, for some simple choices of the utility function $U$, a closed-form solution exists. For example, if we choose $U(c)=\frac{c^{1-\alpha}}{1-\alpha}$ and we look for a solution of the form $V(t,x)=f(t)\frac{x^{1-\alpha}}{1-\alpha}$, we obtain
 \begin{equation}
 	V(t,x)=(T-t+e^{A/\alpha t})^{\alpha}e^{-AT}U(x)
 \end{equation} 
@@ -7896,7 +7896,7 @@ Solving \eqref{eqn:HJB_consumption} is not easy. In practice, we can only rely o
 
 
 \begin{ex}
-Show that the value function $V(t,x)=(T-t+e^{A/\alpha t})^{\alpha}e^{-AT}U(x)$ with $U(x)=\frac{c^{1-\alpha}}{1-\alpha}$ meets the verification theorem criteria for the value function of the HJB \eqref{eqn:HJB_consumption}.
+Show that the value function $V(t,x)=(T-t+e^{A/\alpha t})^{\alpha}e^{-AT}U(x)$ with $U(x)=\frac{c^{1-\alpha}}{1-\alpha}$ meets the verification theorem criteria for the value function of the HJB \eqref{ex:merton_w_consumption}.
 \begin{equation}
 \begin{cases}
 	0=\partial_{t}V-\gamma V+rx\partial_{x}V+\sup_{c\ge0}
