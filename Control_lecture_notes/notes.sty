@@ -60,7 +60,9 @@
 % It provides every amssymb/amsfonts symbol and clashes with those packages,
 % so they are loaded only for pdfLaTeX.
 \ifLuaTeX
-  \usepackage{unicode-math}
+  % warnings-off: the notes use none of mathtools' colon or bracket commands,
+  % so unicode-math's notices about overriding them are irrelevant.
+  \usepackage[warnings-off={mathtools-colon,mathtools-overbracket}]{unicode-math}
   \setmathfont{Latin Modern Math}
 \else
   \usepackage{amssymb,amsfonts}
