@@ -74,9 +74,11 @@
 % -----------------------------------------------------------------------
 %  Page layout
 % -----------------------------------------------------------------------
-\geometry{verbose,letterpaper,tmargin=1.0in,bmargin=1.0in,lmargin=1in,rmargin=1in}
+% headheight: the running head is two lines tall (fancyhdr asked for 25.2pt).
+% marginparwidth: the default 116pt overran the 1in margin; no \marginpar is used.
+\geometry{verbose,letterpaper,tmargin=1.0in,bmargin=1.0in,lmargin=1in,rmargin=1in,
+  headheight=26pt,marginparwidth=0.6in}
 \pagestyle{fancy}
-\setlength{\headheight}{15pt}
 \renewcommand{\baselinestretch}{1}
 \setlength\parindent{5pt}
 \renewcommand{\ps@plain}{\pagestyle{fancy}}
