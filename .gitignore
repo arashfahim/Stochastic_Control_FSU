@@ -1,2 +1,28 @@
 
 Stochastic_Control_FSU/
+
+# macOS folder metadata
+.DS_Store
+
+# Backups and superseded copies
+*.old
+*.bak
+*~
+
+# LaTeX build files (Overleaf rebuilds these; optimal_control.pdf stays tracked)
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
+*.log
+*.lot
+*.out
+*.synctex.gz
+*.toc
+
+# Python / Jupyter
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
